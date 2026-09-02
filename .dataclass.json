@@ -1,0 +1,27 @@
+{
+  "_comment": [
+    "Spec v1 s9 -- every path in this repo belongs to exactly one class.",
+    "TOOL    = code, docs and metrics ABOUT the tools. Public, hand-written, no data.",
+    "FIXTURE = tests and examples. Public, SYNTHETIC.",
+    "DATA    = anything a REAL RUN produced. Never git-tracked."
+  ],
+  "data": [],
+  "data_sealed": [],
+  "fixture": [],
+  "tool": [],
+  "_run_shape_probes": [],
+  "_audited": [
+    "2026-09-02. The data list is empty because this repo produces no real-run output, not because",
+    "nobody looked. It holds two scanners, their tests and two CI actions.",
+    "",
+    "Checked rather than assumed. Every write in shipped (non-test) code was located:",
+    "  dash_guard.py --fix -> rewrites the file it was pointed at, which is the CALLER's source.",
+    "                         That is an edit to somebody else's tree, not output this repo makes.",
+    "  load_budget.py      -> prints. It writes nothing at all.",
+    "Nothing else writes. The tracked set is 4 .py, 2 .yml, 2 .md and 2 dotfiles: no ledger, no",
+    "runs tree, no dated output, no database.",
+    "",
+    "_run_shape_probes stays empty for the same reason: a probe list names what a real run of THIS",
+    "repo writes, and a real run of this repo writes nothing."
+  ]
+}
