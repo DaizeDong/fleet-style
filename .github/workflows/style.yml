@@ -1,0 +1,23 @@
+# The kit's own gates, run through the kit's own actions.
+#
+# Callers rather than a second copy of the steps: the action IS the subject here, so a break shows
+# up in this repo before it reaches a consumer.
+#
+# No pii-guard job. This repo does not carry that scanner, and the machine-level hook plus the
+# consuming repos' own CI cover the identifier question. What is asserted here is that these two
+# gates still work.
+name: style
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  dash:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - uses: ./ci/dash-guard
