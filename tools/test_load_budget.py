@@ -362,3 +362,48 @@ def test_NEG_json_mode_still_returns_the_failing_exit_code(tmp_path):
 
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__, "-q"]))
+
+
+# ------------------------------------------------------------------ submodules (2026-09-03)
+def test_NEG_a_submodule_is_not_counted_as_this_repos_prose(tmp_path):
+    """A submodule's markdown is a DEPENDENCY, not prose this repo owns.
+
+    Counting it makes the budget measure something the repo cannot edit, and it produces
+    duplication notes that are true by construction: the guard kit ships a COMPANION.md that is
+    byte-identical to the consumer's copy on purpose, so every root-layout repo printed the same
+    three notes on every run. A rare signal made routine is one people learn to scroll past.
+
+    Only the ROOT layout is affected, because it is the only one whose reference walk starts above
+    the submodules. The fixture names the submodule something no name list would contain, so a fix
+    that adds "guards" to a set does not pass this.
+    """
+    shared = _prose(30, seed=7)
+    root = _mkrepo(tmp_path / "rootlayout", layout="root", skill_text=shared,
+                   refs={"reference/own.md": _prose(20, seed=99)})
+    sub = os.path.join(root, "vendored-kit-nobody-listed")
+    os.makedirs(sub, exist_ok=True)
+    with open(os.path.join(sub, "COMPANION.md"), "w", encoding="utf-8") as fh:
+        fh.write(shared)                       # identical to SKILL.md, on purpose
+    with open(os.path.join(sub, ".git"), "w", encoding="utf-8") as fh:
+        fh.write("gitdir: ../.git/modules/kit" + chr(10))
+    rc, out = _run(root)
+    assert "vendored-kit-nobody-listed" not in out, (
+        "a submodule file was counted as this repo's prose:" + chr(10) + out)
+
+
+def test_NEG_an_ordinary_subdirectory_is_still_counted(tmp_path):
+    """The negative control. Excluding by shape must not start excluding real references: a budget
+    that quietly stops measuring half the repo prints the same green as a lean one.
+
+    Same fixture as above with the .git marker removed, so the ONLY difference is the shape.
+    """
+    shared = _prose(30, seed=7)
+    root = _mkrepo(tmp_path / "plain", layout="root", skill_text=shared,
+                   refs={"reference/own.md": _prose(20, seed=99)})
+    plain = os.path.join(root, "vendored-kit-nobody-listed")
+    os.makedirs(plain, exist_ok=True)
+    with open(os.path.join(plain, "COMPANION.md"), "w", encoding="utf-8") as fh:
+        fh.write(shared)                       # no .git marker: an ordinary directory
+    rc, out = _run(root)
+    assert "vendored-kit-nobody-listed" in out, (
+        "an ordinary duplicated reference stopped being measured:" + chr(10) + out)

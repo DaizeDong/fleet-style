@@ -152,11 +152,36 @@ def ships_a_skill(root):
             or os.path.isdir(os.path.join(root, "skills")))
 
 
+def in_submodule(base, path):
+    """Is `path` inside a git submodule of `base`?
+
+    A submodule's files are a DEPENDENCY, not this repo's prose. Counting them makes the budget
+    measure something the repo does not own and cannot edit, and it produces duplication notes that
+    are true by construction: the guard kit's COMPANION.md is byte-identical to the consumer's copy
+    on purpose, so every root-layout repo reported the same three notes on every run. A rare signal
+    made routine is a signal people learn to scroll past.
+
+    DETECTED BY SHAPE, NOT BY NAME, for the same reason the scanner's skip is: a name list is a
+    list of the submodules somebody remembered, and the next one is silent again. `.git` as a FILE
+    rather than a directory is git's own marker for "this worktree belongs to a parent".
+
+    Only repos whose SKILL.md sits at the ROOT are affected, because that is the only layout where
+    the reference walk starts above the submodules. That is why this went unnoticed until three
+    such repos existed.
+    """
+    rel = os.path.relpath(path, base)
+    first = rel.split(os.sep, 1)[0]
+    if first in (".", ".."):
+        return False
+    return os.path.isfile(os.path.join(base, first, ".git"))
+
+
 def audit(skill_md):
     base = os.path.dirname(skill_md)
     refs = sorted(
         p for p in glob.glob(os.path.join(base, "**", "*.md"), recursive=True)
         if os.path.basename(p) != "SKILL.md" and not is_template(p)
+        and not in_submodule(base, p)
     )
     s_text = read(skill_md)
     s_sh = shingles(s_text)
