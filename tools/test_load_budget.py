@@ -343,7 +343,11 @@ def test_json_mode_carries_the_measured_and_dup_checked_flags(tmp_path):
     payload = json.loads(out[out.index("["):out.rindex("]") + 1])
     assert rc == 0, out
     assert payload[0]["measured"] is True, payload
-    assert payload[0]["dup_checked"] is False, "0 refs must be dup_checked=False, not a 0.00% pass\n%s" % payload
+    # The percent is DOUBLED. Unescaped, "0.00% pass" makes Python read "% p" as a format
+    # character, so this message raised ValueError instead of printing the payload: the one
+    # moment the message exists for was the one moment it destroyed itself.
+    assert payload[0]["dup_checked"] is False, (
+        "0 refs must be dup_checked=False, not a 0.00%% pass" + chr(10) + "%s") % payload
 
 
 def test_NEG_json_mode_still_returns_the_failing_exit_code(tmp_path):

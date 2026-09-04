@@ -19,7 +19,7 @@ import tempfile
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import dash_guard as dg  # noqa: E402
-from dash_guard import NO_VALUE, fix_prose, fix_table_cells, process_text  # noqa: E402
+from dash_guard import NO_VALUE, fix_prose, process_text  # noqa: E402
 
 EM = "—"
 EN = "–"
