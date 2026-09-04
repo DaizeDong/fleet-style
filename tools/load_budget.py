@@ -292,22 +292,22 @@ def main():
                   f"{r['ref_count']} refs, {r['ref_lines']} on-demand lines")
             if unmeasured:
                 print(f"          MEASURED NOTHING: {r['skill_md']} yielded no {SHINGLE_N}-word run of prose.")
-                print(f"          A SKILL.md that short is empty, truncated or unreadable. Neither half of this")
-                print(f"          gate examined it, so nothing about it has been cleared. Exit 1, not exit 0.")
+                print("          A SKILL.md that short is empty, truncated or unreadable. Neither half of this")
+                print("          gate examined it, so nothing about it has been cleared. Exit 1, not exit 0.")
             if over_lines:
                 print(f"          BLOCK: always-loaded budget exceeded. {r['always_loaded_lines']} lines > "
                       f"cap {args.max_lines}, over by {r['always_loaded_lines'] - args.max_lines}.")
                 print(f"          file: {r['skill_md']}")
                 print(f"          Every invocation of this skill pays for all {r['always_loaded_lines']} lines. Move the "
                       f"parts only SOME runs need")
-                print(f"          into a reference doc and leave a pointer (P7). Raising --max-lines is not the fix.")
+                print("          into a reference doc and leave a pointer (P7). Raising --max-lines is not the fix.")
             elif r["always_loaded_lines"] > ALWAYS_LOADED_WARN:
                 print(f"          note: SKILL.md is large ({r['always_loaded_lines']} lines, warn at "
                       f"{ALWAYS_LOADED_WARN}, block at {args.max_lines}). Not a failure by itself, but check")
-                print(f"          whether any of it is only needed by SOME runs (P7).")
+                print("          whether any of it is only needed by SOME runs (P7).")
             if not r["dup_checked"] and r["measured"]:
-                print(f"          note: 0 reference docs, so the duplication half compared nothing. Legitimate for "
-                      f"a single-file skill, but NOT a clean duplication result.")
+                print("          note: 0 reference docs, so the duplication half compared nothing. Legitimate for "
+                      "a single-file skill, but NOT a clean duplication result.")
             if over:
                 for count, ref, samples in r["offenders"]:
                     print(f"          +{count:<4} shared with {ref}")

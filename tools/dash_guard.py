@@ -152,8 +152,8 @@ def _split_md_code(line: str, in_fence: bool):
     if in_fence:
         return [(line, True)], True
     # protect inline code spans (`...`)
-    segs, is_code = [], False
-    for i, part in enumerate(re.split(r"(`[^`]*`)", line)):
+    segs = []
+    for part in re.split(r"(`[^`]*`)", line):
         segs.append((part, part.startswith("`") and part.endswith("`") and len(part) >= 2))
     return segs, False
 
