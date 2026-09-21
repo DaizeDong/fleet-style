@@ -36,8 +36,9 @@ two run in CI, which cannot be skipped with `--no-verify` anyway.
 
     git -C style fetch && git -C style checkout <sha>
 
-then commit the new pointer. A submodule pins one commit and does not follow the source on its
-own, which is deliberate: a bad commit here cannot reach every consumer by itself.
+then commit the new pointer. A submodule pins one commit. Consumers may also enroll
+in [automatic synchronization](docs/AUTOMATIC_SYNC.md): after the source workflow
+passes, a dispatch event advances the pin through the consumer's normal commit gates.
 
 ## An empty style/ is not a pass
 
