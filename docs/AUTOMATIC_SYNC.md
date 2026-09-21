@@ -16,6 +16,8 @@ The required configuration is:
   to `.github/workflows/fleet-sync.yml`, and set the `FLEET_SYNC_TOKEN` Actions secret.
   One workflow handles both kits. `.gitmodules` must use the public kit URL and
   track `main`, or omit `branch` to use `main`.
+  If the consumer has a separate CI identity allowlist, register the GitHub Actions
+  bot as an automation service as described in the shared guide.
 - In fleet-style, set `FLEET_SYNC_TARGETS` to a nonempty JSON array of subscriptions
   and `FLEET_SYNC_CREDENTIALS` to the corresponding credential mapping. A synthetic
   subscription is `{"repository":"example/consumer","credential":"primary"}`.
