@@ -45,11 +45,13 @@ docstring of the tool that enforces it, next to the code that can be checked aga
 `docs/` holds dated evidence, the two READMEs are a tour, and `ROADMAP.md` plus
 `CHANGELOG.md` are the only places a version number appears.
 
-**No `License: MIT` badge.** Chapter 3 fixes the second badge as the license, linking to
-`LICENSE`. This repository ships no `LICENSE` file, so the badge would assert terms that do
-not exist and link to a 404. The honest move is to leave the slot empty and record the gap,
-which `ROADMAP.md` does as the first planned item. The badge goes in when the file does,
-and not before.
+**The license, resolved the same day.** Chapter 3 fixes the second badge as the license,
+linking to `LICENSE`, and this repository shipped no such file. A badge asserting MIT over
+an unlicensed repository states terms that do not exist, and a consumer pinning this
+submodule would be acting on them, so the slot was left empty rather than filled. The file
+now exists, MIT, matching the rest of the fleet byte for byte, and the badge went in with
+it. Recorded here rather than deleted, because the sequence is the point: the gap was
+stated before it was closed, not quietly skipped.
 
 **No `.github/workflows/dash-guard.yml`.** The spec's chapter 10 asks every repository to
 run the dash gate in CI, and this one does, through `.github/workflows/style.yml` calling
@@ -117,4 +119,4 @@ audit's conclusion, that `dash_guard --fix` edits the caller's own source and
 | The dash gate is armed here and clean | `python tools/dash_guard.py --tree` exits 0, 9 files examined, 2 skipped by name |
 | The load budget gate refuses rather than reassures | `python tools/load_budget.py .` exits 3 with `measured NOTHING`, which is why this repository runs no load budget job |
 | No version exists to be consistent with | No `pyproject.toml`, no `__version__`, no manifest anywhere in the tree |
-| No `LICENSE` exists to badge | No such file at the root |
+| The license badge now has something to point at | `LICENSE` added 2026-09-22, MIT, identical to the rest of the fleet |
