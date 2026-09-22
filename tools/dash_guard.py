@@ -28,7 +28,7 @@ Replacement (deterministic):
   markdown table cell that is ONLY a dash  -> "none"  (the cell means "no value", not an aside)
   markdown table cell STARTING with a dash -> ASCII "-" (a sub-item marker, not an aside)
   spaced   ` — ` / ` – `                 -> ", "   (appositive / aside; never grammatically wrong)
-  ASCII range  A–B  (word char both sides) -> "A to B"  (e.g. T1–T9, 2020–2026)
+  ASCII range  A-B  (ONE dash, short token both sides) -> "A to B"  (e.g. T1-T9, 2020-2026)
   any leftover run  —— / – / ―           -> "," glued to the preceding word (never " ,")
 
 Why the table rules exist: a table cell holding a single long dash is the conventional way to write
@@ -76,7 +76,16 @@ _KIND = {".md": "md", ".markdown": "md", ".rst": "md", ".txt": "prose", ".py": "
          ".tmpl": "md"}
 
 _SPACED = re.compile(rf"\s+[{_DASHES}]+\s+")
-_RANGE = re.compile(rf"([A-Za-z0-9])[{_DASHES}]+([A-Za-z0-9])")
+# A range is a SINGLE dash between two SHORT alphanumeric tokens: 2020-2026, T1-T9, A-Z.
+# Both limits are load-bearing. Without the single-dash requirement the Chinese pause
+# `attach——attach` is read as a range and rewritten to "attach to attach", which is not a
+# typographic change but a false sentence; measured on a real repository. Without the token
+# length limit the same thing happens to a single dash between two words. Anything wider
+# falls through to the leftover-run rule, which turns it into a comma and never invents a
+# word that was not there.
+_RANGE = re.compile(
+    rf"(?<![A-Za-z0-9])([A-Za-z0-9]{{1,4}})[{_DASHES}]([A-Za-z0-9]{{1,4}})(?![A-Za-z0-9])"
+)
 # The leftover run is matched TOGETHER with the blanks hugging it, so the replacement decides the
 # spacing instead of inheriting a stray space and emitting " ,".
 _RUN = re.compile(rf"[ \t]*[{_DASHES}]+[ \t]*")

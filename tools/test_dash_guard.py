@@ -28,8 +28,23 @@ _FAILS = []
 
 
 def check(got, want, what):
+    """Compare, and FAIL in whichever runner is driving this file.
+
+    This used to only append to _FAILS, which the __main__ runner at the bottom prints.
+    pytest never looks at that list, and CI runs pytest, so every comparison in this file
+    was collected and then silently dropped: the suite reported green whatever the guard
+    did. Measured by widening the range rule back to its broken form and re-running under
+    pytest: 29 passed, including the test written to catch exactly that.
+
+    So it raises as well as records. The __main__ runner already catches AssertionError per
+    test and counts it, so both drivers now fail for the same reason. The cost is that a
+    test stops at its first mismatch instead of listing every one, which is a fair price
+    for a comparison that can fail at all.
+    """
     if got != want:
-        _FAILS.append(f"{what}\n     got: {got!r}\n    want: {want!r}")
+        detail = f"{what}\n     got: {got!r}\n    want: {want!r}"
+        _FAILS.append(detail)
+        raise AssertionError(detail)
 
 
 def md(text):
@@ -125,6 +140,24 @@ def test_a_tight_dash_is_not_respaced():
     or every re-run churns hundreds of fleet lines for nothing."""
     check(fix_prose(f"$2.0B{EN}$4.6B"), "$2.0B,$4.6B", "currency range keeps its old rendering")
     check(fix_prose(f"8.8x{EN}50.5x"), "8.8x to 50.5x", "plain word chars still become a range")
+
+
+def test_a_pause_between_two_words_is_not_a_range():
+    """The range rule must not invent the word "to".
+
+    Measured on a real repository: `attach{EM}{EM}attach` in a Chinese sentence was rewritten to
+    "attach to attach", which is not a typographic change, it is a false sentence, and one that
+    reads as deliberate. A range is a SINGLE dash between two SHORT tokens. Everything wider
+    falls through to the leftover-run rule, which produces a comma and never a word that was
+    not there.
+    """
+    check(fix_prose(f"not attach{EM}{EM}attach fails"), "not attach,attach fails",
+          "a doubled dash between identical words is a pause, not a range")
+    check(fix_prose(f"spawn{EM}attach"), "spawn,attach",
+          "one dash between two long words is still not a range")
+    check(fix_prose(f"2020{EN}2026"), "2020 to 2026", "a real numeric range survives")
+    check(fix_prose(f"T1{EN}T9"), "T1 to T9", "a real identifier range survives")
+    check(fix_prose(f"A{EN}Z"), "A to Z", "a two token range survives")
 
 
 def test_existing_behavior_preserved():
