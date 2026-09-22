@@ -3,6 +3,7 @@
 两个与安全无关的房规闸门，放在一个仓里，以 git submodule 的方式被消费。
 
 [![子模块](https://img.shields.io/badge/%E5%AD%90%E6%A8%A1%E5%9D%97-%E6%A0%B7%E5%BC%8F%E5%A5%97%E4%BB%B6-orange?style=flat)](#安装)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![闸门](https://img.shields.io/badge/%E9%97%B8%E9%97%A8-2-green?style=flat)](#闸门总览)
 [![语言](https://img.shields.io/badge/%E8%AF%AD%E8%A8%80-EN%20%2F%20CN-blue?style=flat)](#语言)
 [![路线图](https://img.shields.io/badge/%E8%B7%AF%E7%BA%BF%E5%9B%BE-v0.1.0-purple?style=flat)](ROADMAP.md)

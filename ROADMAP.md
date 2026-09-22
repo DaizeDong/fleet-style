@@ -24,8 +24,6 @@ which are the single home for those rules, and what changed lives in `CHANGELOG.
 
 ## Planned
 
-- **A LICENSE file.** The repository ships none, so it carries no license badge and a
-  consumer has no stated terms for the code it pins.
 - **File types `dash_guard` does not examine.** The extension map covers Markdown, plain
   prose, Python and templates. Anything outside it is skipped, and a skipped file is
   reported but not checked, so prose in a YAML description or a shell comment passes.

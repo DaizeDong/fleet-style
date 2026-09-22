@@ -3,6 +3,7 @@
 Two house gates that are not about security, kept in one place and consumed as a git submodule.
 
 [![Git Submodule](https://img.shields.io/badge/Git%20Submodule-Style%20Kit-orange?style=flat)](#install)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Gates](https://img.shields.io/badge/Gates-2-green?style=flat)](#gates-at-a-glance)
 [![Languages](https://img.shields.io/badge/Languages-EN%20%2F%20CN-blue?style=flat)](#languages)
 [![Roadmap](https://img.shields.io/badge/Roadmap-v0.1.0-purple?style=flat)](ROADMAP.md)
