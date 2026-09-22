@@ -18,6 +18,8 @@ The required configuration is:
   track `main`, or omit `branch` to use `main`.
   If the consumer has a separate CI identity allowlist, register the GitHub Actions
   bot as an automation service as described in the shared guide.
+  Both hook shims must be committed with executable Git mode `100755`; the shared
+  updater rejects missing or non-executable hooks before committing.
 - In fleet-style, set `FLEET_SYNC_TARGETS` to a nonempty JSON array of subscriptions
   and `FLEET_SYNC_CREDENTIALS` to the corresponding credential mapping. A synthetic
   subscription is `{"repository":"example/consumer","credential":"primary"}`.
@@ -35,6 +37,9 @@ Consumers serialize updates and reconcile daily. Repeated updates make no extra
 commit; stale notifications cannot move a pin backwards. API failures fail the
 dispatcher visibly. Upstream checks must pass before a version is distributed;
 consumer CI failures remain visible and are not automatically rolled back.
+The shared workflow follows `@main`, while its Python updater checkout uses a
+reviewed, immutable commit. Updater releases must advance that checkout pin after
+testing and review, as described in the shared guide.
 
 For recovery, rerun the source notification workflow or the affected consumer's
 sync workflow. To stop synchronization, disable the consumer workflow and remove
