@@ -391,12 +391,28 @@ def read_ignore(repo: Path) -> list[tuple[str, str]]:
     return out
 
 
-def _eligible(paths, ignore: list[tuple[str, str]] | None = None) -> list[Path]:
+def _eligible(paths, ignore: list[tuple[str, str]] | None = None,
+              repo: Path | None = None) -> list[Path]:
+    """筛出该扫的文件。豁免前缀**按仓库相对路径比**。
+
+    第一版拿绝对路径去比，于是 `solver/archive/` 这样的前缀一条都匹配不上，
+    而它**一声不响地全都放行了**：输出里照样写着「查了 153 份文件」，
+    和豁免真的生效时唯一的区别是那个数字 —— 一个没人会去核对的数字。
+    """
     keep = [p for p in paths if p.suffix.lower() in _EXT_KIND and p.is_file()]
     if not ignore:
         return keep
-    return [p for p in keep
-            if not any(p.as_posix().startswith(pre) for pre, _ in ignore)]
+    out = []
+    for p in keep:
+        rel = p.as_posix()
+        if repo is not None:
+            try:
+                rel = p.resolve().relative_to(repo).as_posix()
+            except ValueError:
+                pass
+        if not any(rel.startswith(pre) for pre, _ in ignore):
+            out.append(p)
+    return out
 
 
 def _added_lines(repo: Path, path: Path) -> set[int]:
@@ -468,9 +484,9 @@ def main(argv: list[str] | None = None) -> int:
             targets = _eligible(Path(x) for x in a.paths)
             ignored = []
         elif a.staged:
-            targets = _eligible(_staged(repo), ignored)
+            targets = _eligible(_staged(repo), ignored, repo)
         else:
-            targets = _eligible(_tracked(repo), ignored)
+            targets = _eligible(_tracked(repo), ignored, repo)
     except GitError as exc:
         # **「扫不动」和「扫干净了」必须是两个输出。**
         print(f"wrap_guard: 没能跑起来 —— {exc}", file=sys.stderr)
