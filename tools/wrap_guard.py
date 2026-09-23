@@ -230,7 +230,11 @@ def check_text(text: str, path: str = "<text>", kind: str = "md") -> list[dict]:
             _list_continuations(blk, found, path, kind)
             continue
         first = blk.lines[0]
-        if _LIST.match(first):
+        if _LIST.match(first) or any(_LIST.match(x) for x in blk.lines[1:]):
+            # **一行标签后面紧跟一串列表项，中间不留空行，是标准写法。**
+            # 2026-09-23 实测：`**Why:**` 加三条 `- …` 被整块判成了一个
+            # 「占了 4 行的散文段」。只看第一行不够, 块里**任何一行**是
+            # 列表项，段落规则对这一块就不成立，该问的是项内有没有续行。
             _list_continuations(blk, found, path, kind)
             continue
         if len(blk.lines) < 2:
@@ -287,7 +291,7 @@ def fix_text(text: str) -> str:
             return
         if start in allowed or not all(_is_prose_line(x) for x in buf):
             out.extend(_fix_list_only(buf))
-        elif _LIST.match(buf[0]):
+        elif _LIST.match(buf[0]) or any(_LIST.match(x) for x in buf[1:]):
             out.extend(_fix_list_only(buf))
         elif len(buf) > 1 and not any(_EXPLICIT_BR.search(x) for x in buf[:-1]):
             joined = buf[0].rstrip()

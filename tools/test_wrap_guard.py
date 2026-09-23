@@ -129,6 +129,25 @@ def test_a_sentence_containing_a_link_is_still_prose():
     assert rows and rows[0]["kind"] == "paragraph"
 
 
+def test_a_label_line_followed_by_a_list_is_not_a_paragraph():
+    """**一行标签后面紧跟一串列表项，中间不留空行，是标准写法。**
+
+    2026-09-23 实测：记忆池里的 `**Why:**` 加三条 `- …` 被整块判成了一个
+    「占了 4 行的散文段」。只看块的第一行不够 —— 块里任何一行是列表项，
+    段落规则对这一块就不成立。
+    """
+    text = "**Why:**\n- 第一条理由。\n- 第二条理由。\n"
+    assert W.check_text(text) == []
+    assert W.fix_text(text) == text
+
+
+def test_a_list_item_inside_such_a_block_is_still_checked():
+    """**另一半**：跳过段落规则不等于整块放行，项内续行照报。"""
+    text = "**Why:**\n- 这一条的文本\n  折到了第二行。\n"
+    rows = W.check_text(text)
+    assert [r["kind"] for r in rows] == ["list_item"], rows
+
+
 def test_a_file_carrying_the_self_marker_is_skipped_whole():
     text = f"# {W._SELF_MARKER}\n被折断的\n段落\n"
     assert W.check_text(text) == []
