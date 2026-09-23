@@ -21,3 +21,15 @@ jobs:
         with:
           python-version: '3.x'
       - uses: ./ci/dash-guard
+
+  # Separate job, not a second step in `dash`. A failing dash scan would otherwise stop the run
+  # before the wrap scan ever executed, and "did not run" would be reported as one red gate rather
+  # than two independent answers.
+  wrap:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - uses: ./ci/wrap-guard
