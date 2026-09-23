@@ -86,7 +86,7 @@ _LINKDEF = re.compile(r"^\s*\[[^\]]+\]:\s")
 _HTML = re.compile(r"^\s*<")
 # git trailer：`Co-Authored-By: …`、`Signed-off-by: …`、`Fixes: …`。
 # 它们**按格式必须各占一行**，报它们等于让这个钩子挡下每一条带署名的提交。
-# 只在 commit message 那一面生效 —— 在 Markdown 里 `Note: 某某` 是一句散文，
+# 只在 commit message 那一面生效, 在 Markdown 里 `Note: 某某` 是一句散文，
 # 不是 trailer，拿同一条规则去套会悄悄放过真正的硬折行。
 _TRAILER = re.compile(r"^[A-Za-z][A-Za-z0-9-]*:\s")
 _FENCE = re.compile(r"^\s*(```|~~~)")
@@ -101,7 +101,7 @@ _INDENT_CODE = re.compile(r"^(\t| {4,})")
 #
 # 一个徽章是嵌套的 `[![alt](img)](href)`。把图片和链接写成一条带 `!?` 的正则，
 # 在它身上会剥错位置：`[^\]]*` 在 `![alt]` 的那个 `]` 处就停了，于是匹配到的是
-# `[![alt](img)`，外层链接的开方括号被内层图片吃掉，剩下一个 `](href)` ——
+# `[![alt](img)`，外层链接的开方括号被内层图片吃掉，剩下一个 `](href)`,
 # 再怎么重复替换都剥不动。实测第一版就是这样，徽章行照样被当成散文拼成一整行。
 #
 # 分成两条、按顺序来：图片先走，`[![alt](img)](href)` 变成 `[](href)`，
@@ -360,8 +360,43 @@ def _staged(repo: Path) -> list[Path]:
     return [repo / p for p in out.split("\0") if p]
 
 
-def _eligible(paths) -> list[Path]:
-    return [p for p in paths if p.suffix.lower() in _EXT_KIND and p.is_file()]
+def read_ignore(repo: Path) -> list[tuple[str, str]]:
+    """仓库自己声明的「这些路径不归这条规则管」。格式：`前缀 # 理由`。
+
+    2026-09-23 由一次真实的越界逼出来：在一个仓里跑 `--tree`，它扫到 153 份
+    文件、改写了 123 份 —— 其中大半是 `solver/archive/` 和几百份调研笔记。
+    **归档件里的旧形态就该原样留着**，那正是「归档不是删除」的意思；
+    而那个仓的另一条闸门（单源化）早就把 archive 排除在外了，
+    这一条却不知道，因为**没有任何办法让仓库把它知道的事告诉工具**。
+
+    理由是必填的：一张只有路径、没有理由的豁免表，三个月后没人敢删任何一行。
+    """
+    f = repo / ".wrap-allow"
+    if not f.exists():
+        return []
+    out: list[tuple[str, str]] = []
+    for raw in f.read_text(encoding="utf-8").splitlines():
+        line = raw.strip()
+        if not line or line.startswith("#"):
+            continue
+        prefix, _, why = line.partition("#")
+        prefix, why = prefix.strip(), why.strip()
+        if not prefix:
+            continue
+        if not why:
+            raise ValueError(
+                f".wrap-allow: {prefix!r} 没写理由。**一张只有路径、没有理由的"
+                f"豁免表，三个月后没人敢删任何一行。** 格式是 `前缀 # 理由`")
+        out.append((prefix, why))
+    return out
+
+
+def _eligible(paths, ignore: list[tuple[str, str]] | None = None) -> list[Path]:
+    keep = [p for p in paths if p.suffix.lower() in _EXT_KIND and p.is_file()]
+    if not ignore:
+        return keep
+    return [p for p in keep
+            if not any(p.as_posix().startswith(pre) for pre, _ in ignore)]
 
 
 def _added_lines(repo: Path, path: Path) -> set[int]:
@@ -423,12 +458,19 @@ def main(argv: list[str] | None = None) -> int:
 
     repo = Path(a.repo).resolve()
     try:
+        ignored = read_ignore(repo)
+    except ValueError as exc:
+        print(f"wrap_guard: {exc}", file=sys.stderr)
+        return 2
+    try:
         if a.paths:
+            # 显式点名的路径**不过豁免表**：点名就是意图，豁免表是给 --tree 的。
             targets = _eligible(Path(x) for x in a.paths)
+            ignored = []
         elif a.staged:
-            targets = _eligible(_staged(repo))
+            targets = _eligible(_staged(repo), ignored)
         else:
-            targets = _eligible(_tracked(repo))
+            targets = _eligible(_tracked(repo), ignored)
     except GitError as exc:
         # **「扫不动」和「扫干净了」必须是两个输出。**
         print(f"wrap_guard: 没能跑起来 —— {exc}", file=sys.stderr)
@@ -437,6 +479,12 @@ def main(argv: list[str] | None = None) -> int:
     found: list[dict] = []
     skipped = 0
     fixed = 0
+    if ignored:
+        # **豁免要留痕。** 一个被声明排除的目录和一个干净的目录，
+        # 在输出里不许长得一样。
+        print(f"wrap_guard: {len(ignored)} 条路径前缀按 .wrap-allow 排除：")
+        for pre, why in ignored:
+            print(f"  {pre:<40} {why}")
     unreadable = 0
     for p in targets:
         try:
@@ -494,7 +542,7 @@ def _message_body(text: str) -> dict:
 def _report(found: list[dict], *, scanned: int, skipped: int, what: str) -> int:
     if not found:
         # **把扫过多少、跳过多少打出来。** 一个被跳过的文件和一个干净的文件
-        # 不许长得一样 —— 那正是「被喂了空的检查器」那个形状。
+        # 不许长得一样, 那正是「被喂了空的检查器」那个形状。
         print(f"wrap_guard: 干净（查了 {scanned} 份{what}，"
               f"跳过 {skipped} 份带豁免标记的）")
         return 0

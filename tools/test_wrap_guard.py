@@ -147,6 +147,46 @@ def test_the_exemption_is_not_a_blanket():
 
 
 # --------------------------------------------------------------------------
+# 二 b · 仓库自己声明的范围
+# --------------------------------------------------------------------------
+
+def test_a_repo_can_declare_paths_this_rule_does_not_govern(tmp_path):
+    """**归档件里的旧形态就该原样留着。**
+
+    2026-09-23 由一次真实的越界逼出来：在一个仓里跑 `--tree`，它扫到 153 份
+    文件、改写了 123 份，大半是 `archive/` 和几百份调研笔记。那个仓的另一条
+    闸门早就把 archive 排除在外了，这一条却不知道 —— 因为**没有任何办法
+    让仓库把它知道的事告诉工具**。
+    """
+    (tmp_path / ".wrap-allow").write_text(
+        "# 注释行会被跳过\narchive/   # 归档件是历史证据，旧形态就该留着\n",
+        encoding="utf-8")
+    got = W.read_ignore(tmp_path)
+    assert got == [("archive/", "归档件是历史证据，旧形态就该留着")]
+
+
+def test_an_exemption_without_a_reason_is_refused(tmp_path):
+    """**一张只有路径、没有理由的豁免表，三个月后没人敢删任何一行。**"""
+    (tmp_path / ".wrap-allow").write_text("archive/\n", encoding="utf-8")
+    with pytest.raises(ValueError) as e:
+        W.read_ignore(tmp_path)
+    assert "理由" in str(e.value)
+
+
+def test_no_declaration_file_means_no_exemptions(tmp_path):
+    """**另一半**：没有那份文件不等于「全都豁免」。"""
+    assert W.read_ignore(tmp_path) == []
+
+
+def test_explicitly_named_paths_bypass_the_exemption_table(tmp_path):
+    """点名就是意图。豁免表是给 `--tree` 的，不是给「我就要查这一份」的。"""
+    (tmp_path / ".wrap-allow").write_text("a.md  # 理由\n", encoding="utf-8")
+    f = tmp_path / "a.md"
+    f.write_text("前半句，\n后半句。\n", encoding="utf-8")
+    assert W.main([str(f)]) == 1, "显式点名的文件被豁免表挡掉了"
+
+
+# --------------------------------------------------------------------------
 # 三 · 接回去的那条规则
 # --------------------------------------------------------------------------
 
