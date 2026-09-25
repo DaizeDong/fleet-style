@@ -375,6 +375,19 @@ def test_js_division_is_not_a_regex():
     check(_lines(src, "js"), [1], "a / b / c is division, the trailing comment is found")
 
 
+def test_js_increment_then_division_is_not_a_regex():
+    """`x++ / 2` divides. Read as two `+` signs, the `/` opened a regex that swallowed the comment."""
+    src = (f"let y = x++ / 2; // ratio {EM} note\n"
+           f"let z = a-- / b; // also {EN} here\n"
+           f"function f() {{ return ++n; }} // prefix {EM} form\n")
+    check(_lines(src, "js"), [1, 2, 3], "increments end operands; the trailing comments are found")
+
+
+def test_jsx_closing_tag_is_not_a_regex():
+    src = f"const e = <p>a</p>; // jsx {EM} note\nconst f = <br/>; // self {EN} closing\n"
+    check(_lines(src, "js"), [1, 2], "a JSX closing tag does not open a regex")
+
+
 def test_js_allow_marker_wins():
     check(_lines(f"// kept {EM} on purpose  dash-guard: allow\n", "js"), [], "allow marker")
 
@@ -394,6 +407,22 @@ def test_yaml_run_block_shell_comment_is_counted():
     documented rather than accidental: a workflow's step explanations live exactly there."""
     src = f"steps:\n  - run: |\n      # explain {EM} why\n      echo \"{EM}\"\n"
     check(_lines(src, "yaml"), [3], "shell comment in a run block")
+
+
+def test_yaml_block_scalar_content_is_text_not_comments():
+    """Inside a block scalar other than `run:`, a `#` line is part of the string. Once the
+    indentation drops back, comments count again."""
+    src = (f"body: |\n"
+           f"  # Heading {EM} x\n"
+           f"  text\n"
+           f"items:\n"
+           f"  - >-\n"
+           f"    # folded {EN} text\n"
+           f"  - key: |\n"
+           f"      # nested {EM} text\n"
+           f"    other: 1   # back to a comment {EM} here\n"
+           f"# top level {EN} comment\n")
+    check(_lines(src, "yaml"), [9, 10], "block scalar text is not a comment; siblings are")
 
 
 def test_sh_comments_strings_and_heredocs():
@@ -482,6 +511,18 @@ def test_fix_never_rewrites_a_report_kind():
         assert "left 1 file(s) of comment-only kinds untouched" in p.stderr, p.stderr
         with open(os.path.join(d, "a.js"), encoding="utf-8", newline="") as f:
             check(f.read(), body, "--fix touched a js file")
+
+
+def test_fix_ignores_an_undecodable_comment_kind_file():
+    """--fix never touches a comment kind, so it must not read one either: a UTF-16 .ps1 (common on
+    Windows) would otherwise be recorded as unexamined and turn the repair run nonzero, although
+    before the report kinds existed that extension never entered --fix's file set."""
+    with _TmpDir() as d:
+        _repo_with(d, {"a.ps1": "# note\r\n".encode("utf-16"), "b.md": "fine\n"})
+        p = _guard(["--fix", "--tree", "--repo", "."], d)
+        assert p.returncode == 0, f"--fix failed on a file it never touches: {p.stderr!r}"
+        q = _guard(["--tree", "--repo", "."], d)
+        assert "unexamined=1" in q.stdout, f"--check must still count the unread file: {q.stdout!r}"
 
 
 def test_message_mode_reports_then_blocks_when_promoted():

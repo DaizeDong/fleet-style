@@ -29,6 +29,8 @@ Finding kinds and their policy (2026-09-25, report-only rollout):
                      String, template and regex literals are code and are never examined.
   yaml               REPORT. `#` comments in .yml/.yaml (workflows, actions). Scalars are not
                      examined yet, including prose ones such as `description:`; comments only.
+                     A `#` line inside a block scalar (`key: |`, `- >-`) is text and is skipped,
+                     except in a `run:` block, whose content is a shell script.
   sh, ps, cmd        REPORT. Shell `#` comments (.sh/.bash/.zsh and extensionless files whose
                      shebang names a shell), PowerShell `#` and `<# #>` comments (.ps1/.psm1/.psd1),
                      and cmd `rem` / `::` lines (.cmd/.bat). Quoted strings and heredoc bodies are
@@ -42,7 +44,8 @@ exit code. `--block-kinds js,yaml` (or `all`) promotes kinds to BLOCK; the CI ac
 `block-kinds` input through. The default set of blocking kinds is exactly the set that existed
 before this rollout, so pinning this version changes no consumer's verdict. `--fix` never rewrites
 the report kinds: there is no fixer for them yet, and a repair that edits code files deserves its
-own review before it exists.
+own review before it exists. It does not read them either, so an undecodable comment-kind file (a
+UTF-16 .ps1) cannot make --fix exit nonzero, exactly as before those extensions were scanned.
 
 Markdown safety: fenced ``` code blocks and inline `code` spans are skipped, so a dash shown as a
 literal example survives. In every other text file each en/em dash is treated as prose.
@@ -316,6 +319,20 @@ def _js_comment_spans(text):
             stack.append("tmpl")
             i += 1
             continue
+        if text.startswith(("++", "--"), i):
+            # An increment ends an operand when it follows one (`x++ / 2` is a division), and
+            # starts one otherwise (`return ++x`). Read as two single `+` it would open a regex at
+            # the next `/` and swallow the rest of the line, trailing comment included.
+            operand = prev in (")", "]") or (prev == "a" and prev_word not in _REGEX_PREFIX_WORDS)
+            prev, prev_word = (")" if operand else c), ""
+            i += 2
+            continue
+        if c == "/" and i > 0 and text[i - 1] == "<":
+            # `</` is a JSX or TSX closing tag, not a regex after `<`. Plain JS almost never writes
+            # `a </re/` with no space, and reading the tag as a regex loses the rest of the line.
+            prev, prev_word = "/", ""
+            i += 1
+            continue
         if c == "/" and (prev == "" or prev in _REGEX_PREFIX_PUNCT
                          or (prev == "a" and prev_word in _REGEX_PREFIX_WORDS)):
             j, in_class = i + 1, False
@@ -356,6 +373,29 @@ def _js_comment_spans(text):
     return spans
 
 
+# A YAML block scalar header: optional `- ` sequence markers, an optional `key:`, then `|` or `>`
+# with its indicators and an optional trailing comment. Group 1 is everything before the key (so
+# its length is the key's column), group 2 the key.
+_YAML_BLOCK = re.compile(r"^(\s*(?:-\s+)*)(?:([^\s#'\"][^#]*?)\s*:\s+)?[|>][0-9+-]*\s*(?:#.*)?$")
+
+
+def _yaml_block_start(line):
+    """(column that content must be indented past, is_run) for a block scalar header, else None.
+    The column is the key's, or for a bare `- |` the last dash's."""
+    m = _YAML_BLOCK.match(line)
+    if not m or not line.strip() or line.lstrip().startswith("#"):
+        return None
+    lead = m.group(1)
+    if m.group(2) is not None:
+        col = len(lead)
+    else:
+        if "-" not in lead:
+            return None                                  # a bare `|` line is not a header
+        col = lead.rstrip().rfind("-")
+    key = (m.group(2) or "").strip().strip("'\"")
+    return col, key == "run"
+
+
 _HEREDOC = re.compile(r"<<(-?)[ \t]*(['\"]?)([A-Za-z_][A-Za-z0-9_]*)\2")
 
 
@@ -391,6 +431,7 @@ def _line_spans(text, kind):
     heredoc = None            # (terminator, strip_tabs) while inside a shell heredoc body
     ps_block = False          # inside a PowerShell <# ... #> block comment
     ps_here = None            # closing token of a PowerShell here-string, '@ or "@
+    yaml_block = None         # (indent column, is_run) while inside a YAML block scalar
     for raw in text.split("\n"):
         line_start, line = pos, raw.rstrip("\r")
         pos += len(raw) + 1
@@ -430,7 +471,20 @@ def _line_spans(text, kind):
             if m and "<<<" not in code:
                 heredoc = (m.group(3), m.group(1) == "-")
         else:                                            # yaml
+            if yaml_block:
+                indent = len(line) - len(line.lstrip(" "))
+                if not line.strip() or indent > yaml_block[0]:
+                    # Block scalar content is a string, so a `#` in it is text, not a comment. The
+                    # one exception is a `run:` block: its content is a shell script and a `#` line
+                    # there is a shell comment written as prose.
+                    if yaml_block[1]:
+                        col = _hash_line_comment(line, True, "\\")
+                        if col >= 0:
+                            spans.append((line_start + col, line_start + len(line)))
+                    continue
+                yaml_block = None
             col = _hash_line_comment(line, False, "\\")
+            yaml_block = _yaml_block_start(line)
         if col >= 0:
             spans.append((line_start + col, line_start + len(line)))
     return spans
@@ -756,6 +810,12 @@ def main(argv=None) -> int:
         _rel = rel.replace(chr(92), "/")
         while _rel.startswith("./"):
             _rel = _rel[2:]
+        if args.fix and _kind_of(path) in _COMMENT_KINDS:
+            # Decided before the read, so a comment-kind file --fix will not touch anyway (a UTF-16
+            # .ps1, say) cannot turn the repair run nonzero as "unexamined". Those extensions never
+            # entered --fix's file set before the report kinds existed, and they still do not count.
+            fix_skipped += 1
+            continue
         try:
             text = open(path, encoding="utf-8").read()
         except (UnicodeDecodeError, OSError) as e:
@@ -771,9 +831,6 @@ def main(argv=None) -> int:
         kind = _kind_of(path)
         if kind is None:
             excluded.append((rel, "no de-dash rule for this extension"))
-            continue
-        if args.fix and kind in _COMMENT_KINDS:
-            fix_skipped += 1
             continue
         examined += 1
         if not _DASH_RE.search(text):

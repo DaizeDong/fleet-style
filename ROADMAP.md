@@ -19,7 +19,7 @@ Feature names only. Why each gate behaves the way it does lives in the tool docs
 
 - **Python docstrings and comments are outside `wrap_guard`.** The extension map covers Markdown, plain prose and reStructuredText. A wrapped paragraph inside a docstring passes, which is a stated gap rather than a silent one: widening it means measuring recall against real sources first.
 
-- **Promote the report kinds to blocking.** Each kind moves to the default blocking set only after a report-only run across every consumer is reviewed and the findings are cleaned. The first run, on 2026-09-25, is recorded in `CHANGELOG.md`.
+- **Promote the report kinds to blocking.** Each kind moves to the default blocking set only after a report-only run across every consumer is reviewed and the findings are cleaned. For `js` that includes measuring recall on `.jsx` and `.tsx` files, which no consumer carries yet. The first run, on 2026-09-25, is recorded in `CHANGELOG.md`.
 - **YAML prose scalars and a fixer for the comment kinds.** `description:` and similar scalars are prose that `dash_guard` does not read yet, and the comment kinds can be flagged but not repaired. Both need measuring against real files before they exist.
 - **A `commit-msg` wiring for `--message`.** The mode exists; nothing in this kit calls it at the commit boundary, for the same `core.hooksPath` reason as below.
 - **Repository shapes `load_budget` does not understand.** It discovers `skills/*/SKILL.md` and a root `SKILL.md`. Every other layout reports that nothing was measured, which is the correct refusal and still a gap.
