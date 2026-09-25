@@ -6,7 +6,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![闸门](https://img.shields.io/badge/%E9%97%B8%E9%97%A8-2-green?style=flat)](#闸门总览)
 [![语言](https://img.shields.io/badge/%E8%AF%AD%E8%A8%80-EN%20%2F%20CN-blue?style=flat)](#语言)
-[![路线图](https://img.shields.io/badge/%E8%B7%AF%E7%BA%BF%E5%9B%BE-v0.2.0-purple?style=flat)](ROADMAP.md)
+[![路线图](https://img.shields.io/badge/%E8%B7%AF%E7%BA%BF%E5%9B%BE-v0.3.0-purple?style=flat)](ROADMAP.md)
 
 [English](README.md) | [中文版](README_CN.md)
 
@@ -46,6 +46,8 @@ git submodule add -b main https://github.com/DaizeDong/fleet-style.git style
 - uses: ./style/ci/dash-guard        # 或者 ./style/ci/load-budget
 ```
 
+`ci/dash-guard` 有一个可选输入 `block-kinds`。v0.3.0 新增的几类（JS、YAML、shell、PowerShell 和 cmd 的注释，commit message，以及读不了的文件）只报告、不失败，直到消费方在这里点名，比如 `with: {block-kinds: 'js,yaml'}`。留空时判决与 v0.3.0 之前完全一致。
+
 移动指针：
 
 ```bash
@@ -62,6 +64,8 @@ git -C style fetch && git -C style checkout <sha>
 python style/tools/dash_guard.py --tree      # 所有被跟踪的文本文件
 python style/tools/dash_guard.py --staged    # 只看 staged 的 blob
 python style/tools/dash_guard.py --fix FILE  # 确定性修复，不是闸门
+python style/tools/dash_guard.py --message .git/COMMIT_EDITMSG   # 查一条 commit message
+python style/tools/dash_guard.py --tree --block-kinds js,yaml    # 把报告类升为阻断
 python style/tools/load_budget.py .          # 常驻加载预算
 ```
 
@@ -77,13 +81,13 @@ pytest style/tools/
 
 | 闸门 | 它断言什么 | 退出码 |
 | --- | --- | --- |
-| `tools/dash_guard.py` | 公开 prose 不含 en dash、em dash、horizontal bar。Markdown 围栏与行内 code 豁免，带 `dash-guard: allow` 标记的行豁免，扫描器自己的源文件按文件名豁免，因为它把那组破折号当数据装在身上。 | 0 干净，1 有发现，2 扫描跑不起来 |
+| `tools/dash_guard.py` | 公开 prose 不含 en dash、em dash、horizontal bar。Markdown 围栏与行内 code 豁免，带 `dash-guard: allow` 标记的行豁免，扫描器自己的源文件按文件名豁免，因为它把那组破折号当数据装在身上。Markdown、纯文本和 Python 注释是阻断类。JS 的 `//` 与 `/* */` 注释、YAML 的 `#` 注释、shell、PowerShell 和 cmd 注释、commit message（`--message`）以及读不了的文件是报告类：带着类别打印出来，计入判决行，只有在 `--block-kinds` 里点名才阻断。所有字符串、模板和正则字面量都是代码，从不检查。 | 0 干净，1 有阻断类发现，2 扫描跑不起来 |
 | `tools/wrap_guard.py` | 正文段落里不许有硬折行：一段写成一整行，段落之间用空行分隔。只有段落之间、列表项之间、代码块内和表格内才该换行。围栏、表格、引用、标题、徽章行和 git trailer 豁免，前面一行写了 `wrap-guard:allow` 的那一段豁免，扫描器自己的源文件按文件名豁免（它身上带着被折断的示例）。`--fix` 把行接回去，中日韩之间直接粘、其余补一个半角空格。 | 0 干净，1 有发现，2 扫描跑不起来 |
 | `tools/load_budget.py` | 一个 skill 的常驻加载行数不超预算，且 `SKILL.md` 里的正文不是 reference 里正文的第二份副本。重复用 word shingle 检测，所以一条规则的措辞出现在展开它的那份 reference 里并不会触发。 | 0 在预算内，1 超预算，3 什么都没测到 |
 
 | CI action | 接线方式 |
 | --- | --- |
-| `ci/dash-guard` | 装 pytest，跑 `tools/test_dash_guard.py`，然后扫调用方仓库的树。 |
+| `ci/dash-guard` | 装 pytest，跑 `tools/test_dash_guard.py`，然后扫调用方仓库的树。输入 `block-kinds` 把报告类升为阻断。 |
 | `ci/wrap-guard` | 装 pytest，跑 `tools/test_wrap_guard.py`，然后扫调用方仓库的树。 |
 | `ci/load-budget` | 装 pytest，`tools/test_load_budget.py` 不在就失败，跑它，然后测量调用方仓库。 |
 
@@ -100,7 +104,7 @@ $ python tools/dash_guard.py --tree
 dash_guard: 2 file(s) deliberately excluded:
   tools/dash_guard.py                    the guard's own source (contains the dash set by design)
   tools/test_dash_guard.py               the guard's own source (contains the dash set by design)
-dash_guard: clean (9 file(s) examined, 2 skipped)
+dash_guard: clean (16 file(s) examined, 2 skipped)
 ```
 
 ```
@@ -116,7 +120,7 @@ load_budget: FAIL, measured NOTHING under /path/to/fleet-style
 
 ## 局限
 
-两个闸门都不保护历史。它们读的是此刻的树，所以已经躺在老 commit 里的违规就留在那儿。这里也不接钩子，所以只在 CI 里跑它们的消费方，是在 push 之后而不是之前知道违规的。`dash_guard --fix` 就地重写文件，并且刻意不能当闸门用：它修复成功后退 0，把它接进 CI 等于装了一个不可能失败的检查。而 `load_budget` 只认两种仓库形态，`skills/*/SKILL.md` 和根目录下的 `SKILL.md`，别的形态一律报成什么都没测到。
+两个闸门都不保护历史。它们读的是此刻的树，所以已经躺在老 commit 里的违规就留在那儿。这里也不接钩子，所以只在 CI 里跑它们的消费方，是在 push 之后而不是之前知道违规的。`dash_guard --fix` 就地重写文件，并且刻意不能当闸门用：它修复成功后退 0，把它接进 CI 等于装了一个不可能失败的检查。v0.3.0 新增的注释类没有修复器，在消费方升级之前只报告。它们的词法器是手写的小东西，不是解析器；YAML 标量（包括 `description:` 这种写成正文的）暂不检查，而 `run: |` 块里的 `#` 行会被计入，因为那是 shell 注释。而 `load_budget` 只认两种仓库形态，`skills/*/SKILL.md` 和根目录下的 `SKILL.md`，别的形态一律报成什么都没测到。
 
 ## 语言
 
