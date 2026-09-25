@@ -6,7 +6,7 @@ Three house gates that are not about security, kept in one place and consumed as
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Gates](https://img.shields.io/badge/Gates-3-green?style=flat)](#gates-at-a-glance)
 [![Languages](https://img.shields.io/badge/Languages-EN%20%2F%20CN-blue?style=flat)](#languages)
-[![Roadmap](https://img.shields.io/badge/Roadmap-v0.2.0-purple?style=flat)](ROADMAP.md)
+[![Roadmap](https://img.shields.io/badge/Roadmap-v0.3.0-purple?style=flat)](ROADMAP.md)
 
 [English](README.md) | [中文版](README_CN.md)
 
@@ -51,6 +51,8 @@ Then in each workflow that wants a gate:
 - uses: ./style/ci/dash-guard        # or ./style/ci/load-budget
 ```
 
+`ci/dash-guard` takes one optional input, `block-kinds`. The kinds added in v0.3.0 (JS, YAML, shell, PowerShell and cmd comments, commit messages, and files the guard could not read) report without failing until a consumer names them there, for example `with: {block-kinds: 'js,yaml'}`. Leaving it empty keeps the verdict exactly what it was before v0.3.0.
+
 Moving the pin:
 
 ```bash
@@ -67,6 +69,8 @@ Run either tool directly against the repository that consumes it:
 python style/tools/dash_guard.py --tree      # every tracked text file
 python style/tools/dash_guard.py --staged    # the staged blobs only
 python style/tools/dash_guard.py --fix FILE  # deterministic repair, not a gate
+python style/tools/dash_guard.py --message .git/COMMIT_EDITMSG   # one commit message
+python style/tools/dash_guard.py --tree --block-kinds js,yaml    # promote report kinds
 python style/tools/load_budget.py .          # the always loaded budget
 ```
 
@@ -82,13 +86,13 @@ A bare `pytest` at the consumer's root does not collect it. `conftest.py` keeps 
 
 | Gate | What it asserts | Exit codes |
 | --- | --- | --- |
-| `tools/dash_guard.py` | Published prose carries no en dash, em dash or horizontal bar. Markdown fences and inline code spans are exempt, a line marked `dash-guard: allow` is exempt, and the scanner's own source is exempt by name because it carries the dash set as data. | 0 clean, 1 findings, 2 the scan could not run |
+| `tools/dash_guard.py` | Published prose carries no en dash, em dash or horizontal bar. Markdown fences and inline code spans are exempt, a line marked `dash-guard: allow` is exempt, and the scanner's own source is exempt by name because it carries the dash set as data. Markdown, plain text and Python comments block. JS `//` and `/* */` comments, YAML `#` comments, shell, PowerShell and cmd comments, commit messages (`--message`) and files the guard could not read are REPORT kinds: printed with their kind and counted on the verdict line, and blocking only when named in `--block-kinds`. Every string, template and regex literal is code and is never examined. | 0 clean, 1 blocking findings, 2 the scan could not run |
 | `tools/wrap_guard.py` | Prose paragraphs carry no hard wraps: a paragraph is one line, blank lines separate paragraphs. Newlines belong only between paragraphs, between list items, inside code blocks and inside tables. Fences, tables, quotes, headings, badge rows and git trailers are exempt, a paragraph preceded by `wrap-guard:allow` is exempt, and the scanner's own source is exempt by name because it carries wrapped examples. `--fix` rejoins the lines, gluing CJK without a space and everything else with one. | 0 clean, 1 findings, 2 the scan could not run |
 | `tools/load_budget.py` | A skill's always loaded lines stay under budget, and prose in `SKILL.md` is not a second copy of prose in a reference. Duplication is detected with word shingles, so a rule's own wording appearing in the reference that elaborates it does not trip it. | 0 within budget, 1 over budget, 3 nothing was measured |
 
 | CI action | Wiring |
 | --- | --- |
-| `ci/dash-guard` | Installs pytest, runs `tools/test_dash_guard.py`, then scans the calling repository's tree. |
+| `ci/dash-guard` | Installs pytest, runs `tools/test_dash_guard.py`, then scans the calling repository's tree. The `block-kinds` input promotes report kinds to blocking. |
 | `ci/wrap-guard` | Installs pytest, runs `tools/test_wrap_guard.py`, then scans the calling repository's tree. |
 | `ci/load-budget` | Installs pytest, fails if `tools/test_load_budget.py` is absent, runs it, then measures the calling repository. |
 
@@ -105,7 +109,7 @@ $ python tools/dash_guard.py --tree
 dash_guard: 2 file(s) deliberately excluded:
   tools/dash_guard.py                    the guard's own source (contains the dash set by design)
   tools/test_dash_guard.py               the guard's own source (contains the dash set by design)
-dash_guard: clean (9 file(s) examined, 2 skipped)
+dash_guard: clean (16 file(s) examined, 2 skipped)
 ```
 
 ```
@@ -121,7 +125,7 @@ The second one is the design working. A repository with nothing to measure is to
 
 ## Limitations
 
-Neither gate protects a history. Both read the tree as it is now, so a violation already in an old commit stays there. Neither gate is a hook here, so a consumer that only runs them in CI learns about a violation after the push rather than before it. `dash_guard --fix` rewrites files in place and is deliberately not usable as a gate: it exits 0 after a successful repair, so wiring it into CI installs a check that cannot fail. And `load_budget` only understands two repository shapes, `skills/*/SKILL.md` and a `SKILL.md` at the root; anything else is reported as nothing measured.
+Neither gate protects a history. Both read the tree as it is now, so a violation already in an old commit stays there. Neither gate is a hook here, so a consumer that only runs them in CI learns about a violation after the push rather than before it. `dash_guard --fix` rewrites files in place and is deliberately not usable as a gate: it exits 0 after a successful repair, so wiring it into CI installs a check that cannot fail. The comment kinds added in v0.3.0 have no fixer and are report only until a consumer promotes them. Their lexers are small and hand written, not parsers; YAML scalars, including prose ones such as `description:`, are not examined yet, while a `#` line inside a `run: |` block is counted because it is a shell comment. And `load_budget` only understands two repository shapes, `skills/*/SKILL.md` and a `SKILL.md` at the root; anything else is reported as nothing measured.
 
 ## Languages
 

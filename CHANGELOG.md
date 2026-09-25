@@ -2,6 +2,24 @@
 
 All notable changes to this project are documented here (Keep a Changelog style).
 
+## [0.3.0] - 2026-09-25
+
+### Added
+
+- **`dash_guard` report kinds.** The guard now also reads JS and TS `//` and `/* */` comments (`js`), YAML `#` comments (`yaml`), shell `#` comments in `.sh`, `.bash`, `.zsh` and extensionless files with a shell shebang (`sh`), PowerShell `#` and `<# #>` comments (`ps`), cmd `rem` and `::` lines (`cmd`), one commit message through `--message FILE` (`message`), and it turns a file it meant to read and could not into a counted finding (`unexamined`). Only comment text is examined: every string, template and regex literal is code, so a test asserting on a dash or a regex listing the dash set is never flagged. Shell heredoc bodies and PowerShell here-strings are data and are skipped.
+
+- **A per-kind policy, report by default.** Every new kind prints its findings tagged `[report KIND]` and counts them on the verdict line, and does not change the exit code. `--block-kinds js,yaml` (or `all`) promotes kinds to blocking, and `ci/dash-guard` passes its new `block-kinds` input through. An unknown kind name exits 2, because a typo in a promotion must not leave the gate open without a word.
+
+- 17 new tests, 46 in the dash suite in all, including a mutation check for each new rule: making `js` block by default, reading JS strings as prose, dropping regex literal handling, opening YAML quotes mid word, ignoring heredocs, dropping the `unexamined` count, accepting a typo kind, keeping git's `#` lines in a message, letting `--fix` touch a comment kind and ignoring shebang files each turn at least one test red.
+
+### Unchanged
+
+- Markdown, plain text and Python still block exactly as before, and `--fix` never rewrites a report kind. With `block-kinds` left empty, the old and the new guard were run against every consumer checkout on this machine: 27 repositories, identical exit codes and identical blocking lines in all 27.
+
+### Measured
+
+- The report-only run over those 27 consumers found 43 findings in 10 of them: `js` 27, `ps` 6, `yaml` 5, `sh` 4 and `unexamined` 1 (a Python file the tokenizer rejects). Every one was read by hand and every one is comment prose, not a literal. `--message` over the last 50 commit messages of each consumer found dashes in 54 messages across 8 repositories. These are the numbers the promotion to blocking waits on.
+
 ## [0.2.0] - 2026-09-23
 
 ### Added
