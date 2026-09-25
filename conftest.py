@@ -1,4 +1,4 @@
-"""Keep this kit's own tests (112 on 2026-09-25) out of a CONSUMER's test run, without hiding them.
+"""Keep this kit's own tests (116 on 2026-09-25) out of a CONSUMER's test run, without hiding them.
 
 THE PROBLEM THIS SOLVES. Consumed as a submodule at <repo>/style, this directory is an ordinary
 subdirectory as far as pytest is concerned. A bare `pytest` at a consumer's root went from

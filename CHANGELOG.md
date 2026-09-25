@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented here (Keep a Changelog style).
 
+## [Unreleased]
+
+### Changed
+
+- **`notify-consumers.yml` pins the shared dispatch workflow by commit.** It called the fleet-guards `dispatch-consumers.yml` at `@main` while passing it both sync secrets, so any later change on that branch ran here unreviewed. The call now names a full commit SHA with a comment on how to bump it, and `tools/test_workflow_pins.py` (4 tests, run by the new `pins` job in `style.yml`) fails on any branch, tag or short SHA ref to another repository's reusable workflow; it went red against the `@main` call before the pin.
+
 ## [0.3.0] - 2026-09-25
 
 ### Added

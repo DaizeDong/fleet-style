@@ -14,6 +14,7 @@ Feature names only. Why each gate behaves the way it does lives in the tool docs
 - `conftest.py`: keep this kit's tests out of a consumer's collection while leaving them reachable by path.
 - `.github/workflows/style.yml`: this repository runs its own dash gate through its own action.
 - `.github/workflows/notify-consumers.yml` and `docs/AUTOMATIC_SYNC.md`: optional pin advancement through each consumer's normal commit gates.
+- `tools/test_workflow_pins.py`: a reusable workflow called from another repository must be pinned to a full commit SHA, run by the `pins` job in `style.yml`.
 
 ## Planned
 

@@ -18,7 +18,10 @@ concurrency:
 jobs:
   notify:
     if: github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push')
-    uses: DaizeDong/fleet-guards/.github/workflows/dispatch-consumers.yml@main
+    # Pinned to a fleet-guards commit because this call hands over both secrets below; @main would run
+    # whatever lands there next. To bump: read the new SHA with `git ls-remote https://github.com/DaizeDong/fleet-guards refs/heads/main`,
+    # review the dispatch-consumers.yml diff between the two SHAs, then replace the SHA and the date. tools/test_workflow_pins.py fails on a branch or tag ref.
+    uses: DaizeDong/fleet-guards/.github/workflows/dispatch-consumers.yml@82d771fb47588a8aaae1151bdbca33d60a91b986  # main as of 2026-09-25
     secrets:
       targets: ${{ secrets.FLEET_SYNC_TARGETS }}
       credentials: ${{ secrets.FLEET_SYNC_CREDENTIALS }}
