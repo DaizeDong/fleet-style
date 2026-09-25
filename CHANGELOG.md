@@ -10,11 +10,11 @@ All notable changes to this project are documented here (Keep a Changelog style)
 
 - **A per-kind policy, report by default.** Every new kind prints its findings tagged `[report KIND]` and counts them on the verdict line, and does not change the exit code. `--block-kinds js,yaml` (or `all`) promotes kinds to blocking, and `ci/dash-guard` passes its new `block-kinds` input through. An unknown kind name exits 2, because a typo in a promotion must not leave the gate open without a word.
 
-- 17 new tests, 46 in the dash suite in all, including a mutation check for each new rule: making `js` block by default, reading JS strings as prose, dropping regex literal handling, opening YAML quotes mid word, ignoring heredocs, dropping the `unexamined` count, accepting a typo kind, keeping git's `#` lines in a message, letting `--fix` touch a comment kind and ignoring shebang files each turn at least one test red.
+- 21 new tests, 50 in the dash suite in all, including a mutation check for each new rule: making `js` block by default, reading JS strings as prose, dropping regex literal handling, opening YAML quotes mid word, ignoring heredocs, dropping the `unexamined` count, accepting a typo kind, keeping git's `#` lines in a message, letting `--fix` touch a comment kind and ignoring shebang files each turn at least one test red. Four more pin fixes found in review: a `/` after `x++` or `a--` is a division, a JSX `</` closing tag does not open a regex, a `#` line inside a YAML block scalar other than `run:` is text, and `--fix` skips a comment-kind file before reading it; each of the four goes red against the code before the fix.
 
 ### Unchanged
 
-- Markdown, plain text and Python still block exactly as before, and `--fix` never rewrites a report kind. With `block-kinds` left empty, the old and the new guard were run against every consumer checkout on this machine: 27 repositories, identical exit codes and identical blocking lines in all 27.
+- Markdown, plain text and Python still block exactly as before, and `--fix` never rewrites a report kind. It does not read one either, so an undecodable comment-kind file (a UTF-16 `.ps1`, common on Windows) leaves `--fix` at exit 0, as it was when those extensions were never scanned. With `block-kinds` left empty, the old and the new guard were run against every consumer checkout on this machine: 27 repositories, identical exit codes and identical blocking lines in all 27.
 
 ### Measured
 
