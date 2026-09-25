@@ -20,6 +20,29 @@ Target set:
   --staged           the git staged text blobs (pre-commit hook)
   --tree   (default) every git-tracked text file
   paths...           explicit files (overrides the set)
+  --message FILE     one commit message (the subject and body; git's own `#` lines and everything
+                     under a scissors line are ignored). Its findings are kind "message".
+
+Finding kinds and their policy (2026-09-25, report-only rollout):
+  md, prose, py      BLOCK. Unchanged: these are the kinds every consumer has been clean on.
+  js                 REPORT. `//` and `/* */` comments in .js/.mjs/.cjs/.jsx/.ts/.mts/.cts/.tsx.
+                     String, template and regex literals are code and are never examined.
+  yaml               REPORT. `#` comments in .yml/.yaml (workflows, actions). Scalars are not
+                     examined yet, including prose ones such as `description:`; comments only.
+  sh, ps, cmd        REPORT. Shell `#` comments (.sh/.bash/.zsh and extensionless files whose
+                     shebang names a shell), PowerShell `#` and `<# #>` comments (.ps1/.psm1/.psd1),
+                     and cmd `rem` / `::` lines (.cmd/.bat). Quoted strings and heredoc bodies are
+                     data and are skipped.
+  message            REPORT. --message.
+  unexamined         REPORT. A file the guard meant to read and could not (undecodable bytes,
+                     source the tokenizer rejects). It used to be printed and then ignored by the
+                     verdict; it is now a counted finding like any other.
+A REPORT finding is printed with its kind and counted on the verdict line, and does not change the
+exit code. `--block-kinds js,yaml` (or `all`) promotes kinds to BLOCK; the CI action passes its
+`block-kinds` input through. The default set of blocking kinds is exactly the set that existed
+before this rollout, so pinning this version changes no consumer's verdict. `--fix` never rewrites
+the report kinds: there is no fixer for them yet, and a repair that edits code files deserves its
+own review before it exists.
 
 Markdown safety: fenced ``` code blocks and inline `code` spans are skipped, so a dash shown as a
 literal example survives. In every other text file each en/em dash is treated as prose.
@@ -39,6 +62,7 @@ rules run before the prose rules so a dash that is a value never reaches the app
 from __future__ import annotations
 
 import argparse
+import bisect
 import io
 import os
 import re
@@ -73,7 +97,40 @@ _DASH_RE = re.compile(f"[{_DASHES}]")
 # safely). The rule is enforced on published docs + the .py comment prose; runtime output compliance
 # is the renderer's job.
 _KIND = {".md": "md", ".markdown": "md", ".rst": "md", ".txt": "prose", ".py": "py",
-         ".tmpl": "md"}
+         ".tmpl": "md",
+         # Comment-only kinds (report by default, see the module docstring). Only the COMMENT text
+         # is examined; every literal is code.
+         ".js": "js", ".mjs": "js", ".cjs": "js", ".jsx": "js",
+         ".ts": "js", ".mts": "js", ".cts": "js", ".tsx": "js",
+         ".yml": "yaml", ".yaml": "yaml",
+         ".sh": "sh", ".bash": "sh", ".zsh": "sh",
+         ".ps1": "ps", ".psm1": "ps", ".psd1": "ps",
+         ".cmd": "cmd", ".bat": "cmd"}
+
+# Policy. BLOCKING_DEFAULT is frozen at the kinds that existed before the report-only rollout, so a
+# consumer that pins this version gets byte-identical exit codes. Every other kind reports.
+BLOCKING_DEFAULT = frozenset({"md", "prose", "py"})
+REPORT_KINDS = ("js", "yaml", "sh", "ps", "cmd", "message", "unexamined")
+ALL_KINDS = tuple(sorted(BLOCKING_DEFAULT)) + REPORT_KINDS
+_COMMENT_KINDS = frozenset({"js", "yaml", "sh", "ps", "cmd"})
+# An extensionless file is examined only when its shebang names one of these interpreters.
+_SHELL_SHEBANG = re.compile(rb"^#![^\n]*\b(?:ba|z|da|k)?sh\b")
+
+
+def parse_block_kinds(spec):
+    """'js,yaml' / 'all' / '' -> the full set of blocking kinds. An unknown name raises ValueError:
+    a typo in a promotion must not quietly leave the gate report-only."""
+    kinds = set(BLOCKING_DEFAULT)
+    for name in (spec or "").replace(" ", "").split(","):
+        if not name:
+            continue
+        if name == "all":
+            kinds.update(ALL_KINDS)
+        elif name in ALL_KINDS:
+            kinds.add(name)
+        else:
+            raise ValueError("unknown kind %r (known: %s, all)" % (name, ", ".join(ALL_KINDS)))
+    return frozenset(kinds)
 
 _SPACED = re.compile(rf"\s+[{_DASHES}]+\s+")
 # A range is a SINGLE dash between two SHORT alphanumeric tokens: 2020-2026, T1-T9, A-Z.
@@ -202,12 +259,229 @@ def _process_py(text: str, notes=None):
     return "\n".join(lines), hits
 
 
+# --- comment-only kinds (report by default) ---------------------------------------------------
+# Each lexer returns the (start, end) character spans that are COMMENTS. Everything else, above all
+# every string, template and regex literal, is code: a JS test that asserts on "a — b", or a
+# regex character class listing the dash set, must never be read as prose. These are small
+# hand-written lexers, not parsers. When one guesses wrong it can only move a dash between
+# "comment" and "code", and the kinds they serve are report-only until each has been measured.
+
+_REGEX_PREFIX_WORDS = frozenset({"return", "typeof", "instanceof", "in", "of", "new", "delete",
+                                 "void", "throw", "case", "do", "else", "yield", "await"})
+_REGEX_PREFIX_PUNCT = set("(,=:[!&|?{};+-*%<>~^")
+
+
+def _js_comment_spans(text):
+    spans, n, i = [], len(text), 0
+    stack = []            # "tmpl" = inside a template body; int = brace depth of a ${ } expression
+    prev, prev_word = "", ""
+    while i < n:
+        c = text[i]
+        if stack and stack[-1] == "tmpl":
+            if c == "\\":
+                i += 2
+            elif c == "`":
+                stack.pop()
+                prev, prev_word = "`", ""
+                i += 1
+            elif text.startswith("${", i):
+                stack.append(0)
+                prev, prev_word = "{", ""
+                i += 2
+            else:
+                i += 1
+            continue
+        if c in " \t\r\n":
+            i += 1
+            continue
+        if text.startswith("//", i):
+            j = text.find("\n", i)
+            j = n if j < 0 else j
+            spans.append((i, j))
+            i = j
+            continue
+        if text.startswith("/*", i):
+            j = text.find("*/", i + 2)
+            j = n if j < 0 else j + 2
+            spans.append((i, j))
+            i = j
+            continue
+        if c in "'\"":
+            j = i + 1
+            while j < n and text[j] not in (c, "\n"):
+                j += 2 if text[j] == "\\" else 1
+            i, prev, prev_word = j + 1, "a", ""
+            continue
+        if c == "`":
+            stack.append("tmpl")
+            i += 1
+            continue
+        if c == "/" and (prev == "" or prev in _REGEX_PREFIX_PUNCT
+                         or (prev == "a" and prev_word in _REGEX_PREFIX_WORDS)):
+            j, in_class = i + 1, False
+            while j < n and text[j] != "\n":
+                ch = text[j]
+                if ch == "\\":
+                    j += 2
+                    continue
+                if ch == "[":
+                    in_class = True
+                elif ch == "]":
+                    in_class = False
+                elif ch == "/" and not in_class:
+                    break
+                j += 1
+            i = j + 1
+            while i < n and text[i].isalnum():
+                i += 1                                   # regex flags
+            prev, prev_word = "a", ""
+            continue
+        if stack and isinstance(stack[-1], int):
+            if c == "{":
+                stack[-1] += 1
+            elif c == "}":
+                if stack[-1] == 0:
+                    stack.pop()                          # back into the template body
+                    i += 1
+                    continue
+                stack[-1] -= 1
+        if c.isalnum() or c in "_$":
+            j = i
+            while j < n and (text[j].isalnum() or text[j] in "_$"):
+                j += 1
+            prev, prev_word, i = "a", text[i:j], j
+            continue
+        prev, prev_word = c, ""
+        i += 1
+    return spans
+
+
+_HEREDOC = re.compile(r"<<(-?)[ \t]*(['\"]?)([A-Za-z_][A-Za-z0-9_]*)\2")
+
+
+def _hash_line_comment(line, quote_anywhere, escape):
+    """Column where a `#` comment starts in one line, or -1. A `#` opens a comment only at the start
+    of a word (line start, or after a blank or ; & | ( ), so `$#`, `${#x}` and `a#b` are code.
+    Quotes are tracked within the line. quote_anywhere=False (YAML) opens a quote only at the start
+    of a token, so the apostrophe in a plain scalar such as `don't` is not a quote."""
+    q = None
+    k, n = 0, len(line)
+    while k < n:
+        ch = line[k]
+        if q:
+            if ch == escape and q == '"' and k + 1 < n:
+                k += 2
+                continue
+            if ch == q:
+                q = None
+        elif ch == escape and escape and k + 1 < n:
+            k += 2
+            continue
+        elif ch in "'\"" and (quote_anywhere or k == 0 or line[k - 1] in " \t:[{,-"):
+            q = ch
+        elif ch == "#" and (k == 0 or line[k - 1] in " \t;&|("):
+            return k
+        k += 1
+    return -1
+
+
+def _line_spans(text, kind):
+    """Comment spans for the line-oriented kinds: yaml, sh, ps, cmd."""
+    spans, pos = [], 0
+    heredoc = None            # (terminator, strip_tabs) while inside a shell heredoc body
+    ps_block = False          # inside a PowerShell <# ... #> block comment
+    ps_here = None            # closing token of a PowerShell here-string, '@ or "@
+    for raw in text.split("\n"):
+        line_start, line = pos, raw.rstrip("\r")
+        pos += len(raw) + 1
+        if kind == "cmd":
+            if re.match(r"^\s*@?\s*(?:rem(?:\s|$)|::)", line, re.I):
+                spans.append((line_start, line_start + len(line)))
+            continue
+        if heredoc:
+            body = line.lstrip("\t") if heredoc[1] else line
+            if body == heredoc[0]:
+                heredoc = None
+            continue
+        if ps_here:
+            if line.startswith(ps_here):
+                ps_here = None
+            continue
+        if ps_block:
+            end = line.find("#>")
+            spans.append((line_start, line_start + (len(line) if end < 0 else end + 2)))
+            ps_block = end < 0
+            continue
+        if kind == "ps":
+            st = line.lstrip()
+            if st.startswith("<#"):
+                end = line.find("#>", line.find("<#") + 2)
+                s = line_start + line.find("<#")
+                spans.append((s, line_start + (len(line) if end < 0 else end + 2)))
+                ps_block = end < 0
+                continue
+            if line.rstrip().endswith(("@'", '@"')):
+                ps_here = line.rstrip()[-1] + "@"
+            col = _hash_line_comment(line, True, "`")
+        elif kind == "sh":
+            col = _hash_line_comment(line, True, "\\")
+            code = line if col < 0 else line[:col]
+            m = _HEREDOC.search(code)
+            if m and "<<<" not in code:
+                heredoc = (m.group(3), m.group(1) == "-")
+        else:                                            # yaml
+            col = _hash_line_comment(line, False, "\\")
+        if col >= 0:
+            spans.append((line_start + col, line_start + len(line)))
+    return spans
+
+
+def _process_comments(text, kind):
+    """Hits for a comment-only kind: every line holding a dash INSIDE a comment span. The text is
+    returned unchanged; these kinds have no fixer."""
+    spans = _js_comment_spans(text) if kind == "js" else _line_spans(text, kind)
+    if not spans:
+        return text, []
+    starts = [s for s, _ in spans]
+    lines = text.split("\n")
+    line_starts, p = [], 0
+    for ln in lines:
+        line_starts.append(p)
+        p += len(ln) + 1
+    hit_lines = set()
+    for m in _DASH_RE.finditer(text):
+        k = bisect.bisect_right(starts, m.start()) - 1
+        if k >= 0 and spans[k][0] <= m.start() < spans[k][1]:
+            hit_lines.add(bisect.bisect_right(line_starts, m.start()))
+    hits = [(no, lines[no - 1]) for no in sorted(hit_lines) if _ALLOW not in lines[no - 1]]
+    return text, hits
+
+
+_SCISSORS = re.compile(r"^# -+ >8 -+$")
+
+
+def message_text(raw):
+    """The part of a commit message a reader sees: git's `#` lines blanked (not removed, so line
+    numbers still match the file) and everything from a scissors line on dropped."""
+    out = []
+    for ln in raw.split("\n"):
+        if _SCISSORS.match(ln.rstrip("\r")):
+            break
+        out.append("" if ln.startswith("#") else ln)
+    return "\n".join(out)
+
+
 def process_text(text: str, kind: str, notes=None):
     """Return (new_text, hits) where hits = list of (lineno, original_line).
-    kind: "py" (comments only), "md" (prose, code spans exempt), "prose" (plain text, full).
+    kind: "py" (comments only), "md" (prose, code spans exempt), "prose" (plain text, full),
+    "message" (a commit message, as prose), or a comment-only kind (js, yaml, sh, ps, cmd).
     notes: optional list; anything appended is a reason this file was not fully examined."""
     if kind == "py":
         return _process_py(text, notes)
+    if kind in _COMMENT_KINDS:
+        return _process_comments(text, kind)
+    if kind == "message":
+        kind = "prose"
     is_md = (kind == "md")
     out_lines, hits, in_fence = [], [], False
     for lineno, line in enumerate(text.split("\n"), 1):
@@ -303,8 +577,33 @@ def _git(repo, *a, allow_fail=False):
     return r.stdout
 
 
-def _eligible(paths):
-    return [f for f in paths if os.path.splitext(f)[1].lower() in _KIND]
+def _shebang_kind(path):
+    """'sh' for an extensionless file whose first line is a shell shebang, else None. Git hooks and
+    installers are the usual case, and they are exactly where shell comments hold prose."""
+    try:
+        with open(path, "rb") as f:
+            head = f.read(128)
+    except OSError:
+        return None
+    return "sh" if _SHELL_SHEBANG.match(head) else None
+
+
+def _kind_of(path):
+    ext = os.path.splitext(path)[1].lower()
+    if ext:
+        return _KIND.get(ext)
+    return _shebang_kind(path)
+
+
+def _eligible(paths, repo=None):
+    out = []
+    for f in paths:
+        ext = os.path.splitext(f)[1].lower()
+        if ext in _KIND:
+            out.append(f)
+        elif not ext and repo is not None and _shebang_kind(os.path.join(repo, f)):
+            out.append(f)
+    return out
 
 
 def _tracked(repo):
@@ -314,27 +613,77 @@ def _tracked(repo):
     # C-quoted escape string that opens nothing, and it vanishes from BOTH the examined and the
     # skipped tally, so the clean line does not even admit something went unread.
     all_paths = [p for p in _git(repo, "ls-files", "-z").split("\0") if p]
-    return all_paths, _eligible(all_paths)
+    return all_paths, _eligible(all_paths, repo)
 
 
 def _staged(repo):
     out = _git(repo, "diff", "--cached", "--name-only", "--diff-filter=ACM")
     all_paths = [f for f in out.splitlines() if f.strip()]
-    return all_paths, _eligible(all_paths)
+    return all_paths, _eligible(all_paths, repo)
 
 
-def main() -> int:
+def _print_rows(label, rows):
+    if not rows:
+        return
+    print("dash_guard: %d file(s) %s:" % (len(rows), label), file=sys.stderr)
+    for rel, why in rows[:20]:
+        print("  %-52s %s" % (rel, why), file=sys.stderr)
+    if len(rows) > 20:
+        print("  ... and %d more" % (len(rows) - 20), file=sys.stderr)
+
+
+def _counts_text(counts):
+    return " ".join("%s=%d" % (k, counts[k]) for k in ALL_KINDS if counts.get(k))
+
+
+def _check_message(path, blocking):
+    """--message: one commit message, kind "message". 2 when the file cannot be read, because a
+    message nobody read is not a clean message."""
+    try:
+        raw = open(path, encoding="utf-8").read()
+    except (UnicodeDecodeError, OSError) as e:
+        print("dash_guard: SCAN FAILED -- cannot read the commit message %s (%s)."
+              % (path, type(e).__name__), file=sys.stderr)
+        return 2
+    _, hits = process_text(message_text(raw), "message")
+    gate = "message" in blocking
+    for lineno, line in hits:
+        tag = "" if gate else "[report message] "
+        print(f"{path}:{lineno}: {tag}{line.strip()[:100]}")
+    if hits and gate:
+        print(f"dash_guard: {len(hits)} en/em dash(es) in the commit message", file=sys.stderr)
+        return 1
+    if hits:
+        print(f"dash_guard: clean (1 commit message examined); {len(hits)} report-only "
+              f"finding(s) not gated: message={len(hits)}")
+        return 0
+    print("dash_guard: clean (1 commit message examined)")
+    return 0
+
+
+def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description="en/em dash guard for public repo prose")
     ap.add_argument("--repo", default=".")
     ap.add_argument("--fix", action="store_true", help="rewrite offending files in place")
     g = ap.add_mutually_exclusive_group()
     g.add_argument("--staged", action="store_true")
     g.add_argument("--tree", action="store_true")
+    g.add_argument("--message", metavar="FILE",
+                   help="check one commit message file (kind 'message', report-only by default)")
     ap.add_argument("--added-only", action="store_true",
                     help="report only lines the staged diff ADDS (implies --staged); for trees "
                          "with standing violations that are not being retroactively cleaned")
+    ap.add_argument("--block-kinds", default="", metavar="KINDS",
+                    help="comma list of report-only kinds to promote to blocking, or 'all' "
+                         "(kinds: %s)" % ", ".join(REPORT_KINDS))
     ap.add_argument("paths", nargs="*", help="explicit files (overrides --staged/--tree)")
-    args = ap.parse_args()
+    args = ap.parse_args(argv)
+
+    try:
+        blocking = parse_block_kinds(args.block_kinds)
+    except ValueError as e:
+        print("dash_guard: --block-kinds: %s" % e, file=sys.stderr)
+        return 2
 
     # --fix rewrites whole files, so pairing it with --added-only would silently clean the standing
     # lines the mode exists to leave alone. Refuse rather than pick one of the two meanings.
@@ -343,6 +692,12 @@ def main() -> int:
               "file, which would also rewrite the standing lines --added-only exists to skip.",
               file=sys.stderr)
         return 2
+    if args.message:
+        if args.fix or args.added_only or args.paths:
+            print("dash_guard: --message checks one message and takes no --fix, --added-only or "
+                  "paths.", file=sys.stderr)
+            return 2
+        return _check_message(args.message, blocking)
     if args.added_only:
         args.staged = True
 
@@ -369,17 +724,21 @@ def main() -> int:
         print("dash_guard: NOTE %d %s path(s), none with a de-dashable extension (%s)."
               % (enumerated, source, " ".join(sorted(_KIND))), file=sys.stderr)
 
-    total = 0
+    total = 0                         # BLOCKING hits
+    report = {}                       # kind -> report-only hit count
     changed_files = 0
     examined = 0
     # Two different things, kept apart because only one of them is a problem:
     #   excluded  -- we CHOSE not to read this file (the guard's own source, an absent path). A
     #                declared exclusion is a decision, and a decision does not fail a run.
     #   unexamined -- we MEANT to read it and could not (undecodable bytes, source the tokenizer
-    #                rejects). The file may be full of dashes and nobody looked. Both are printed;
-    #                only this one affects an exit code.
+    #                rejects). The file may be full of dashes and nobody looked. Both are printed.
+    #                An unexamined file is a finding of kind "unexamined": counted on the verdict
+    #                line (report-only by default), blocking under --block-kinds unexamined, and
+    #                a nonzero under --fix, which cannot claim to have repaired a file it never read.
     excluded = []                     # (path, reason)
     unexamined = []                   # (path, reason)
+    fix_skipped = 0                   # report-kind files --fix left alone (no fixer exists)
     # The guard's own source carries the dash set by design, so it is exempt -- but keyed on the
     # vendored PATH, not on the basename. A basename rule means `git mv prose.md tools/../
     # dash_guard.py`, or simply any file called dash_guard.py in any directory, is exempt from the
@@ -409,9 +768,12 @@ def main() -> int:
                                    and _self_marker in text):
             excluded.append((rel, "the guard's own source (contains the dash set by design)"))
             continue
-        kind = _KIND.get(os.path.splitext(path)[1].lower())
+        kind = _kind_of(path)
         if kind is None:
             excluded.append((rel, "no de-dash rule for this extension"))
+            continue
+        if args.fix and kind in _COMMENT_KINDS:
+            fix_skipped += 1
             continue
         examined += 1
         if not _DASH_RE.search(text):
@@ -431,6 +793,12 @@ def main() -> int:
                 hits = [h for h in hits if h[0] in added]
         if not hits:
             continue
+        if kind not in blocking:
+            report[kind] = report.get(kind, 0) + len(hits)
+            for lineno, line in hits:
+                print(f"{os.path.relpath(path, repo)}:{lineno}: [report {kind}] "
+                      f"{line.strip()[:100]}")
+            continue
         total += len(hits)
         if args.fix:
             if new_text != text:
@@ -443,21 +811,15 @@ def main() -> int:
 
     # Print both lists BEFORE the verdict, in both modes. A file carrying a dash that the tokenizer
     # rejected is exactly the file this guard exists for, and it used to vanish without a word.
-    def _report(label, rows):
-        if not rows:
-            return
-        print("dash_guard: %d file(s) %s:" % (len(rows), label), file=sys.stderr)
-        for rel, why in rows[:20]:
-            print("  %-52s %s" % (rel, why), file=sys.stderr)
-        if len(rows) > 20:
-            print("  ... and %d more" % (len(rows) - 20), file=sys.stderr)
-
-    _report("deliberately excluded", excluded)
-    _report("could NOT be examined", unexamined)
+    _print_rows("deliberately excluded", excluded)
+    _print_rows("could NOT be examined", unexamined)
 
     if args.fix:
         print(f"dash_guard: fixed {total} line(s) across {changed_files} file(s); "
               f"{examined} file(s) examined")
+        if fix_skipped:
+            print("dash_guard: --fix left %d file(s) of comment-only kinds untouched (no fixer "
+                  "for js, yaml, sh, ps or cmd yet)" % fix_skipped, file=sys.stderr)
         # --fix is a REPAIR, not a gate, and its exit code is deliberately not a verdict on the
         # tree: it just rewrote the tree, so "0 remaining findings" would be true by construction
         # and would let `dash_guard --fix` be wired into CI as a gate that can never fail. The gate
@@ -469,14 +831,27 @@ def main() -> int:
                   "to gate." % len(unexamined), file=sys.stderr)
             return 1
         return 0
-    if total:
-        print(f"dash_guard: {total} prose en/em dash(es) found (run with --fix)", file=sys.stderr)
+
+    blocked_unexamined = len(unexamined) if "unexamined" in blocking else 0
+    if unexamined and not blocked_unexamined:
+        report["unexamined"] = len(unexamined)
+    rep_total = sum(report.values())
+    rep_note = (f"; {rep_total} report-only finding(s) not gated: {_counts_text(report)}"
+                if rep_total else "")
+    if total or blocked_unexamined:
+        if total:
+            print(f"dash_guard: {total} prose en/em dash(es) found (run with --fix){rep_note}",
+                  file=sys.stderr)
+        if blocked_unexamined:
+            print(f"dash_guard: {blocked_unexamined} file(s) could not be examined, and kind "
+                  f"'unexamined' is blocking{'' if total else rep_note}", file=sys.stderr)
         return 1
     # The verdict states its own coverage. "dash_guard: clean" on its own is the identical string
     # whether 400 files were read or none were, which is precisely how the fail-open stayed hidden.
+    # Report-only findings ride on the same line, so a clean verdict never hides that they exist.
     skipped = len(excluded) + len(unexamined)
     print(f"dash_guard: clean ({examined} file(s) examined"
-          + (f", {skipped} skipped)" if skipped else ")"))
+          + (f", {skipped} skipped)" if skipped else ")") + rep_note)
     return 0
 
 
