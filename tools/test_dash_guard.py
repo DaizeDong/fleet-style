@@ -204,7 +204,8 @@ def _guard(args, cwd, env_overrides=None):
     env = dict(os.environ)
     env.update(env_overrides or {})
     return subprocess.run([sys.executable, dg.__file__] + args, cwd=cwd,
-                          capture_output=True, text=True, env=env)
+                          capture_output=True, text=True, encoding="utf-8", errors="replace",
+                          env=env)
 
 
 def _git(cwd, *a):
@@ -323,6 +324,182 @@ def test_fix_reports_nonzero_when_it_could_not_examine_a_file():
         _git(d, "add", "broken.py")
         p = _guard(["--fix", "--tree", "--repo", "."], d)
         assert p.returncode != 0, f"--fix hid an unexaminable file: {p.stdout!r}"
+
+
+# --- report-only kinds (2026-09-25): js, yaml, sh, ps, cmd comments, commit messages, unexamined --
+# The property every test below protects: the new kinds see COMMENT prose only (every literal is
+# code), and none of them can change a consumer's exit code until that kind is promoted by name.
+
+def _lines(text, kind):
+    return [n for n, _ in process_text(text, kind)[1]]
+
+
+def test_block_policy_default_is_exactly_the_pre_rollout_kinds():
+    check(dg.parse_block_kinds(""), frozenset({"md", "prose", "py"}), "default blocking set")
+    check(dg.parse_block_kinds("js, yaml"), frozenset({"md", "prose", "py", "js", "yaml"}),
+          "promotion adds to the default")
+    check(dg.parse_block_kinds("all"), frozenset(dg.ALL_KINDS), "all promotes every kind")
+    try:
+        dg.parse_block_kinds("jss")
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("a typo in --block-kinds was accepted and would leave the gate open")
+
+
+def test_js_line_and_block_comments_are_examined():
+    src = (f"const a = 1; // an aside {EM} here\n"
+           f"/* a block\n   comment {EN} two */\n"
+           f"const b = 2;\n")
+    check(_lines(src, "js"), [1, 3], "js // and /* */ comments")
+
+
+def test_js_string_template_and_regex_literals_are_code():
+    src = (f'const s = "a {EM} b", t = \'c {EN} d\';\n'
+           f"const u = `e {EM} f ${{g}} h {EM}`;\n"
+           f"const r = /[{EN}{EM}]/g;\n"
+           f'const url = "http://x.test/ {EM} // not a comment";\n'
+           f"expect(render(x)).toBe(\"{EM}\");\n"
+           f"const slashes = /^\\/*{EM}/;\n")
+    check(_lines(src, "js"), [], "no js literal is ever read as prose")
+
+
+def test_js_comment_inside_a_template_expression_is_still_a_comment():
+    src = f"const u = `a ${{ f(/* why {EM} */ 1) }} b {EM}`;\n"
+    check(_lines(src, "js"), [1], "comment inside ${ } counts, template text does not")
+    check(_lines(f"const u = `a ${{ f(1) }} b {EM}`;\n", "js"), [], "template text alone")
+
+
+def test_js_division_is_not_a_regex():
+    src = f"const q = a / b; // ratio {EM} of two\nconst z = c / d / e;\n"
+    check(_lines(src, "js"), [1], "a / b / c is division, the trailing comment is found")
+
+
+def test_js_allow_marker_wins():
+    check(_lines(f"// kept {EM} on purpose  dash-guard: allow\n", "js"), [], "allow marker")
+
+
+def test_yaml_comments_only():
+    src = (f"# a workflow {EM} note\n"
+           f"name: build {EM} and test\n"
+           f"description: 'quoted # {EM} not a comment'\n"
+           f"url: a#{EM}b\n"
+           f"key: value   # trailing {EN} comment\n"
+           f"note: don't stop   # why {EM} here\n")
+    check(_lines(src, "yaml"), [1, 5, 6], "yaml: comments yes, scalars no")
+
+
+def test_yaml_run_block_shell_comment_is_counted():
+    """A `#` line inside a `run: |` block is a shell comment written as prose, so it counts. This is
+    documented rather than accidental: a workflow's step explanations live exactly there."""
+    src = f"steps:\n  - run: |\n      # explain {EM} why\n      echo \"{EM}\"\n"
+    check(_lines(src, "yaml"), [3], "shell comment in a run block")
+
+
+def test_sh_comments_strings_and_heredocs():
+    src = (f"#!/bin/sh\n"
+           f"# setup {EM} step\n"
+           f'echo "{EM} # quoted"\n'
+           f"cat <<EOF\n# heredoc body {EM}\nEOF\n"
+           f"echo ${{#arr}} {EM}\n"
+           f"x=1 # trailing {EN}\n")
+    check(_lines(src, "sh"), [2, 8], "sh: comments yes, strings/heredoc/${#} no")
+
+
+def test_ps_line_block_and_here_string():
+    src = (f"# note {EM}\n"
+           f"<# block\n  {EM} text #>\n"
+           f'$x = "{EM} # in a string"\n'
+           f"$h = @'\n# {EM} here-string body\n'@\n"
+           f"Write-Host 1 # tail {EN}\n")
+    check(_lines(src, "ps"), [1, 3, 8], "ps: comments yes, strings/here-strings no")
+
+
+def test_cmd_rem_and_double_colon():
+    src = f"rem one {EM}\n:: two {EM}\necho three {EM}\n@REM four {EM}\n"
+    check(_lines(src, "cmd"), [1, 2, 4], "cmd: rem and :: lines only")
+
+
+def test_message_text_drops_git_comment_lines_and_the_scissors():
+    raw = (f"Subject {EM} line\n\nBody\n# Please enter {EM} the message\n"
+           f"# ------------------------ >8 ------------------------\ndiff {EM}\n")
+    out = dg.message_text(raw)
+    check(_lines(out, "message"), [1], "only the subject is prose here")
+    check(len(out.split("\n")), 4, "line numbers still match the file up to the scissors")
+
+
+def _repo_with(d, files):
+    _git(d, "init", "-q")
+    for name, body in files.items():
+        p = os.path.join(d, name)
+        os.makedirs(os.path.dirname(p), exist_ok=True)
+        with open(p, "wb") as f:
+            f.write(body if isinstance(body, bytes) else body.encode("utf-8"))
+        _git(d, "add", name)
+
+
+def test_report_kinds_do_not_change_the_exit_code_until_promoted():
+    with _TmpDir() as d:
+        _repo_with(d, {"a.js": f"// js {EM}\n", ".github/workflows/w.yml": f"# y {EM}\n",
+                       "s.sh": f"# s {EM}\n", "p.ps1": f"# p {EM}\n", "c.cmd": f"rem c {EM}\n",
+                       "hooks/pre-commit": f"#!/usr/bin/env bash\n# h {EM}\n"})
+        p = _guard(["--tree", "--repo", "."], d)
+        assert p.returncode == 0, f"a report-only kind turned a consumer red: {p.stderr!r}"
+        for tag in ("[report js]", "[report yaml]", "[report sh]", "[report ps]", "[report cmd]"):
+            assert tag in p.stdout, (tag, p.stdout)
+        assert "hooks/pre-commit:2: [report sh]" in p.stdout.replace("\\", "/"), p.stdout
+        assert "js=1 yaml=1 sh=2 ps=1 cmd=1" in p.stdout, p.stdout
+        for kind in ("js", "yaml", "sh", "ps", "cmd"):
+            q = _guard(["--tree", "--repo", ".", "--block-kinds", kind], d)
+            assert q.returncode == 1, f"--block-kinds {kind} did not block: {q.stdout!r}"
+        q = _guard(["--tree", "--repo", ".", "--block-kinds", "nope"], d)
+        assert q.returncode == 2 and "unknown kind" in q.stderr, q.stderr
+
+
+def test_md_and_py_still_block_by_default():
+    with _TmpDir() as d:
+        _repo_with(d, {"a.md": f"an aside {EM} here\n", "b.js": "// fine\n"})
+        p = _guard(["--tree", "--repo", "."], d)
+        assert p.returncode == 1, "md stopped blocking: the existing behaviour changed"
+
+
+def test_an_unexaminable_file_is_a_counted_finding():
+    with _TmpDir() as d:
+        _repo_with(d, {"bad.md": b"\xff\xfe not utf-8 \x80\n", "ok.md": "fine\n"})
+        p = _guard(["--tree", "--repo", "."], d)
+        assert p.returncode == 0, "unexamined must stay report-only by default"
+        assert "unexamined=1" in p.stdout, f"the verdict hid an unread file: {p.stdout!r}"
+        q = _guard(["--tree", "--repo", ".", "--block-kinds", "unexamined"], d)
+        assert q.returncode == 1 and "could not be examined" in q.stderr, q.stderr
+
+
+def test_fix_never_rewrites_a_report_kind():
+    with _TmpDir() as d:
+        body = f"// keep {EM} as is\nconst s = \"{EM}\";\n"
+        _repo_with(d, {"a.js": body})
+        p = _guard(["--fix", "--tree", "--repo", "."], d)
+        assert p.returncode == 0, p.stderr
+        assert "left 1 file(s) of comment-only kinds untouched" in p.stderr, p.stderr
+        with open(os.path.join(d, "a.js"), encoding="utf-8", newline="") as f:
+            check(f.read(), body, "--fix touched a js file")
+
+
+def test_message_mode_reports_then_blocks_when_promoted():
+    with _TmpDir() as d:
+        msg = os.path.join(d, "COMMIT_EDITMSG")
+        with open(msg, "w", encoding="utf-8") as f:
+            f.write(f"Add a thing {EM} carefully\n\n# git comment {EM}\n")
+        p = _guard(["--message", msg], d)
+        assert p.returncode == 0 and "[report message]" in p.stdout and "message=1" in p.stdout, \
+            p.stdout
+        q = _guard(["--message", msg, "--block-kinds", "message"], d)
+        assert q.returncode == 1, q.stdout
+        with open(msg, "w", encoding="utf-8") as f:
+            f.write("Add a thing carefully\n\n# git comment " + EM + "\n")
+        r = _guard(["--message", msg, "--block-kinds", "message"], d)
+        assert r.returncode == 0 and "1 commit message examined" in r.stdout, r.stdout
+        s = _guard(["--message", os.path.join(d, "missing")], d)
+        assert s.returncode == 2 and "SCAN FAILED" in s.stderr, "an unread message passed"
 
 
 def main():
