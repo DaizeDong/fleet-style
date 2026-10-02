@@ -7,12 +7,12 @@ Current: **v0.3.0**
 Feature names only. Why each gate behaves the way it does lives in the tool docstrings, which are the single home for those rules, and what changed lives in `CHANGELOG.md`.
 
 - `tools/dash_guard.py`: flag or repair en dash, em dash and horizontal bar in published prose, across the tracked tree, the staged blobs or explicit paths. Markdown fences, inline code spans, allow marked lines and the scanner's own source are exempt.
-- `tools/dash_guard.py` report kinds: JS, YAML, shell, PowerShell and cmd comments, one commit message (`--message`), and files the guard could not read, each reported and counted without failing until promoted with `--block-kinds` or the `ci/dash-guard` input of the same name.
+- `tools/dash_guard.py` report kinds: JS, YAML, shell, PowerShell and cmd comments, and one commit message (`--message`), each reported and counted without failing until promoted with `--block-kinds` or the `ci/dash-guard` input of the same name. Incomplete scans always block.
 - `tools/load_budget.py`: measure a skill's always loaded lines against a two rung budget, and detect prose duplicated between `SKILL.md` and an on demand reference by word shingle.
-- `tools/wrap_guard.py`: flag or repair hard wraps inside prose paragraphs, across the tracked tree, the staged blobs, explicit paths or a single commit message. Fences, tables, quotes, headings, badge rows, git trailers, allow marked paragraphs and the scanner's own source are exempt.
+- `tools/wrap_guard.py`: flag or repair hard wraps inside prose paragraphs, across the tracked tree, the staged blobs, explicit paths or a single commit message. Matching code fences, tables, quotes, headings, badge rows, git trailers, allow marked paragraphs and the scanner's own source are exempt. Staged text and exclusions come from the index; unreadable inputs block and repairs reject unsafe file identities.
 - `ci/dash-guard`, `ci/wrap-guard` and `ci/load-budget`: composite actions that run each guard's own tests first and fail on a missing scanner rather than skipping it.
 - `conftest.py`: keep this kit's tests out of a consumer's collection while leaving them reachable by path.
-- `.github/workflows/style.yml`: this repository runs its own dash gate through its own action.
+- `.github/workflows/style.yml`: this repository runs independent dash, wrap, load-budget regression and workflow-pin jobs.
 - `.github/workflows/notify-consumers.yml` and `docs/AUTOMATIC_SYNC.md`: optional pin advancement through each consumer's normal commit gates.
 - `tools/test_workflow_pins.py`: a reusable workflow called from another repository must be pinned to a full commit SHA, run by the `pins` job in `style.yml`.
 

@@ -46,7 +46,7 @@ git submodule add -b main https://github.com/DaizeDong/fleet-style.git style
 - uses: ./style/ci/dash-guard        # 或者 ./style/ci/load-budget
 ```
 
-`ci/dash-guard` 有一个可选输入 `block-kinds`。v0.3.0 新增的几类（JS、YAML、shell、PowerShell 和 cmd 的注释，commit message，以及读不了的文件）只报告、不失败，直到消费方在这里点名，比如 `with: {block-kinds: 'js,yaml'}`。留空时判决与 v0.3.0 之前完全一致。
+`ci/dash-guard` 有一个可选输入 `block-kinds`。JS、YAML、shell、PowerShell 和 cmd 的注释，以及 commit message，默认只报告发现；消费方可以用 `with: {block-kinds: 'js,yaml'}` 将指定类别设为阻断。文件读不了、无法完整解析或读取期间发生变化时，一律阻断，不受这个输入影响。
 
 移动指针：
 
@@ -81,14 +81,14 @@ pytest style/tools/
 
 | 闸门 | 它断言什么 | 退出码 |
 | --- | --- | --- |
-| `tools/dash_guard.py` | 公开 prose 不含 en dash、em dash、horizontal bar。Markdown 围栏与行内 code 豁免，带 `dash-guard: allow` 标记的行豁免，扫描器自己的源文件按文件名豁免，因为它把那组破折号当数据装在身上。Markdown、纯文本和 Python 注释是阻断类。JS 的 `//` 与 `/* */` 注释、YAML 的 `#` 注释、shell、PowerShell 和 cmd 注释、commit message（`--message`）以及读不了的文件是报告类：带着类别打印出来，计入判决行，只有在 `--block-kinds` 里点名才阻断。所有字符串、模板和正则字面量都是代码，从不检查。 | 0 干净，1 有阻断类发现，2 扫描跑不起来 |
-| `tools/wrap_guard.py` | 正文段落里不许有硬折行：一段写成一整行，段落之间用空行分隔。只有段落之间、列表项之间、代码块内和表格内才该换行。围栏、表格、引用、标题、徽章行和 git trailer 豁免，前面一行写了 `wrap-guard:allow` 的那一段豁免，扫描器自己的源文件按文件名豁免（它身上带着被折断的示例）。`--fix` 把行接回去，中日韩之间直接粘、其余补一个半角空格。 | 0 干净，1 有发现，2 扫描跑不起来 |
+| `tools/dash_guard.py` | 公开 prose 不含 en dash、em dash、horizontal bar。Markdown 围栏与行内 code 豁免，带 `dash-guard: allow` 标记的行豁免，扫描器源文件按固定路径或标记识别。Markdown、纯文本和 Python 注释默认阻断。JS、YAML、shell、PowerShell 和 cmd 的注释，以及 commit message（`--message`），默认报告，可用 `--block-kinds` 设为阻断。扫描不完整时始终阻断。暂存模式读取 Git index，修复模式验证文件与目录身份后才写入。 | 0 干净，1 有发现或扫描不完整，2 扫描跑不起来 |
+| `tools/wrap_guard.py` | 正文段落里不许有硬折行：一段写成一整行，段落之间用空行分隔。围栏、表格、引用、标题、徽章行和 git trailer 豁免，带豁免标记的段落或文件按声明跳过。暂存模式从 Git index 读取文本和 `.wrap-allow`，`--added-only` 也使用暂存内容。代码围栏按相同标记、长度和容器边界识别。`--fix` 把行接回去，中日韩之间直接粘、其余补一个半角空格；链接或读写期间变化的文件会被拒绝，不能与暂存模式同时使用。 | 0 干净，1 有发现或扫描不完整，2 扫描跑不起来 |
 | `tools/load_budget.py` | 一个 skill 的常驻加载行数不超预算，且 `SKILL.md` 里的正文不是 reference 里正文的第二份副本。重复用 word shingle 检测，所以一条规则的措辞出现在展开它的那份 reference 里并不会触发。 | 0 在预算内，1 超预算，3 什么都没测到 |
 
 | CI action | 接线方式 |
 | --- | --- |
 | `ci/dash-guard` | 装 pytest，跑 `tools/test_dash_guard.py`，然后扫调用方仓库的树。输入 `block-kinds` 把报告类升为阻断。 |
-| `ci/wrap-guard` | 装 pytest，跑 `tools/test_wrap_guard.py`，然后扫调用方仓库的树。 |
+| `ci/wrap-guard` | 装 pytest，验证生成的测试数据，跑 wrap、共享文件读写和 Markdown 合同测试，然后扫调用方仓库的树。 |
 | `ci/load-budget` | 装 pytest，`tools/test_load_budget.py` 不在就失败，跑它，然后测量调用方仓库。 |
 
 ## 怎么跑起来的

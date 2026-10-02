@@ -8,6 +8,12 @@ description: House rule that published prose carries no en/em dash, checked agai
 # The steps live here rather than in a workflow every consumer copies, because copied into every
 # repo the reasoning for each step becomes divergent copies of an argument, and copies drift.
 
+inputs:
+  block-kinds:
+    description: "Comma list of comment or message kinds to block, or all. Incomplete scans always block."
+    required: false
+    default: ""
+
 runs:
   using: composite
   steps:
@@ -24,4 +30,6 @@ runs:
 
     - name: No en/em dash in published prose
       shell: bash
-      run: python "$GITHUB_ACTION_PATH/../../tools/dash_guard.py" --check --tree
+      env:
+        DASH_BLOCK_KINDS: ${{ inputs.block-kinds }}
+      run: python "$GITHUB_ACTION_PATH/../../tools/dash_guard.py" --check --tree --block-kinds "$DASH_BLOCK_KINDS"

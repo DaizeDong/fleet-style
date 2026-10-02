@@ -25,7 +25,8 @@ runs:
       shell: bash
       run: |
         python -m pip install --quiet pytest
-        python -m pytest "$GITHUB_ACTION_PATH/../../tools/test_wrap_guard.py" -q
+        python "$GITHUB_ACTION_PATH/../../tools/make_fixtures.py" --check
+        python -m pytest "$GITHUB_ACTION_PATH/../../tools/test_wrap_guard.py" "$GITHUB_ACTION_PATH/../../tools/test_dash_guard_contracts.py" "$GITHUB_ACTION_PATH/../../tools/test_markdown_contracts.py" -q
 
     # --tree, never --fix. `--fix` rewrites the files and then exits 0, so wiring it in here would
     # install a check that cannot fail.

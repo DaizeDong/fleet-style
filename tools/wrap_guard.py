@@ -59,10 +59,16 @@
 from __future__ import annotations
 
 import argparse
+import importlib.util
+import os
 import re
-import subprocess
 import sys
 from pathlib import Path
+
+_SCAN_SPEC = importlib.util.spec_from_file_location(
+    "_fleet_style_wrap_scan", Path(__file__).with_name("dash_guard.py"))
+_SCAN = importlib.util.module_from_spec(_SCAN_SPEC)
+_SCAN_SPEC.loader.exec_module(_SCAN)
 
 try:
     sys.stdout.reconfigure(encoding="utf-8")
@@ -89,7 +95,6 @@ _HTML = re.compile(r"^\s*<")
 # 只在 commit message 那一面生效, 在 Markdown 里 `Note: 某某` 是一句散文，
 # 不是 trailer，拿同一条规则去套会悄悄放过真正的硬折行。
 _TRAILER = re.compile(r"^[A-Za-z][A-Za-z0-9-]*:\s")
-_FENCE = re.compile(r"^\s*(```|~~~)")
 _INDENT_CODE = re.compile(r"^(\t| {4,})")
 
 # 整行只有图片/链接（徽章行、图标行），**不是散文**。
@@ -166,6 +171,21 @@ class _Block:
         self.lines = lines
 
 
+def _protected_lines(text: str) -> set[int]:
+    """Share the Markdown parser's marker, length and container rules for block code."""
+    regions = iter(_SCAN._MARKDOWN.fenced_regions(text))
+    current = next(regions, None)
+    protected = set()
+    offset = 0
+    for number, line in enumerate(text.splitlines(keepends=True), 1):
+        while current and offset >= current[1]:
+            current = next(regions, None)
+        if current and current[0] < offset + len(line):
+            protected.add(number)
+        offset += len(line)
+    return protected
+
+
 def _blocks(text: str) -> list[_Block]:
     """按空行切块，**围栏代码块整块跳过**。
 
@@ -175,15 +195,12 @@ def _blocks(text: str) -> list[_Block]:
     out: list[_Block] = []
     buf: list[str] = []
     start = 0
-    fence = False
+    protected = _protected_lines(text)
     for i, ln in enumerate(text.splitlines(), 1):
-        if _FENCE.match(ln):
-            fence = not fence
+        if i in protected:
             if buf:
                 out.append(_Block(start, buf))
                 buf = []
-            continue
-        if fence:
             continue
         if not ln.strip():
             if buf:
@@ -280,7 +297,7 @@ def fix_text(text: str) -> str:
     out: list[str] = []
     buf: list[str] = []
     start = 0
-    fence = False
+    protected = _protected_lines(text)
     allowed: set[int] = set()
     for i, ln in enumerate(lines, 1):
         if _PARA_ALLOW in ln:
@@ -303,12 +320,8 @@ def fix_text(text: str) -> str:
         buf.clear()
 
     for i, ln in enumerate(lines, 1):
-        if _FENCE.match(ln):
+        if i in protected:
             flush()
-            out.append(ln)
-            fence = not fence
-            continue
-        if fence:
             out.append(ln)
             continue
         if not ln.strip():
@@ -344,27 +357,37 @@ class GitError(RuntimeError):
 
 def _git(repo: Path, *args: str) -> str:
     try:
-        r = subprocess.run(["git", "-C", str(repo), *args],
-                           capture_output=True, text=True, encoding="utf-8",
-                           errors="replace")
-    except FileNotFoundError as exc:                             # pragma: no cover
-        raise GitError("PATH 里没有 git") from exc
-    if r.returncode != 0:
-        raise GitError(f"git {' '.join(args)} 退 {r.returncode}: {r.stderr.strip()[:200]}")
-    return r.stdout
+        return _SCAN._git(str(repo), *args)
+    except _SCAN.GitError as error:
+        raise GitError(str(error)) from error
 
 
 def _tracked(repo: Path) -> list[Path]:
     out = _git(repo, "ls-files", "-z")
-    return [repo / p for p in out.split("\0") if p]
+    links = _SCAN._gitlinks(str(repo))
+    return [repo / p for p in out.split("\0") if p and p not in links]
 
 
 def _staged(repo: Path) -> list[Path]:
-    out = _git(repo, "diff", "--cached", "--name-only", "-z", "--diff-filter=ACMR")
-    return [repo / p for p in out.split("\0") if p]
+    out = _git(repo, "diff", "--cached", "--no-ext-diff", "--no-textconv",
+               "--name-only", "-z", "--diff-filter=ACMRTU")
+    links = _SCAN._gitlinks(str(repo))
+    return [repo / p for p in out.split("\0") if p and p not in links]
 
 
-def read_ignore(repo: Path) -> list[tuple[str, str]]:
+def _read_worktree(path: Path):
+    snapshot = _SCAN._worktree_snapshot(path)
+    if snapshot is None:
+        raise FileNotFoundError(path)
+    with _SCAN._open_worktree(path, "r", snapshot) as stream:
+        text = stream.read()
+        if (_SCAN._worktree_snapshot(path) != snapshot or
+                _SCAN._worktree_stamp(os.fstat(stream.fileno())) != snapshot[-1][1]):
+            raise _SCAN._UnsafeWorktreePath("worktree target changed during read")
+    return text, snapshot
+
+
+def read_ignore(repo: Path, *, staged=False) -> list[tuple[str, str]]:
     """仓库自己声明的「这些路径不归这条规则管」。格式：`前缀 # 理由`。
 
     2026-09-23 由一次真实的越界逼出来：在一个仓里跑 `--tree`，它扫到 153 份
@@ -376,10 +399,17 @@ def read_ignore(repo: Path) -> list[tuple[str, str]]:
     理由是必填的：一张只有路径、没有理由的豁免表，三个月后没人敢删任何一行。
     """
     f = repo / ".wrap-allow"
-    if not f.exists():
-        return []
+    if staged:
+        if not _git(repo, "ls-files", "-z", "--", ".wrap-allow"):
+            return []
+        text = _SCAN._index_text(str(repo), ".wrap-allow")
+    else:
+        try:
+            text, _ = _read_worktree(f)
+        except FileNotFoundError:
+            return []
     out: list[tuple[str, str]] = []
-    for raw in f.read_text(encoding="utf-8").splitlines():
+    for raw in text.splitlines():
         line = raw.strip()
         if not line or line.startswith("#"):
             continue
@@ -403,7 +433,7 @@ def _eligible(paths, ignore: list[tuple[str, str]] | None = None,
     而它**一声不响地全都放行了**：输出里照样写着「查了 153 份文件」，
     和豁免真的生效时唯一的区别是那个数字 —— 一个没人会去核对的数字。
     """
-    keep = [p for p in paths if p.suffix.lower() in _EXT_KIND and p.is_file()]
+    keep = [p for p in paths if p.suffix.lower() in _EXT_KIND]
     if not ignore:
         return keep
     out = []
@@ -411,7 +441,7 @@ def _eligible(paths, ignore: list[tuple[str, str]] | None = None,
         rel = p.as_posix()
         if repo is not None:
             try:
-                rel = p.resolve().relative_to(repo).as_posix()
+                rel = p.absolute().relative_to(repo).as_posix()
             except ValueError:
                 pass
         if not any(rel.startswith(pre) for pre, _ in ignore):
@@ -420,22 +450,22 @@ def _eligible(paths, ignore: list[tuple[str, str]] | None = None,
 
 
 def _added_lines(repo: Path, path: Path) -> set[int]:
-    """这次提交**新增**的行号。挡存量会让每次提交重报同一批，而那种噪音正是
-    把人训练成忽略钩子的东西。"""
-    try:
-        diff = _git(repo, "diff", "--cached", "-U0", "--", str(path))
-    except GitError:
-        return set()
-    added: set[int] = set()
-    cur = 0
-    for ln in diff.splitlines():
-        m = re.match(r"^@@ -\d+(?:,\d+)? \+(\d+)(?:,(\d+))? @@", ln)
-        if m:
-            cur = int(m.group(1))
-            continue
-        if ln.startswith("+") and not ln.startswith("+++"):
-            added.add(cur)
-            cur += 1
+    """Return added post-image lines, or raise if Git cannot establish the range."""
+    diff = _git(repo, "diff", "--cached", "--no-ext-diff", "--no-textconv",
+                "-U0", "--", str(path))
+    added = set()
+    current = None
+    for line in diff.splitlines():
+        if line.startswith("@@"):
+            match = _SCAN._HUNK.match(line)
+            if match is None:
+                raise GitError("unrecognized added-line hunk")
+            current = int(match.group(1))
+        elif current is not None and line.startswith("+"):
+            added.add(current)
+            current += 1
+        elif current is not None and line.startswith(" "):
+            current += 1
     return added
 
 
@@ -455,6 +485,12 @@ def main(argv: list[str] | None = None) -> int:
                     help="只报这次新增的行（配 --staged）")
     ap.add_argument("--repo", default=".", help="仓库根")
     a = ap.parse_args(argv)
+    if (a.fix and a.staged or a.tree and (a.staged or a.added_only)
+            or a.message and (a.fix or a.staged or a.tree or a.added_only or a.paths)):
+        print("wrap_guard: incompatible target or repair modes", file=sys.stderr)
+        return 2
+    if a.added_only:
+        a.staged = True
 
     if a.fix and a.added_only:
         print("wrap_guard: --fix 会重写整份文件，和 --added-only 放在一起等于"
@@ -466,8 +502,8 @@ def main(argv: list[str] | None = None) -> int:
     if a.message:
         p = Path(a.message)
         try:
-            text = p.read_text(encoding="utf-8", errors="replace")
-        except OSError as exc:
+            text, _ = _read_worktree(p)
+        except (OSError, UnicodeError, ValueError) as exc:
             print(f"wrap_guard: 读不了 {p}：{exc}", file=sys.stderr)
             return 2
         body = _message_body(text)
@@ -476,22 +512,25 @@ def main(argv: list[str] | None = None) -> int:
             f["line"] += body["offset"]
         return _report(found, scanned=1, skipped=0, what="commit message")
 
-    repo = Path(a.repo).resolve()
+    repo = Path(a.repo).absolute()
     try:
-        ignored = read_ignore(repo)
-    except ValueError as exc:
+        if a.staged:
+            repo = Path(_git(repo, "rev-parse", "--show-toplevel").removesuffix("\n"))
+        ignored = [] if a.paths else read_ignore(repo, staged=a.staged)
+    except (ValueError, OSError, GitError, _SCAN.GitError) as exc:
         print(f"wrap_guard: {exc}", file=sys.stderr)
         return 2
     try:
         if a.paths:
             # 显式点名的路径**不过豁免表**：点名就是意图，豁免表是给 --tree 的。
-            targets = _eligible(Path(x) for x in a.paths)
+            targets = _eligible(Path(os.path.abspath(os.path.join(a.repo, x)))
+                                if a.staged else Path(x) for x in a.paths)
             ignored = []
         elif a.staged:
             targets = _eligible(_staged(repo), ignored, repo)
         else:
             targets = _eligible(_tracked(repo), ignored, repo)
-    except GitError as exc:
+    except (GitError, _SCAN.GitError) as exc:
         # **「扫不动」和「扫干净了」必须是两个输出。**
         print(f"wrap_guard: 没能跑起来 —— {exc}", file=sys.stderr)
         return 2
@@ -508,8 +547,13 @@ def main(argv: list[str] | None = None) -> int:
     unreadable = 0
     for p in targets:
         try:
-            text = p.read_text(encoding="utf-8")
-        except (OSError, UnicodeDecodeError):
+            if a.staged:
+                rel = _SCAN._index_path(str(repo), str(p))
+                text = _SCAN._index_text(str(repo), rel)
+            else:
+                text, snapshot = _read_worktree(p)
+        except (OSError, ValueError, GitError, _SCAN.GitError) as error:
+            print(f"wrap_guard: cannot examine {p}: {type(error).__name__}", file=sys.stderr)
             unreadable += 1
             continue
         if _SELF_MARKER in text:
@@ -518,13 +562,31 @@ def main(argv: list[str] | None = None) -> int:
         if a.fix:
             new = fix_text(text)
             if new != text:
-                p.write_text(new, encoding="utf-8")
+                try:
+                    with _SCAN._open_worktree(p, "w", snapshot) as stream:
+                        if (_SCAN._worktree_snapshot(p) != snapshot or
+                                _SCAN._worktree_stamp(os.fstat(stream.fileno())) != snapshot[-1][1]):
+                            raise _SCAN._UnsafeWorktreePath("worktree target changed before repair")
+                        stream.write(new)
+                        stream.truncate()
+                except (OSError, ValueError) as error:
+                    print(f"wrap_guard: cannot repair {p}: {type(error).__name__}", file=sys.stderr)
+                    unreadable += 1
+                    continue
                 fixed += 1
             continue
         rows = check_text(text, path=p.as_posix())
         if a.added_only and a.staged:
-            keep = _added_lines(repo, p)
-            rows = [r for r in rows if r["line"] in keep]
+            try:
+                keep = _added_lines(repo, p)
+            except (GitError, _SCAN.GitError) as error:
+                print(f"wrap_guard: added lines unavailable for {p}: {error}", file=sys.stderr)
+                unreadable += 1
+                continue
+            def touches_added(row):
+                first = row["line"] - (1 if row["kind"] == "list_item" else 0)
+                return any(line in keep for line in range(first, first + row["lines"]))
+            rows = [row for row in rows if touches_added(row)]
         found.extend(rows)
 
     if a.fix:
@@ -532,7 +594,7 @@ def main(argv: list[str] | None = None) -> int:
               f"（跳过 {skipped} 份带豁免标记的，{unreadable} 份读不了）")
         # **--fix 不是闸门。** 它修好之后退 0；只有读不了的文件才退 1。
         return 1 if unreadable else 0
-    return _report(found, scanned=len(targets), skipped=skipped, what="文件")
+    return _report(found, scanned=len(targets) - unreadable, skipped=skipped, unreadable=unreadable, what="文件")
 
 
 def _message_body(text: str) -> dict:
@@ -559,7 +621,12 @@ def _message_body(text: str) -> dict:
     return {"text": "\n".join(keep), "offset": offset}
 
 
-def _report(found: list[dict], *, scanned: int, skipped: int, what: str) -> int:
+def _report(found: list[dict], *, scanned: int, skipped: int, what: str,
+            unreadable: int = 0) -> int:
+    if unreadable:
+        print(f"wrap_guard: incomplete ({scanned} file(s) examined, {unreadable} unreadable)")
+        if not found:
+            return 1
     if not found:
         # **把扫过多少、跳过多少打出来。** 一个被跳过的文件和一个干净的文件
         # 不许长得一样, 那正是「被喂了空的检查器」那个形状。

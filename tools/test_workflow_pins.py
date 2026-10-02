@@ -71,3 +71,12 @@ def test_real_workflows_pin_remote_reusable_calls():
         with open(os.path.join(WORKFLOWS, n), encoding="utf-8") as f:
             offenders += [(n,) + hit for hit in find_unpinned(f.read())]
     assert offenders == [], "remote reusable workflows not pinned to a full commit SHA: %r" % offenders
+
+
+def test_independent_baseline_gates_remain_in_style_workflow():
+    with open(os.path.join(WORKFLOWS, "style.yml"), encoding="utf-8") as source:
+        workflow = source.read()
+    for job in ("dash", "wrap", "pins", "budget-tests"):
+        assert re.search(r"^  " + re.escape(job) + r":$", workflow, re.MULTILINE), job
+    assert "uses: ./ci/wrap-guard" in workflow
+    assert "tools/test_workflow_pins.py" in workflow

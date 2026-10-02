@@ -358,6 +358,81 @@ class ScannerContracts(unittest.TestCase):
         self.assertIn("--no-ext-diff", git.call_args.args)
         self.assertIn("--no-textconv", git.call_args.args)
 
+    def test_promoted_comments_scan_index_after_worktree_removal(self):
+        self.init()
+        for name, content in CASES["comment_inputs"].items():
+            with self.subTest(name=name):
+                path = self.stage(name, content)
+                path.unlink()
+                code, out, err = self.invoke("--staged", "--block-kinds", "all", name)
+                self.assertEqual(code, 1, (out, err))
+                self.assertIn("prose en/em dash(es) found", err)
+                self.assertNotIn("incomplete", out)
+
+    def test_shell_shebang_comes_from_index_in_added_only_mode(self):
+        self.init()
+        self.stage("hook", CASES["comment_inputs"]["hook"])
+        (self.repo / "hook").write_text(CASES["clean"], encoding="utf-8")
+        code, out, err = self.invoke("--added-only", "--block-kinds", "sh")
+        self.assertEqual(code, 1, (out, err))
+        self.assertIn("hook:2:", out)
+
+    def test_extensionless_type_change_during_read_is_incomplete(self):
+        self.init()
+        path = self.stage("hook", CASES["clean"])
+        original_open = guard._open_worktree
+
+        @contextlib.contextmanager
+        def changing_open(*args):
+            with original_open(*args) as stream:
+                reader = mock.Mock(wraps=stream)
+                def read(*values):
+                    data = stream.read(*values)
+                    path.write_text(CASES["comment_inputs"]["hook"], encoding="utf-8")
+                    return data
+                reader.read.side_effect = read
+                yield reader
+
+        with mock.patch.object(guard, "_open_worktree", side_effect=changing_open):
+            code, out, err = self.invoke("--tree", "--block-kinds", "sh")
+        self.assertEqual(code, 1, (out, err))
+        self.assertIn("incomplete", out)
+        self.assertIn("could NOT be examined", err)
+
+    def test_comment_fix_does_not_read_or_repair_code(self):
+        self.init()
+        content = CASES["comment_inputs"]["sample.cmd"]
+        path = self.stage("sample.cmd", content)
+        with mock.patch.object(guard, "_open_worktree", side_effect=AssertionError("code opened")):
+            code, out, err = self.invoke("--fix", "--tree")
+        self.assertEqual(code, 0, (out, err))
+        self.assertIn("left 1 file(s)", err)
+        self.assertEqual(path.read_text(encoding="utf-8"), content)
+
+    def test_gitlinks_are_excluded_before_extensionless_content_reads(self):
+        with mock.patch.object(guard, "_git", return_value=CASES["gitlink_index_row"]):
+            links = guard._gitlinks(str(self.repo))
+        self.assertEqual(links, {"dependency"})
+        self.assertEqual(guard._eligible(["dependency", "hook"], links), ["hook"])
+
+    def test_cmd_path_and_descriptor_metadata_allow_ordinary_scan(self):
+        self.init()
+        self.stage("sample.cmd", CASES["comment_inputs"]["sample.cmd"])
+        code, out, err = self.invoke("--tree", "--block-kinds", "cmd")
+        self.assertEqual(code, 1, (out, err))
+        self.assertIn("sample.cmd:1:", out)
+        self.assertNotIn("incomplete", out)
+
+    def test_message_symlink_is_rejected_before_content_read(self):
+        path = self.repo / "message"
+        path.write_text(CASES["dash"], encoding="utf-8")
+        with mock.patch.object(guard, "_worktree_snapshot",
+                               side_effect=guard._UnsafeWorktreePath("unsafe worktree path")), \
+                mock.patch.object(guard, "_open_worktree", side_effect=AssertionError("opened")):
+            code, out, err = self.invoke("--message", path, "--block-kinds", "message")
+        self.assertEqual(code, 2, (out, err))
+        self.assertIn("SCAN FAILED", err)
+
     def test_renderer_mismatch_raises_in_existing_pytest_test(self):
         failures = getattr(legacy, "_FAILS", None)
         if failures is not None:

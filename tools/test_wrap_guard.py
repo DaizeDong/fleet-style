@@ -14,6 +14,8 @@
 """
 from __future__ import annotations
 
+import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -23,6 +25,7 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import wrap_guard as W                                            # noqa: E402
+import make_fixtures
 
 TOOL = Path(__file__).resolve().parent / "wrap_guard.py"
 
@@ -358,3 +361,143 @@ def test_fix_is_not_a_gate():
 
     src = inspect.getsource(W.main)
     assert "--fix 不是闸门" in src
+
+
+# Generated integration inputs are shared with the kit's data-boundary proof.
+_CONTRACTS = json.loads(make_fixtures.fixture_bytes())
+_WRAP = _CONTRACTS["wrap_inputs"]
+
+
+def _contract_repo(root, name="guide.md", text=None):
+    subprocess.run(["git", "-C", str(root), "init", "-q"], check=True, capture_output=True)
+    path = root / name
+    path.write_text(_WRAP["wrapped"] if text is None else text, encoding="utf-8")
+    subprocess.run(["git", "-C", str(root), "add", "--", name], check=True, capture_output=True)
+    return path
+
+
+def test_contract_undecodable_file_blocks_with_incomplete_count(tmp_path, capsys):
+    path = tmp_path / "guide.md"
+    path.write_bytes(bytes.fromhex(_CONTRACTS["invalid_utf8_hex"]))
+    assert W.main([str(path)]) == 1
+    captured = capsys.readouterr()
+    assert "incomplete" in captured.out
+    assert str(path) in captured.err
+
+
+def test_contract_explicit_missing_file_is_not_clean(tmp_path, capsys):
+    assert W.main([str(tmp_path / "missing.md")]) == 1
+    assert "incomplete" in capsys.readouterr().out
+
+
+@pytest.mark.parametrize("remove", [False, True])
+@pytest.mark.parametrize("explicit", [False, True])
+def test_contract_staged_version_survives_unstaged_change(tmp_path, remove, explicit):
+    path = _contract_repo(tmp_path)
+    if remove:
+        path.unlink()
+    else:
+        path.write_text(_WRAP["clean"], encoding="utf-8")
+    args = ["--repo", str(tmp_path), "--staged"]
+    assert W.main(args + ([str(path)] if explicit else [])) == 1
+
+
+def test_contract_staged_allowlist_cannot_use_unstaged_exemption(tmp_path):
+    _contract_repo(tmp_path)
+    (tmp_path / ".wrap-allow").write_text(_WRAP["allow"], encoding="utf-8")
+    assert W.main(["--repo", str(tmp_path), "--staged"]) == 1
+
+
+def test_contract_added_only_implies_staged_source(tmp_path):
+    path = _contract_repo(tmp_path)
+    path.write_text(_WRAP["clean"], encoding="utf-8")
+    assert W.main(["--repo", str(tmp_path), "--added-only"]) == 1
+
+
+def test_contract_added_diff_failure_propagates(tmp_path, monkeypatch):
+    def failed(*args):
+        raise W.GitError("synthetic Git failure")
+    monkeypatch.setattr(W, "_git", failed)
+    with pytest.raises(W.GitError):
+        W._added_lines(tmp_path, tmp_path / "guide.md")
+
+
+@pytest.mark.parametrize("args", [["--fix", "--staged"], ["--tree", "--staged"],
+                                  ["--tree", "--added-only"]])
+def test_contract_incompatible_modes_are_rejected(tmp_path, args):
+    _contract_repo(tmp_path)
+    assert W.main(["--repo", str(tmp_path), *args]) == 2
+
+
+def test_contract_invalid_message_encoding_is_not_replaced(tmp_path):
+    path = tmp_path / "message"
+    path.write_bytes(bytes.fromhex(_CONTRACTS["invalid_utf8_hex"]))
+    assert W.main(["--message", str(path)]) == 2
+
+
+@pytest.mark.parametrize("text", _WRAP["fences"])
+def test_contract_fence_marker_and_length_preserve_code(text):
+    assert W.check_text(text) == []
+    assert W.fix_text(text) == text
+
+
+def test_contract_hardlinked_file_is_not_scanned_or_repaired(tmp_path):
+    path = tmp_path / "guide.md"
+    outside = tmp_path / "outside.txt"
+    outside.write_text(_WRAP["wrapped"], encoding="utf-8")
+    os.link(outside, path)
+    for args in ([], ["--fix"]):
+        assert W.main([*args, str(path)]) == 1
+        assert outside.read_text(encoding="utf-8") == _WRAP["wrapped"]
+
+
+def test_contract_staged_fix_preserves_unstaged_content(tmp_path):
+    path = _contract_repo(tmp_path)
+    path.write_text(_WRAP["clean"], encoding="utf-8")
+    assert W.main(["--repo", str(tmp_path), "--staged", "--fix"]) == 2
+    assert path.read_text(encoding="utf-8") == _WRAP["clean"]
+
+
+def test_contract_added_continuation_is_detected(tmp_path, monkeypatch):
+    _contract_repo(tmp_path)
+    monkeypatch.setattr(W, "_added_lines", lambda *args: {2})
+    assert W.main(["--repo", str(tmp_path), "--added-only"]) == 1
+
+
+def test_contract_replacement_after_transform_cannot_write_external_file(tmp_path, monkeypatch):
+    path = tmp_path / "guide.md"
+    outside = tmp_path / "outside.txt"
+    path.write_text(_WRAP["wrapped"], encoding="utf-8")
+    outside.write_text(_WRAP["wrapped"], encoding="utf-8")
+    original = W.fix_text
+    def replace_target(text):
+        fixed = original(text)
+        path.unlink()
+        os.link(outside, path)
+        return fixed
+    monkeypatch.setattr(W, "fix_text", replace_target)
+    assert W.main(["--fix", str(path)]) == 1
+    assert outside.read_text(encoding="utf-8") == _WRAP["wrapped"]
+
+
+def test_contract_descriptor_redirection_cannot_truncate_external_file(tmp_path, monkeypatch):
+    path = tmp_path / "guide.md"
+    outside = tmp_path / "outside.txt"
+    path.write_text(_WRAP["wrapped"], encoding="utf-8")
+    outside.write_text(_WRAP["wrapped"], encoding="utf-8")
+    original = W._SCAN.os.open
+    observed = []
+    def redirected(filename, flags, *args, **kwargs):
+        if os.path.abspath(filename) == str(path) and flags & (os.O_WRONLY | os.O_RDWR):
+            observed.append(flags)
+            return original(outside, flags, *args, **kwargs)
+        return original(filename, flags, *args, **kwargs)
+    monkeypatch.setattr(W._SCAN.os, "open", redirected)
+    assert W.main(["--fix", str(path)]) == 1
+    assert observed and all(not flags & (os.O_TRUNC | os.O_CREAT) for flags in observed)
+    assert outside.read_text(encoding="utf-8") == _WRAP["wrapped"]
+
+
+def test_contract_plus_prefix_is_an_added_line_not_a_diff_header(tmp_path, monkeypatch):
+    monkeypatch.setattr(W, "_git", lambda *args: _CONTRACTS["wrap_added_diff"])
+    assert W._added_lines(tmp_path, tmp_path / "guide.md") == {2}
