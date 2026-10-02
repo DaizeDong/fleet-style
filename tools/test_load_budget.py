@@ -81,7 +81,7 @@ def _mkrepo(root, skill_lines=40, refs=None, layout="skills", skill_text=None, p
 
 def _run(root, *args):
     env = dict(os.environ, PYTHONIOENCODING="utf-8")
-    r = subprocess.run([sys.executable, TOOL, str(root), *args],
+    r = subprocess.run([sys.executable, "-I", "-S", "-X", "utf8", "-B", TOOL, str(root), *args],
                        capture_output=True, text=True, env=env)
     return r.returncode, (r.stdout or "") + (r.stderr or "")
 

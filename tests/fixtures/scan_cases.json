@@ -1,0 +1,17 @@
+{
+  "clean": "A synthetic guide with ordinary punctuation.\n",
+  "dash": "A synthetic guide \u2014 with an aside.\n",
+  "broken_python": "def sample(:\n    # synthetic prose \u2014 unfinished\n",
+  "invalid_utf8_hex": "fffe616263",
+  "filenames": [
+    "r\u00e9sum\u00e9.md",
+    "\u91c7\u8d2d.md",
+    "a file.md",
+    "-guide.md"
+  ],
+  "framed_paths": [
+    "new name.md",
+    "line\nbreak.md"
+  ],
+  "added_diff": "@@ -1 +1 @@\n-old line\n+new line\n@@ -8,0 +9,2 @@\n+first\n+second\n"
+}

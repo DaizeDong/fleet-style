@@ -27,7 +27,8 @@ WHAT IT DELIBERATELY DOES NOT FLAG
 EXIT CODES
     0  within budget
     1  over budget (used by hooks / CI)
-    3  NOTHING WAS MEASURED. This is a failure, not a state.
+    2  invalid command-line arguments
+    3  no complete measurement (missing targets, discovery or input failure)
 
 WHY THE ALWAYS-LOADED HALF NOW BLOCKS (it used to be incapable of failing)
     This tool measures two things and, until now, only ONE of them could ever return nonzero.
@@ -65,16 +66,24 @@ WHY "NOTHING TO MEASURE" IS A FAILURE (and used to be a quiet success)
     That is the fleet's signature defect: a gate that reassures. Both halves are fixed here. The
     root layout is now discovered (see skill_md_paths), and finding nothing to measure exits 3,
     because a tool vendored into a skill repo that locates no skill has failed to do its job, no
-    matter how calmly it says so. Exit code 2 is retired rather than redefined: a caller that
-    special-cased 2 as benign must break loudly rather than keep quietly agreeing.
+    matter how calmly it says so. The former benign exit 2 for this case is retired;
+    argparse still uses exit 2 for invalid arguments.
 """
 
 import argparse
-import glob
+import fnmatch
+import importlib.util
 import json
+import math
 import os
 import re
+import stat
 import sys
+
+_MARKDOWN_SPEC = importlib.util.spec_from_file_location(
+    "_fleet_style_markdown", os.path.join(os.path.dirname(__file__), "markdown_regions.py"))
+_MARKDOWN = importlib.util.module_from_spec(_MARKDOWN_SPEC)
+_MARKDOWN_SPEC.loader.exec_module(_MARKDOWN)
 
 # Tunables. Deliberately generous: this gate exists to catch a paragraph pasted into two files,
 # not to police wording. Raise DUP_PCT_MAX only with a reason recorded in CHANGELOG.
@@ -83,9 +92,6 @@ DUP_PCT_MAX = 2.0      # % of SKILL.md shingles that may also appear in a refere
 ALWAYS_LOADED_WARN = 450   # lines in SKILL.md; advisory, prints a note, does not block
 ALWAYS_LOADED_MAX = 600    # lines in SKILL.md; BLOCKS. See the docstring for where 450/600 come from.
 
-_FENCE = re.compile(r"```.*?```", re.S)
-_TABLE = re.compile(r"^\s*\|.*\|\s*$", re.M)
-_LINK = re.compile(r"\[([^\]]*)\]\([^)]*\)")
 _PUNCT = re.compile(r"[`*_#>]")
 
 
@@ -96,17 +102,79 @@ def shingles(text, n=SHINGLE_N):
     supposed to be repeated (a command, a slug, a column header), and counting them would make the
     gate fire on correctness rather than on duplication.
     """
-    text = _FENCE.sub(" ", text)
-    text = _TABLE.sub(" ", text)
-    text = _LINK.sub(r"\1", text)
+    text = _MARKDOWN.without_code(text, tables=True)
     text = _PUNCT.sub(" ", text)
     words = [w for w in re.split(r"\s+", text.lower()) if w and not re.fullmatch(r"[\W\d_]+", w)]
     return {" ".join(words[i:i + n]) for i in range(max(0, len(words) - n + 1))}
 
 
+class MeasurementError(RuntimeError):
+    """An input prevents a complete prose measurement."""
+
+
 def read(path):
-    with open(path, encoding="utf-8", errors="replace") as fh:
-        return fh.read()
+    try:
+        with open(path, encoding="utf-8") as fh:
+            return fh.read()
+    except UnicodeDecodeError as error:
+        raise MeasurementError(f"invalid UTF-8: {path}") from error
+
+
+def percentage(value):
+    try:
+        number = float(value)
+    except ValueError as error:
+        raise argparse.ArgumentTypeError("expected a percentage from 0 through 100") from error
+    if not math.isfinite(number) or not 0 <= number <= 100:
+        raise argparse.ArgumentTypeError("expected a finite percentage from 0 through 100")
+    return number
+
+
+def _path_info(path, *, optional=False):
+    # Keep literal '..' components until their preceding ancestors have been checked.
+    # Normalizing first could erase the very link through which a path was supplied.
+    path = os.fspath(path)
+    absolute = path if os.path.isabs(path) else os.path.join(os.getcwd(), path)
+    nodes, parent = [absolute], os.path.dirname(absolute)
+    while parent and parent != nodes[-1]:
+        nodes.append(parent)
+        parent = os.path.dirname(parent)
+    for node in reversed(nodes):
+        try:
+            info = os.lstat(node)
+        except FileNotFoundError:
+            if optional:
+                return None
+            raise
+        if stat.S_ISLNK(info.st_mode) or getattr(info, "st_file_attributes", 0) & 1024:
+            raise MeasurementError(f"linked input cannot be measured: {node}")
+    return info
+
+
+def _entries(directory):
+    """Expose traversal failures instead of silently reducing the population."""
+    with os.scandir(directory) as entries:
+        return sorted(entries, key=lambda entry: entry.name)
+
+
+def _submodule(directory):
+    marker = _path_info(os.path.join(directory, ".git"), optional=True)
+    return marker is not None and stat.S_ISREG(marker.st_mode)
+
+
+def _markdown_paths(directory):
+    """Walk visible Markdown files, pruning submodules before entering them."""
+    for entry in _entries(directory):
+        if entry.name.startswith("."):
+            continue
+        info = _path_info(entry.path)
+        if stat.S_ISDIR(info.st_mode):
+            if not _submodule(entry.path):
+                yield from _markdown_paths(entry.path)
+        elif fnmatch.fnmatch(entry.name, "*.md"):
+            if not stat.S_ISREG(info.st_mode):
+                raise MeasurementError(f"nonregular Markdown input: {entry.path}")
+            yield entry.path
 
 
 def is_template(path):
@@ -131,12 +199,30 @@ def skill_md_paths(root):
     SKILL.md at the repo ROOT instead. Knowing only the first shape is what made this tool silent on
     the second, so the two are discovered together and nothing chooses between them.
 
-    Same resolution as check_conformance.skill_md_paths(). Kept deliberately identical: two gates
-    disagreeing about which files are always loaded is how a file ends up governed by neither.
+    Missing optional layouts are allowed; unreadable layouts are failures.
     """
-    out = sorted(glob.glob(os.path.join(root, "skills", "*", "SKILL.md")))
+    root_info = _path_info(root, optional=True)
+    if root_info is None or not stat.S_ISDIR(root_info.st_mode):
+        return []
+    out = []
+    skills = os.path.join(root, "skills")
+    info = _path_info(skills, optional=True)
+    if info is not None and stat.S_ISDIR(info.st_mode):
+        for entry in _entries(skills):
+            if entry.name.startswith("."):
+                continue
+            if stat.S_ISDIR(_path_info(entry.path).st_mode) and not _submodule(entry.path):
+                candidate = os.path.join(entry.path, "SKILL.md")
+                file_info = _path_info(candidate, optional=True)
+                if file_info is not None:
+                    if not stat.S_ISREG(file_info.st_mode):
+                        raise MeasurementError(f"nonregular skill input: {candidate}")
+                    out.append(candidate)
     r = os.path.join(root, "SKILL.md")
-    if os.path.isfile(r):
+    info = _path_info(r, optional=True)
+    if info is not None:
+        if not stat.S_ISREG(info.st_mode):
+            raise MeasurementError(f"nonregular skill input: {r}")
         out.append(r)
     return out
 
@@ -169,25 +255,37 @@ def in_submodule(base, path):
     the reference walk starts above the submodules. That is why this went unnoticed until three
     such repos existed.
     """
-    rel = os.path.relpath(path, base)
-    first = rel.split(os.sep, 1)[0]
-    if first in (".", ".."):
+    base, path = os.path.abspath(base), os.path.abspath(path)
+    try:
+        inside = os.path.normcase(os.path.commonpath([base, path])) == os.path.normcase(base)
+    except ValueError:
+        inside = False
+    if not inside:
         return False
-    return os.path.isfile(os.path.join(base, first, ".git"))
+    parent = os.path.dirname(path)
+    while os.path.normcase(parent) != os.path.normcase(base):
+        if _submodule(parent):
+            return True
+        ancestor = os.path.dirname(parent)
+        if ancestor == parent:
+            break
+        parent = ancestor
+    return False
 
 
 def audit(skill_md):
-    base = os.path.dirname(skill_md)
+    base = os.path.dirname(skill_md) or os.curdir
     refs = sorted(
-        p for p in glob.glob(os.path.join(base, "**", "*.md"), recursive=True)
+        p for p in _markdown_paths(base)
         if os.path.basename(p) != "SKILL.md" and not is_template(p)
-        and not in_submodule(base, p)
     )
     s_text = read(skill_md)
     s_sh = shingles(s_text)
+    reference_text = {r: read(r) for r in refs}
+    reference_shingles = {r: shingles(text) for r, text in reference_text.items()}
     per_ref, dup = [], set()
     for r in refs:
-        common = s_sh & shingles(read(r))
+        common = s_sh & reference_shingles[r]
         if common:
             dup |= common
             per_ref.append((len(common), os.path.relpath(r, base), sorted(common, key=len, reverse=True)[:2]))
@@ -198,7 +296,7 @@ def audit(skill_md):
     # Inverted index rather than pairwise, so 200+ references stay cheap.
     owners = {}
     for r in refs:
-        for sg in shingles(read(r)):
+        for sg in reference_shingles[r]:
             owners.setdefault(sg, set()).add(os.path.relpath(r, base))
     pairs = {}
     for sg, who in owners.items():
@@ -221,7 +319,7 @@ def audit(skill_md):
         "measured": bool(s_sh),
         "dup_checked": bool(s_sh) and bool(refs),
         "ref_count": len(refs),
-        "ref_lines": sum(read(r).count("\n") + 1 for r in refs),
+        "ref_lines": sum(text.count("\n") + 1 for text in reference_text.values()),
         "offenders": per_ref[:5],
         "cross_ref": cross[:4],
     }
@@ -231,22 +329,28 @@ def main():
     ap = argparse.ArgumentParser(description="PHILOSOPHY P7 gate: always-loaded budget + cross-file prose duplication.")
     ap.add_argument("root", nargs="?", default=".", help="repo root, or a directory of repos with --scan-all")
     ap.add_argument("--scan-all", action="store_true", help="treat root as a parent dir and audit every skill repo under it")
-    ap.add_argument("--max-dup", type=float, default=DUP_PCT_MAX)
+    ap.add_argument("--max-dup", type=percentage, default=DUP_PCT_MAX,
+                    help="maximum duplicated prose percentage, from 0 through 100")
     ap.add_argument("--max-lines", type=int, default=ALWAYS_LOADED_MAX,
                     help="hard cap on always-loaded SKILL.md lines; over this BLOCKS (exit 1). "
                          "This is the half that used to be incapable of failing.")
     ap.add_argument("--json", action="store_true")
     args = ap.parse_args()
 
-    if args.scan_all:
-        targets = []
-        kids = sorted(os.listdir(args.root)) if os.path.isdir(args.root) else []
-        for entry in kids:
-            child = os.path.join(args.root, entry)
-            if os.path.isdir(child):
-                targets += skill_md_paths(child)
-    else:
-        targets = skill_md_paths(args.root)
+    try:
+        if args.scan_all:
+            targets = []
+            info = _path_info(args.root, optional=True)
+            kids = _entries(args.root) if info is not None and stat.S_ISDIR(info.st_mode) else []
+            for entry in kids:
+                if stat.S_ISDIR(_path_info(entry.path).st_mode):
+                    targets += skill_md_paths(entry.path)
+        else:
+            targets = skill_md_paths(args.root)
+        results = [audit(t) for t in targets]
+    except (OSError, MeasurementError) as error:
+        print(f"load_budget: FAIL, incomplete measurement: {error}", file=sys.stderr)
+        return 3
     if not targets:
         # Say what was looked for, where, and that the run FAILED. The old wording ("nothing to
         # measure") described the tool's state; what the operator needs is the consequence.
@@ -263,7 +367,6 @@ def main():
             print("  from it rather than letting an inert gate report a result.")
         return 3
 
-    results = [audit(t) for t in targets]
     if args.json:
         print(json.dumps(results, indent=1, ensure_ascii=False))
 
