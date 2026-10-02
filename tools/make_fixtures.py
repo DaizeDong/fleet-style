@@ -10,6 +10,26 @@ ROOT = Path(__file__).resolve().parents[1]
 FIXTURE = Path("tests/fixtures/scan_cases.json")
 
 
+def physical_line_cases():
+    """Build code whose literal separators must not become Markdown line breaks."""
+    cases = []
+    for newline in ("\n", "\r\n", "\r"):
+        for separator in ("\v", "\f", "\x1c", "\x1d", "\x1e", "\x85", "\u2028", "\u2029"):
+            for marker in ("```", "~~~"):
+                for placement in ("before", "after"):
+                    embedded = ("literal" + separator + marker if placement == "before"
+                                else marker + separator)
+                    code = newline.join((marker + "text", embedded,
+                                         "first synthetic vector branch \u2014 literal",
+                                         "second buffer return signal output token", marker, "", ""))
+                    cases.append({"name": f"physical fence {newline!r} {separator!r} {marker} {placement}",
+                                  "code": code, "input": code + "Outside \u2014 prose.\n",
+                                  "expected": code + "Outside, prose.\n",
+                                  "wrap_input": code + "Outside paragraph\ncontinues here.\n",
+                                  "wrap_expected": code + "Outside paragraph continues here.\n"})
+    return cases
+
+
 def fixture_bytes():
     """Return exact UTF-8 bytes; no runtime or personal data is read."""
     cases = {
@@ -67,6 +87,18 @@ def fixture_bytes():
                            "input": protected + "Synthetic prose" + newline + "continues." + newline,
                            "expected": protected + "Synthetic prose continues." + newline})
     cases["wrap_inputs"]["repair_cases"] = repair
+    repair.extend({"name": case["name"], "input": case["wrap_input"],
+                   "expected": case["wrap_expected"]} for case in physical_line_cases())
+    scissors = "# ------------------------ >8 ------------------------\n"
+    tail = "Discarded synthetic first line\ndiscarded second line.\n"
+    cases["wrap_inputs"]["message_cases"] = [
+        {"name": "only discarded tail wraps", "input": "Synthetic subject\n\nClean body.\n" + scissors + tail,
+         "exit_code": 0, "line": None},
+        {"name": "visible body wraps", "input": "Synthetic subject\n\nFirst body line\nsecond body line.\n" + scissors + tail,
+         "exit_code": 1, "line": 3},
+        {"name": "comment lines preserve coordinates", "input": "Synthetic subject\n\n# Synthetic comment\n# Another comment\nFirst body line\nsecond body line.\n" + scissors + tail,
+         "exit_code": 1, "line": 5},
+    ]
     return (json.dumps(cases, ensure_ascii=True, indent=2) + "\n").encode("utf-8")
 
 
@@ -97,6 +129,7 @@ def markdown_fixture_bytes():
         "prose_a": "alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu\n",
         "prose_b": "orange violet amber green copper silver purple indigo yellow black white teal\n",
         "marker": "gitdir: synthetic\n",
+        "physical_lines": physical_line_cases(),
     }
     return (json.dumps(cases, ensure_ascii=True, indent=2) + "\n").encode("utf-8")
 

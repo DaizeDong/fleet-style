@@ -43,6 +43,11 @@ _AUTOLINK = re.compile(
     r"(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?)*)>")
 
 
+def source_lines(text):
+    """Split only Markdown line endings (LF, CRLF, CR), retaining their bytes."""
+    return re.findall(r"[^\r\n]*(?:\r\n|\r|\n|$)", text)[:-1]
+
+
 def escaped(text, position):
     """Whether an odd run of backslashes precedes a punctuation character."""
     start = position
@@ -284,7 +289,7 @@ def _blocks(text, definitions=None):
     table = False
     html = None
     offset = 0
-    lines = text.splitlines(keepends=True)
+    lines = source_lines(text)
     reference_until = 0
     for index, line in enumerate(lines):
         end = offset + len(line)
@@ -299,7 +304,7 @@ def _blocks(text, definitions=None):
                 match = _FENCE.match(content)
                 if match:
                     marker, tail = match.groups()
-                    if marker[0] == fence[1] and len(marker) >= fence[2] and not tail.strip():
+                    if marker[0] == fence[1] and len(marker) >= fence[2] and not tail.strip(" \t"):
                         yield "code", fence[0], end
                         fence = None
                 offset = end

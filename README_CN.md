@@ -91,6 +91,8 @@ pytest style/tools/
 | `ci/wrap-guard` | 装 pytest，验证生成的测试数据，跑 wrap、共享文件读写和 Markdown 合同测试，然后扫调用方仓库的树。 |
 | `ci/load-budget` | 装 pytest，`tools/test_load_budget.py` 不在就失败，跑它，然后测量调用方仓库。 |
 
+共享 Markdown 解析器只把 LF、CRLF 和 CR 当作换行；代码行中的 Unicode 分隔符不会打开或关闭围栏。Commit message 检查在 Git scissors 标记处停止，移除注释后仍按原始文件行号报告正文问题。
+
 ## 怎么跑起来的
 
 闸门跑在 CI 上，针对调用方那个仓，别处都不跑。它们只扫当前树，从不查历史：老 commit 里的一个破折号无害，不值得为它重写一段历史，这也是这套 kit 与安全那套最尖锐的区别。

@@ -143,7 +143,7 @@ def _explicit_break(line: str) -> bool:
 
 def _source_lines(text: str) -> list[str]:
     """Keep physical line endings; Unicode separators remain literal content."""
-    return re.findall(r"[^\r\n]*(?:\r\n|\r|\n|$)", text)[:-1]
+    return _SCAN._MARKDOWN.source_lines(text)
 
 _CJK_RANGES = (
     (0x2E80, 0x9FFF), (0xF900, 0xFAFF), (0xFE30, 0xFE4F),
@@ -482,7 +482,7 @@ def main(argv: list[str] | None = None) -> int:
         body = _message_body(text)
         found = check_text(body["text"], path=str(p), kind="message")
         for f in found:
-            f["line"] += body["offset"]
+            f["line"] = body["line_numbers"][f["line"] - 1]
         return _report(found, scanned=1, skipped=0, what="commit message")
 
     repo = Path(a.repo).absolute()
@@ -577,15 +577,16 @@ def main(argv: list[str] | None = None) -> int:
 
 
 def _message_body(text: str) -> dict:
-    """commit message 去掉标题行和注释行之后的正文，以及它在原文里的行偏移。
-
-    标题行本来就该是一行，不参与段落规则；`#` 开头的是 git 自己加的说明。
-    """
-    lines = text.splitlines()
+    """Drop the subject, comments and scissors tail while retaining source coordinates."""
+    lines = _source_lines(text)
     keep: list[str] = []
+    line_numbers: list[int] = []
     offset = 0
     started = False
-    for i, ln in enumerate(lines):
+    for i, raw in enumerate(lines):
+        ln = raw.rstrip("\r\n")
+        if _SCAN._SCISSORS.match(ln):
+            break
         if ln.startswith("#"):
             if not started:
                 offset = i + 1
@@ -597,7 +598,8 @@ def _message_body(text: str) -> dict:
             started = True
             offset = i
         keep.append(ln)
-    return {"text": "\n".join(keep), "offset": offset}
+        line_numbers.append(i + 1)
+    return {"text": "\n".join(keep), "offset": offset, "line_numbers": line_numbers}
 
 
 def _report(found: list[dict], *, scanned: int, skipped: int, what: str,
