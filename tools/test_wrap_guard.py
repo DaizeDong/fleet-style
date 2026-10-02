@@ -369,11 +369,18 @@ _WRAP = _CONTRACTS["wrap_inputs"]
 
 
 def _contract_repo(root, name="guide.md", text=None):
-    subprocess.run(["git", "-C", str(root), "init", "-q"], check=True, capture_output=True)
+    _contract_git(root, "init", "-q")
     path = root / name
     path.write_text(_WRAP["wrapped"] if text is None else text, encoding="utf-8")
-    subprocess.run(["git", "-C", str(root), "add", "--", name], check=True, capture_output=True)
+    _contract_git(root, "add", "--", name)
     return path
+
+
+def _contract_git(root, *args):
+    environment = {key: value for key, value in os.environ.items()
+                   if not key.upper().startswith("GIT_")}
+    return subprocess.run(["git", "-C", str(root), *args], check=True,
+                          capture_output=True, env=environment)
 
 
 def test_contract_undecodable_file_blocks_with_incomplete_count(tmp_path, capsys):
@@ -501,3 +508,55 @@ def test_contract_descriptor_redirection_cannot_truncate_external_file(tmp_path,
 def test_contract_plus_prefix_is_an_added_line_not_a_diff_header(tmp_path, monkeypatch):
     monkeypatch.setattr(W, "_git", lambda *args: _CONTRACTS["wrap_added_diff"])
     assert W._added_lines(tmp_path, tmp_path / "guide.md") == {2}
+
+
+@pytest.mark.parametrize("attributes", _WRAP["attributes"])
+def test_contract_native_binary_attributes_cannot_hide_added_prose(tmp_path, monkeypatch, attributes):
+    for name in tuple(os.environ):
+        if name.upper().startswith("GIT_"):
+            monkeypatch.delenv(name)
+    (tmp_path / ".gitattributes").write_text(attributes, encoding="utf-8")
+    _contract_repo(tmp_path)
+    native = _contract_git(tmp_path, "diff", "--cached", "--no-ext-diff", "--no-textconv").stdout
+    assert b"Binary files" in native, native
+    assert W.main(["--repo", str(tmp_path), "--staged"]) == 1
+    assert W.main(["--repo", str(tmp_path), "--added-only"]) == 1
+
+
+@pytest.mark.parametrize("key", ["wrap_binary_diff", "wrap_incomplete_diff"])
+def test_contract_binary_diff_without_ranges_is_not_empty_change(tmp_path, monkeypatch, key):
+    monkeypatch.setattr(W, "_git", lambda *args: _CONTRACTS[key])
+    with pytest.raises(W.GitError):
+        W._added_lines(tmp_path, tmp_path / "guide.md")
+
+
+@pytest.mark.parametrize("diff", ["", _CONTRACTS["wrap_mode_diff"]])
+def test_contract_no_content_changes_have_no_added_lines(tmp_path, monkeypatch, diff):
+    monkeypatch.setattr(W, "_git", lambda *args: diff)
+    assert W._added_lines(tmp_path, tmp_path / "guide.md") == set()
+
+
+@pytest.mark.parametrize("case", _WRAP["repair_cases"], ids=lambda case: case["name"])
+def test_contract_repairs_preserve_literal_bytes_and_intent(case):
+    fixed = W.fix_text(case["input"])
+    assert fixed == case["expected"]
+    assert W.check_text(fixed) == []
+    assert W.fix_text(fixed) == fixed
+
+
+@pytest.mark.parametrize("case", _WRAP["repair_cases"], ids=lambda case: case["name"])
+def test_contract_native_repairs_preserve_literal_bytes(tmp_path, case):
+    path = tmp_path / "guide.md"
+    path.write_bytes(case["input"].encode("utf-8"))
+    assert W.main(["--fix", str(path)]) == 0
+    assert path.read_bytes() == case["expected"].encode("utf-8")
+
+
+@pytest.mark.parametrize("case", [case for case in _WRAP["repair_cases"]
+                                  if case["name"].startswith("literal bytes")],
+                         ids=lambda case: case["name"])
+def test_contract_added_only_maps_markdown_lines_to_git_lines(tmp_path, case):
+    path = _contract_repo(tmp_path, name="[guide].md")
+    path.write_bytes(case["input"].encode("utf-8"))
+    _contract_git(tmp_path, "-c", "core.autocrlf=false", "add", "--", path.name)
+    assert W.main(["--repo", str(tmp_path), "--added-only"]) == 1

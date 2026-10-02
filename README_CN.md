@@ -82,7 +82,7 @@ pytest style/tools/
 | 闸门 | 它断言什么 | 退出码 |
 | --- | --- | --- |
 | `tools/dash_guard.py` | 公开 prose 不含 en dash、em dash、horizontal bar。Markdown 围栏与行内 code 豁免，带 `dash-guard: allow` 标记的行豁免，扫描器源文件按固定路径或标记识别。Markdown、纯文本和 Python 注释默认阻断。JS、YAML、shell、PowerShell 和 cmd 的注释，以及 commit message（`--message`），默认报告，可用 `--block-kinds` 设为阻断。扫描不完整时始终阻断。暂存模式读取 Git index，修复模式验证文件与目录身份后才写入。 | 0 干净，1 有发现或扫描不完整，2 扫描跑不起来 |
-| `tools/wrap_guard.py` | 正文段落里不许有硬折行：一段写成一整行，段落之间用空行分隔。围栏、表格、引用、标题、徽章行和 git trailer 豁免，带豁免标记的段落或文件按声明跳过。暂存模式从 Git index 读取文本和 `.wrap-allow`，`--added-only` 也使用暂存内容。代码围栏按相同标记、长度和容器边界识别。`--fix` 把行接回去，中日韩之间直接粘、其余补一个半角空格；链接或读写期间变化的文件会被拒绝，不能与暂存模式同时使用。 | 0 干净，1 有发现或扫描不完整，2 扫描跑不起来 |
+| `tools/wrap_guard.py` | 正文段落里不许有硬折行：一段写成一整行，段落之间用空行分隔。围栏、HTML 块、表格、引用、标题、徽章行、git trailer 和显式 Markdown 换行保留，带豁免标记的段落、列表项或文件按声明跳过。暂存模式从 Git index 读取文本和 `.wrap-allow`；`--added-only` 强制获取文本差异，即使 attributes 把 Markdown 标成 binary 也能检查，无法获取行范围则阻断。`--fix` 只拼接报出的段落或续行，保留其余字节及换行格式；中日韩之间直接粘、其余补一个半角空格。链接或读写期间变化的文件会被拒绝，不能与暂存模式同时使用。 | 0 干净，1 有发现或扫描不完整，2 扫描跑不起来 |
 | `tools/load_budget.py` | 一个 skill 的常驻加载行数不超预算，且 `SKILL.md` 里的正文不是 reference 里正文的第二份副本。重复用 word shingle 检测，所以一条规则的措辞出现在展开它的那份 reference 里并不会触发。 | 0 在预算内，1 超预算，3 什么都没测到 |
 
 | CI action | 接线方式 |
