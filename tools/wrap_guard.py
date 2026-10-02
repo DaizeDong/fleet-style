@@ -133,8 +133,17 @@ def _only_links(ln: str) -> bool:
     return not any(ch.isalnum() or _is_cjk(ch) for ch in cur)
 
 
-# 一行末尾两个空格在 Markdown 里是一个**显式的 <br>**。那是意图，不是意外。
+# Two trailing spaces or an unescaped trailing backslash request a hard break.
 _EXPLICIT_BR = re.compile(r"\S {2,}$")
+
+
+def _explicit_break(line: str) -> bool:
+    return bool(_EXPLICIT_BR.search(line) or _SCAN._MARKDOWN.escaped(line, len(line)))
+
+
+def _source_lines(text: str) -> list[str]:
+    """Keep physical line endings; Unicode separators remain literal content."""
+    return re.findall(r"[^\r\n]*(?:\r\n|\r|\n|$)", text)[:-1]
 
 _CJK_RANGES = (
     (0x2E80, 0x9FFF), (0xF900, 0xFAFF), (0xFE30, 0xFE4F),
@@ -172,12 +181,12 @@ class _Block:
 
 
 def _protected_lines(text: str) -> set[int]:
-    """Share the Markdown parser's marker, length and container rules for block code."""
-    regions = iter(_SCAN._MARKDOWN.fenced_regions(text))
+    """Preserve code and HTML using the shared parser's original block offsets."""
+    regions = iter(_SCAN._MARKDOWN.code_and_html_regions(text))
     current = next(regions, None)
     protected = set()
     offset = 0
-    for number, line in enumerate(text.splitlines(keepends=True), 1):
+    for number, line in enumerate(_source_lines(text), 1):
         while current and offset >= current[1]:
             current = next(regions, None)
         if current and current[0] < offset + len(line):
@@ -187,16 +196,13 @@ def _protected_lines(text: str) -> set[int]:
 
 
 def _blocks(text: str) -> list[_Block]:
-    """按空行切块，**围栏代码块整块跳过**。
-
-    围栏用一个布尔切换而不是配对匹配：一份文档里有奇数个围栏是真实存在的情况（写坏了），
-    这时候后半份文档整个被当成代码 —— 那是**保守**的一侧，宁可漏报也不要对着代码乱报。
-    """
+    """Group nonblank prose lines, excluding the shared parser's literal blocks."""
     out: list[_Block] = []
     buf: list[str] = []
     start = 0
     protected = _protected_lines(text)
-    for i, ln in enumerate(text.splitlines(), 1):
+    for i, raw in enumerate(_source_lines(text), 1):
+        ln = raw.rstrip("\r\n")
         if i in protected:
             if buf:
                 out.append(_Block(start, buf))
@@ -232,7 +238,7 @@ def check_text(text: str, path: str = "<text>", kind: str = "md") -> list[dict]:
     if _SELF_MARKER in text:
         return []
     found: list[dict] = []
-    lines = text.splitlines()
+    lines = _source_lines(text)
     allowed: set[int] = set()
     for i, ln in enumerate(lines, 1):
         if _PARA_ALLOW in ln and _SELF_MARKER not in ln:
@@ -256,7 +262,7 @@ def check_text(text: str, path: str = "<text>", kind: str = "md") -> list[dict]:
             continue
         if len(blk.lines) < 2:
             continue
-        if any(_EXPLICIT_BR.search(ln) for ln in blk.lines[:-1]):
+        if any(_explicit_break(ln) for ln in blk.lines[:-1]):
             continue                    # 行尾双空格 = 显式换行，是意图
         found.append({
             "path": path, "line": blk.start, "kind": "paragraph",
@@ -279,7 +285,7 @@ def _list_continuations(blk: _Block, found: list[dict], path: str,
             continue
         if _LIST.match(ln) or not _is_prose_line(ln, kind):
             continue
-        if _EXPLICIT_BR.search(prev):
+        if _explicit_break(prev):
             continue
         found.append({
             "path": path, "line": blk.start + off, "kind": "list_item",
@@ -289,62 +295,22 @@ def _list_continuations(blk: _Block, found: list[dict], path: str,
 
 
 def fix_text(text: str) -> str:
-    """把被折断的段落接回去。**只动本闸门会报的那些块**，别的一个字节不碰。"""
-    if _SELF_MARKER in text:
-        return text
-    lines = text.splitlines()
-    keep_eol = text.endswith("\n")
-    out: list[str] = []
-    buf: list[str] = []
-    start = 0
-    protected = _protected_lines(text)
-    allowed: set[int] = set()
-    for i, ln in enumerate(lines, 1):
-        if _PARA_ALLOW in ln:
-            allowed.add(i + 1)
-
-    def flush() -> None:
-        if not buf:
-            return
-        if start in allowed or not all(_is_prose_line(x) for x in buf):
-            out.extend(_fix_list_only(buf))
-        elif _LIST.match(buf[0]) or any(_LIST.match(x) for x in buf[1:]):
-            out.extend(_fix_list_only(buf))
-        elif len(buf) > 1 and not any(_EXPLICIT_BR.search(x) for x in buf[:-1]):
-            joined = buf[0].rstrip()
-            for nxt in buf[1:]:
-                joined = join_lines(joined, nxt)
-            out.append(joined)
-        else:
-            out.extend(buf)
-        buf.clear()
-
-    for i, ln in enumerate(lines, 1):
-        if i in protected:
-            flush()
-            out.append(ln)
-            continue
-        if not ln.strip():
-            flush()
-            out.append(ln)
-            continue
-        if not buf:
-            start = i
-        buf.append(ln)
-    flush()
-    return "\n".join(out) + ("\n" if keep_eol else "")
-
-
-def _fix_list_only(buf: list[str]) -> list[str]:
-    """块里混着别的东西时，只把列表项的续行接回去。"""
-    out: list[str] = []
-    for ln in buf:
-        if (out and _LIST.match(out[-1]) and not _LIST.match(ln)
-                and _is_prose_line(ln) and not _EXPLICIT_BR.search(out[-1])):
-            out[-1] = join_lines(out[-1], ln)
-        else:
-            out.append(ln)
-    return out
+    """Join reported spans only; preserve every byte outside those spans."""
+    while rows := check_text(text):
+        lines = _source_lines(text)
+        # Work backwards so replacing a span preserves earlier source positions.
+        for row in reversed(rows):
+            start = row["line"] - (2 if row["kind"] == "list_item" else 1)
+            end = start + row["lines"]
+            body = [line.rstrip("\r\n") for line in lines[start:end]]
+            ending = lines[end - 1][len(body[-1]):]
+            joined = body[0]
+            for continuation in body[1:]:
+                joined = join_lines(joined, continuation)
+            lines[start:end] = [joined + ending]
+        text = "".join(lines)
+        # A list may expose another continuation after its first pair is joined.
+    return text
 
 
 # --------------------------------------------------------------------------
@@ -379,8 +345,8 @@ def _read_worktree(path: Path):
     snapshot = _SCAN._worktree_snapshot(path)
     if snapshot is None:
         raise FileNotFoundError(path)
-    with _SCAN._open_worktree(path, "r", snapshot) as stream:
-        text = stream.read()
+    with _SCAN._open_worktree(path, "rb", snapshot) as stream:
+        text = stream.read().decode("utf-8")
         if (_SCAN._worktree_snapshot(path) != snapshot or
                 _SCAN._worktree_stamp(os.fstat(stream.fileno())) != snapshot[-1][1]):
             raise _SCAN._UnsafeWorktreePath("worktree target changed during read")
@@ -451,11 +417,16 @@ def _eligible(paths, ignore: list[tuple[str, str]] | None = None,
 
 def _added_lines(repo: Path, path: Path) -> set[int]:
     """Return added post-image lines, or raise if Git cannot establish the range."""
-    diff = _git(repo, "diff", "--cached", "--no-ext-diff", "--no-textconv",
-                "-U0", "--", str(path))
+    diff = _git(repo, "--literal-pathspecs", "diff", "--cached", "--no-ext-diff",
+                "--no-textconv", "--no-color", "--text", "-U0", "--", str(path))
     added = set()
     current = None
-    for line in diff.splitlines():
+    content_headers = False
+    for line in diff.split("\n"):
+        if line.startswith(("Binary files ", "GIT binary patch")):
+            raise GitError("Git did not provide textual added-line ranges")
+        if current is None and line.startswith(("--- ", "+++ ")):
+            content_headers = True
         if line.startswith("@@"):
             match = _SCAN._HUNK.match(line)
             if match is None:
@@ -466,6 +437,8 @@ def _added_lines(repo: Path, path: Path) -> set[int]:
             current += 1
         elif current is not None and line.startswith(" "):
             current += 1
+    if content_headers and current is None:
+        raise GitError("Git content headers have no added-line hunk")
     return added
 
 
@@ -563,11 +536,11 @@ def main(argv: list[str] | None = None) -> int:
             new = fix_text(text)
             if new != text:
                 try:
-                    with _SCAN._open_worktree(p, "w", snapshot) as stream:
+                    with _SCAN._open_worktree(p, "wb", snapshot) as stream:
                         if (_SCAN._worktree_snapshot(p) != snapshot or
                                 _SCAN._worktree_stamp(os.fstat(stream.fileno())) != snapshot[-1][1]):
                             raise _SCAN._UnsafeWorktreePath("worktree target changed before repair")
-                        stream.write(new)
+                        stream.write(new.encode("utf-8"))
                         stream.truncate()
                 except (OSError, ValueError) as error:
                     print(f"wrap_guard: cannot repair {p}: {type(error).__name__}", file=sys.stderr)
@@ -583,9 +556,15 @@ def main(argv: list[str] | None = None) -> int:
                 print(f"wrap_guard: added lines unavailable for {p}: {error}", file=sys.stderr)
                 unreadable += 1
                 continue
+            git_lines = []
+            git_line = 1
+            for raw_line in _source_lines(text):
+                git_lines.append(git_line)
+                git_line += raw_line.count("\n")
             def touches_added(row):
                 first = row["line"] - (1 if row["kind"] == "list_item" else 0)
-                return any(line in keep for line in range(first, first + row["lines"]))
+                return any(git_lines[line - 1] in keep
+                           for line in range(first, first + row["lines"]))
             rows = [row for row in rows if touches_added(row)]
         found.extend(rows)
 

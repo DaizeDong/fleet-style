@@ -27,10 +27,14 @@ def fixture_bytes():
         },
         "gitlink_index_row": "160000 " + "0" * 40 + " 0\tdependency\0",
         "wrap_added_diff": "@@ -1,0 +2,1 @@\n+++ synthetic continuation\n",
+        "wrap_binary_diff": "diff --git a/guide.md b/guide.md\nindex 1111111..2222222 100644\nBinary files a/guide.md and b/guide.md differ\n",
+        "wrap_incomplete_diff": "diff --git a/guide.md b/guide.md\n--- a/guide.md\n+++ b/guide.md\n",
+        "wrap_mode_diff": "diff --git a/guide.md b/guide.md\nold mode 100644\nnew mode 100755\n",
         "wrap_inputs": {
             "wrapped": "Synthetic paragraph begins here\nand continues here.\n",
             "clean": "Synthetic paragraph stays on one line.\n",
             "allow": "guide.md # Synthetic archived-document exemption\n",
+            "attributes": ["*.md -diff\n", "*.md binary\n"],
             "message": "Synthetic subject\n\nSynthetic paragraph begins here\nand continues here.\n",
             "fences": [
                 "````markdown\n```\nalpha\nbeta\n```\n````\n",
@@ -42,6 +46,27 @@ def fixture_bytes():
         "framed_paths": ["new name.md", "line\nbreak.md"],
         "added_diff": "@@ -1 +1 @@\n-old line\n+new line\n@@ -8,0 +9,2 @@\n+first\n+second\n",
     }
+    repair = []
+    for count in (1, 2, 3):
+        for prefix in ("", "- "):
+            first = prefix + "Synthetic first line" + "\\" * count
+            text = first + "\ncontinued here.\n"
+            repair.append({"name": f"backslash break {count} {bool(prefix)}", "input": text,
+                           "expected": text if count % 2 else first + " continued here.\n"})
+    for opening, closing in (("<pre>", "</pre>"), ("<PRE class='synthetic'>", "</PRE>"),
+                             ("<textarea>", "</textarea>")):
+        protected = opening + "\n\nSynthetic first line\nsecond line\n\n" + closing + "\n\n"
+        repair.append({"name": opening, "input": protected + cases["wrap_inputs"]["wrapped"],
+                       "expected": protected + "Synthetic paragraph begins here and continues here.\n"})
+    allowed = "<!-- wrap-guard:allow -->\n- Synthetic list item\ncontinued here.\n"
+    repair.append({"name": "allowed list", "input": allowed, "expected": allowed})
+    for newline in ("\n", "\r\n", "\r"):
+        for separator in ("\u2028", "\u0085", "\x0b"):
+            protected = newline.join(("```text", "Synthetic" + separator + "literal", "```", "", ""))
+            repair.append({"name": f"literal bytes {newline!r} {separator!r}",
+                           "input": protected + "Synthetic prose" + newline + "continues." + newline,
+                           "expected": protected + "Synthetic prose continues." + newline})
+    cases["wrap_inputs"]["repair_cases"] = repair
     return (json.dumps(cases, ensure_ascii=True, indent=2) + "\n").encode("utf-8")
 
 

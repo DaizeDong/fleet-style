@@ -13,15 +13,119 @@
   },
   "gitlink_index_row": "160000 0000000000000000000000000000000000000000 0\tdependency\u0000",
   "wrap_added_diff": "@@ -1,0 +2,1 @@\n+++ synthetic continuation\n",
+  "wrap_binary_diff": "diff --git a/guide.md b/guide.md\nindex 1111111..2222222 100644\nBinary files a/guide.md and b/guide.md differ\n",
+  "wrap_incomplete_diff": "diff --git a/guide.md b/guide.md\n--- a/guide.md\n+++ b/guide.md\n",
+  "wrap_mode_diff": "diff --git a/guide.md b/guide.md\nold mode 100644\nnew mode 100755\n",
   "wrap_inputs": {
     "wrapped": "Synthetic paragraph begins here\nand continues here.\n",
     "clean": "Synthetic paragraph stays on one line.\n",
     "allow": "guide.md # Synthetic archived-document exemption\n",
+    "attributes": [
+      "*.md -diff\n",
+      "*.md binary\n"
+    ],
     "message": "Synthetic subject\n\nSynthetic paragraph begins here\nand continues here.\n",
     "fences": [
       "````markdown\n```\nalpha\nbeta\n```\n````\n",
       "```text\n~~~\nalpha\nbeta\n~~~\n```\n",
       "> ````markdown\n> ```\n> alpha\n> beta\n> ```\n> ````\n"
+    ],
+    "repair_cases": [
+      {
+        "name": "backslash break 1 False",
+        "input": "Synthetic first line\\\ncontinued here.\n",
+        "expected": "Synthetic first line\\\ncontinued here.\n"
+      },
+      {
+        "name": "backslash break 1 True",
+        "input": "- Synthetic first line\\\ncontinued here.\n",
+        "expected": "- Synthetic first line\\\ncontinued here.\n"
+      },
+      {
+        "name": "backslash break 2 False",
+        "input": "Synthetic first line\\\\\ncontinued here.\n",
+        "expected": "Synthetic first line\\\\ continued here.\n"
+      },
+      {
+        "name": "backslash break 2 True",
+        "input": "- Synthetic first line\\\\\ncontinued here.\n",
+        "expected": "- Synthetic first line\\\\ continued here.\n"
+      },
+      {
+        "name": "backslash break 3 False",
+        "input": "Synthetic first line\\\\\\\ncontinued here.\n",
+        "expected": "Synthetic first line\\\\\\\ncontinued here.\n"
+      },
+      {
+        "name": "backslash break 3 True",
+        "input": "- Synthetic first line\\\\\\\ncontinued here.\n",
+        "expected": "- Synthetic first line\\\\\\\ncontinued here.\n"
+      },
+      {
+        "name": "<pre>",
+        "input": "<pre>\n\nSynthetic first line\nsecond line\n\n</pre>\n\nSynthetic paragraph begins here\nand continues here.\n",
+        "expected": "<pre>\n\nSynthetic first line\nsecond line\n\n</pre>\n\nSynthetic paragraph begins here and continues here.\n"
+      },
+      {
+        "name": "<PRE class='synthetic'>",
+        "input": "<PRE class='synthetic'>\n\nSynthetic first line\nsecond line\n\n</PRE>\n\nSynthetic paragraph begins here\nand continues here.\n",
+        "expected": "<PRE class='synthetic'>\n\nSynthetic first line\nsecond line\n\n</PRE>\n\nSynthetic paragraph begins here and continues here.\n"
+      },
+      {
+        "name": "<textarea>",
+        "input": "<textarea>\n\nSynthetic first line\nsecond line\n\n</textarea>\n\nSynthetic paragraph begins here\nand continues here.\n",
+        "expected": "<textarea>\n\nSynthetic first line\nsecond line\n\n</textarea>\n\nSynthetic paragraph begins here and continues here.\n"
+      },
+      {
+        "name": "allowed list",
+        "input": "<!-- wrap-guard:allow -->\n- Synthetic list item\ncontinued here.\n",
+        "expected": "<!-- wrap-guard:allow -->\n- Synthetic list item\ncontinued here.\n"
+      },
+      {
+        "name": "literal bytes '\\n' '\\u2028'",
+        "input": "```text\nSynthetic\u2028literal\n```\n\nSynthetic prose\ncontinues.\n",
+        "expected": "```text\nSynthetic\u2028literal\n```\n\nSynthetic prose continues.\n"
+      },
+      {
+        "name": "literal bytes '\\n' '\\x85'",
+        "input": "```text\nSynthetic\u0085literal\n```\n\nSynthetic prose\ncontinues.\n",
+        "expected": "```text\nSynthetic\u0085literal\n```\n\nSynthetic prose continues.\n"
+      },
+      {
+        "name": "literal bytes '\\n' '\\x0b'",
+        "input": "```text\nSynthetic\u000bliteral\n```\n\nSynthetic prose\ncontinues.\n",
+        "expected": "```text\nSynthetic\u000bliteral\n```\n\nSynthetic prose continues.\n"
+      },
+      {
+        "name": "literal bytes '\\r\\n' '\\u2028'",
+        "input": "```text\r\nSynthetic\u2028literal\r\n```\r\n\r\nSynthetic prose\r\ncontinues.\r\n",
+        "expected": "```text\r\nSynthetic\u2028literal\r\n```\r\n\r\nSynthetic prose continues.\r\n"
+      },
+      {
+        "name": "literal bytes '\\r\\n' '\\x85'",
+        "input": "```text\r\nSynthetic\u0085literal\r\n```\r\n\r\nSynthetic prose\r\ncontinues.\r\n",
+        "expected": "```text\r\nSynthetic\u0085literal\r\n```\r\n\r\nSynthetic prose continues.\r\n"
+      },
+      {
+        "name": "literal bytes '\\r\\n' '\\x0b'",
+        "input": "```text\r\nSynthetic\u000bliteral\r\n```\r\n\r\nSynthetic prose\r\ncontinues.\r\n",
+        "expected": "```text\r\nSynthetic\u000bliteral\r\n```\r\n\r\nSynthetic prose continues.\r\n"
+      },
+      {
+        "name": "literal bytes '\\r' '\\u2028'",
+        "input": "```text\rSynthetic\u2028literal\r```\r\rSynthetic prose\rcontinues.\r",
+        "expected": "```text\rSynthetic\u2028literal\r```\r\rSynthetic prose continues.\r"
+      },
+      {
+        "name": "literal bytes '\\r' '\\x85'",
+        "input": "```text\rSynthetic\u0085literal\r```\r\rSynthetic prose\rcontinues.\r",
+        "expected": "```text\rSynthetic\u0085literal\r```\r\rSynthetic prose continues.\r"
+      },
+      {
+        "name": "literal bytes '\\r' '\\x0b'",
+        "input": "```text\rSynthetic\u000bliteral\r```\r\rSynthetic prose\rcontinues.\r",
+        "expected": "```text\rSynthetic\u000bliteral\r```\r\rSynthetic prose continues.\r"
+      }
     ]
   },
   "filenames": [

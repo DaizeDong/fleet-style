@@ -420,6 +420,13 @@ def fenced_regions(text):
             yield start, end
 
 
+def code_and_html_regions(text):
+    """Yield blocks whose layout a prose reflow operation must preserve."""
+    for kind, start, end in _blocks(text):
+        if kind in {"code", "html"}:
+            yield start, end
+
+
 def table_regions(text):
     """Yield recognized table rows after their original container prefixes."""
     for kind, start, end in _blocks(text):
