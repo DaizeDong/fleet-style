@@ -68,5 +68,775 @@
   ],
   "prose_a": "alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu\n",
   "prose_b": "orange violet amber green copper silver purple indigo yellow black white teal\n",
-  "marker": "gitdir: synthetic\n"
+  "marker": "gitdir: synthetic\n",
+  "physical_lines": [
+    {
+      "name": "physical fence '\\n' '\\x0b' ``` before",
+      "code": "```text\nliteral\u000b```\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\n",
+      "input": "```text\nliteral\u000b```\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside \u2014 prose.\n",
+      "expected": "```text\nliteral\u000b```\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside, prose.\n",
+      "wrap_input": "```text\nliteral\u000b```\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "```text\nliteral\u000b```\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\n' '\\x0b' ``` after",
+      "code": "```text\n```\u000b\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\n",
+      "input": "```text\n```\u000b\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside \u2014 prose.\n",
+      "expected": "```text\n```\u000b\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside, prose.\n",
+      "wrap_input": "```text\n```\u000b\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "```text\n```\u000b\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\n' '\\x0b' ~~~ before",
+      "code": "~~~text\nliteral\u000b~~~\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\n",
+      "input": "~~~text\nliteral\u000b~~~\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside \u2014 prose.\n",
+      "expected": "~~~text\nliteral\u000b~~~\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside, prose.\n",
+      "wrap_input": "~~~text\nliteral\u000b~~~\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "~~~text\nliteral\u000b~~~\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\n' '\\x0b' ~~~ after",
+      "code": "~~~text\n~~~\u000b\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\n",
+      "input": "~~~text\n~~~\u000b\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside \u2014 prose.\n",
+      "expected": "~~~text\n~~~\u000b\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside, prose.\n",
+      "wrap_input": "~~~text\n~~~\u000b\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "~~~text\n~~~\u000b\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\n' '\\x0c' ``` before",
+      "code": "```text\nliteral\f```\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\n",
+      "input": "```text\nliteral\f```\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside \u2014 prose.\n",
+      "expected": "```text\nliteral\f```\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside, prose.\n",
+      "wrap_input": "```text\nliteral\f```\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "```text\nliteral\f```\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\n' '\\x0c' ``` after",
+      "code": "```text\n```\f\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\n",
+      "input": "```text\n```\f\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside \u2014 prose.\n",
+      "expected": "```text\n```\f\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside, prose.\n",
+      "wrap_input": "```text\n```\f\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "```text\n```\f\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\n' '\\x0c' ~~~ before",
+      "code": "~~~text\nliteral\f~~~\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\n",
+      "input": "~~~text\nliteral\f~~~\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside \u2014 prose.\n",
+      "expected": "~~~text\nliteral\f~~~\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside, prose.\n",
+      "wrap_input": "~~~text\nliteral\f~~~\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "~~~text\nliteral\f~~~\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\n' '\\x0c' ~~~ after",
+      "code": "~~~text\n~~~\f\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\n",
+      "input": "~~~text\n~~~\f\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside \u2014 prose.\n",
+      "expected": "~~~text\n~~~\f\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside, prose.\n",
+      "wrap_input": "~~~text\n~~~\f\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "~~~text\n~~~\f\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\n' '\\x1c' ``` before",
+      "code": "```text\nliteral\u001c```\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\n",
+      "input": "```text\nliteral\u001c```\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside \u2014 prose.\n",
+      "expected": "```text\nliteral\u001c```\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside, prose.\n",
+      "wrap_input": "```text\nliteral\u001c```\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "```text\nliteral\u001c```\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\n' '\\x1c' ``` after",
+      "code": "```text\n```\u001c\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\n",
+      "input": "```text\n```\u001c\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside \u2014 prose.\n",
+      "expected": "```text\n```\u001c\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside, prose.\n",
+      "wrap_input": "```text\n```\u001c\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "```text\n```\u001c\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\n' '\\x1c' ~~~ before",
+      "code": "~~~text\nliteral\u001c~~~\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\n",
+      "input": "~~~text\nliteral\u001c~~~\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside \u2014 prose.\n",
+      "expected": "~~~text\nliteral\u001c~~~\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside, prose.\n",
+      "wrap_input": "~~~text\nliteral\u001c~~~\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "~~~text\nliteral\u001c~~~\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\n' '\\x1c' ~~~ after",
+      "code": "~~~text\n~~~\u001c\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\n",
+      "input": "~~~text\n~~~\u001c\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside \u2014 prose.\n",
+      "expected": "~~~text\n~~~\u001c\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside, prose.\n",
+      "wrap_input": "~~~text\n~~~\u001c\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "~~~text\n~~~\u001c\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\n' '\\x1d' ``` before",
+      "code": "```text\nliteral\u001d```\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\n",
+      "input": "```text\nliteral\u001d```\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside \u2014 prose.\n",
+      "expected": "```text\nliteral\u001d```\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside, prose.\n",
+      "wrap_input": "```text\nliteral\u001d```\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "```text\nliteral\u001d```\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\n' '\\x1d' ``` after",
+      "code": "```text\n```\u001d\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\n",
+      "input": "```text\n```\u001d\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside \u2014 prose.\n",
+      "expected": "```text\n```\u001d\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside, prose.\n",
+      "wrap_input": "```text\n```\u001d\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "```text\n```\u001d\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\n' '\\x1d' ~~~ before",
+      "code": "~~~text\nliteral\u001d~~~\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\n",
+      "input": "~~~text\nliteral\u001d~~~\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside \u2014 prose.\n",
+      "expected": "~~~text\nliteral\u001d~~~\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside, prose.\n",
+      "wrap_input": "~~~text\nliteral\u001d~~~\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "~~~text\nliteral\u001d~~~\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\n' '\\x1d' ~~~ after",
+      "code": "~~~text\n~~~\u001d\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\n",
+      "input": "~~~text\n~~~\u001d\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside \u2014 prose.\n",
+      "expected": "~~~text\n~~~\u001d\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside, prose.\n",
+      "wrap_input": "~~~text\n~~~\u001d\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "~~~text\n~~~\u001d\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\n' '\\x1e' ``` before",
+      "code": "```text\nliteral\u001e```\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\n",
+      "input": "```text\nliteral\u001e```\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside \u2014 prose.\n",
+      "expected": "```text\nliteral\u001e```\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside, prose.\n",
+      "wrap_input": "```text\nliteral\u001e```\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "```text\nliteral\u001e```\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\n' '\\x1e' ``` after",
+      "code": "```text\n```\u001e\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\n",
+      "input": "```text\n```\u001e\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside \u2014 prose.\n",
+      "expected": "```text\n```\u001e\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside, prose.\n",
+      "wrap_input": "```text\n```\u001e\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "```text\n```\u001e\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\n' '\\x1e' ~~~ before",
+      "code": "~~~text\nliteral\u001e~~~\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\n",
+      "input": "~~~text\nliteral\u001e~~~\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside \u2014 prose.\n",
+      "expected": "~~~text\nliteral\u001e~~~\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside, prose.\n",
+      "wrap_input": "~~~text\nliteral\u001e~~~\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "~~~text\nliteral\u001e~~~\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\n' '\\x1e' ~~~ after",
+      "code": "~~~text\n~~~\u001e\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\n",
+      "input": "~~~text\n~~~\u001e\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside \u2014 prose.\n",
+      "expected": "~~~text\n~~~\u001e\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside, prose.\n",
+      "wrap_input": "~~~text\n~~~\u001e\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "~~~text\n~~~\u001e\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\n' '\\x85' ``` before",
+      "code": "```text\nliteral\u0085```\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\n",
+      "input": "```text\nliteral\u0085```\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside \u2014 prose.\n",
+      "expected": "```text\nliteral\u0085```\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside, prose.\n",
+      "wrap_input": "```text\nliteral\u0085```\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "```text\nliteral\u0085```\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\n' '\\x85' ``` after",
+      "code": "```text\n```\u0085\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\n",
+      "input": "```text\n```\u0085\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside \u2014 prose.\n",
+      "expected": "```text\n```\u0085\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside, prose.\n",
+      "wrap_input": "```text\n```\u0085\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "```text\n```\u0085\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\n' '\\x85' ~~~ before",
+      "code": "~~~text\nliteral\u0085~~~\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\n",
+      "input": "~~~text\nliteral\u0085~~~\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside \u2014 prose.\n",
+      "expected": "~~~text\nliteral\u0085~~~\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside, prose.\n",
+      "wrap_input": "~~~text\nliteral\u0085~~~\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "~~~text\nliteral\u0085~~~\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\n' '\\x85' ~~~ after",
+      "code": "~~~text\n~~~\u0085\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\n",
+      "input": "~~~text\n~~~\u0085\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside \u2014 prose.\n",
+      "expected": "~~~text\n~~~\u0085\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside, prose.\n",
+      "wrap_input": "~~~text\n~~~\u0085\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "~~~text\n~~~\u0085\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\n' '\\u2028' ``` before",
+      "code": "```text\nliteral\u2028```\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\n",
+      "input": "```text\nliteral\u2028```\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside \u2014 prose.\n",
+      "expected": "```text\nliteral\u2028```\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside, prose.\n",
+      "wrap_input": "```text\nliteral\u2028```\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "```text\nliteral\u2028```\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\n' '\\u2028' ``` after",
+      "code": "```text\n```\u2028\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\n",
+      "input": "```text\n```\u2028\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside \u2014 prose.\n",
+      "expected": "```text\n```\u2028\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside, prose.\n",
+      "wrap_input": "```text\n```\u2028\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "```text\n```\u2028\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\n' '\\u2028' ~~~ before",
+      "code": "~~~text\nliteral\u2028~~~\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\n",
+      "input": "~~~text\nliteral\u2028~~~\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside \u2014 prose.\n",
+      "expected": "~~~text\nliteral\u2028~~~\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside, prose.\n",
+      "wrap_input": "~~~text\nliteral\u2028~~~\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "~~~text\nliteral\u2028~~~\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\n' '\\u2028' ~~~ after",
+      "code": "~~~text\n~~~\u2028\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\n",
+      "input": "~~~text\n~~~\u2028\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside \u2014 prose.\n",
+      "expected": "~~~text\n~~~\u2028\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside, prose.\n",
+      "wrap_input": "~~~text\n~~~\u2028\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "~~~text\n~~~\u2028\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\n' '\\u2029' ``` before",
+      "code": "```text\nliteral\u2029```\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\n",
+      "input": "```text\nliteral\u2029```\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside \u2014 prose.\n",
+      "expected": "```text\nliteral\u2029```\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside, prose.\n",
+      "wrap_input": "```text\nliteral\u2029```\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "```text\nliteral\u2029```\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\n' '\\u2029' ``` after",
+      "code": "```text\n```\u2029\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\n",
+      "input": "```text\n```\u2029\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside \u2014 prose.\n",
+      "expected": "```text\n```\u2029\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside, prose.\n",
+      "wrap_input": "```text\n```\u2029\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "```text\n```\u2029\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n```\n\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\n' '\\u2029' ~~~ before",
+      "code": "~~~text\nliteral\u2029~~~\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\n",
+      "input": "~~~text\nliteral\u2029~~~\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside \u2014 prose.\n",
+      "expected": "~~~text\nliteral\u2029~~~\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside, prose.\n",
+      "wrap_input": "~~~text\nliteral\u2029~~~\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "~~~text\nliteral\u2029~~~\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\n' '\\u2029' ~~~ after",
+      "code": "~~~text\n~~~\u2029\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\n",
+      "input": "~~~text\n~~~\u2029\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside \u2014 prose.\n",
+      "expected": "~~~text\n~~~\u2029\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside, prose.\n",
+      "wrap_input": "~~~text\n~~~\u2029\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "~~~text\n~~~\u2029\nfirst synthetic vector branch \u2014 literal\nsecond buffer return signal output token\n~~~\n\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r\\n' '\\x0b' ``` before",
+      "code": "```text\r\nliteral\u000b```\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\n",
+      "input": "```text\r\nliteral\u000b```\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside \u2014 prose.\n",
+      "expected": "```text\r\nliteral\u000b```\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside, prose.\n",
+      "wrap_input": "```text\r\nliteral\u000b```\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "```text\r\nliteral\u000b```\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r\\n' '\\x0b' ``` after",
+      "code": "```text\r\n```\u000b\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\n",
+      "input": "```text\r\n```\u000b\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside \u2014 prose.\n",
+      "expected": "```text\r\n```\u000b\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside, prose.\n",
+      "wrap_input": "```text\r\n```\u000b\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "```text\r\n```\u000b\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r\\n' '\\x0b' ~~~ before",
+      "code": "~~~text\r\nliteral\u000b~~~\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\n",
+      "input": "~~~text\r\nliteral\u000b~~~\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside \u2014 prose.\n",
+      "expected": "~~~text\r\nliteral\u000b~~~\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside, prose.\n",
+      "wrap_input": "~~~text\r\nliteral\u000b~~~\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "~~~text\r\nliteral\u000b~~~\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r\\n' '\\x0b' ~~~ after",
+      "code": "~~~text\r\n~~~\u000b\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\n",
+      "input": "~~~text\r\n~~~\u000b\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside \u2014 prose.\n",
+      "expected": "~~~text\r\n~~~\u000b\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside, prose.\n",
+      "wrap_input": "~~~text\r\n~~~\u000b\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "~~~text\r\n~~~\u000b\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r\\n' '\\x0c' ``` before",
+      "code": "```text\r\nliteral\f```\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\n",
+      "input": "```text\r\nliteral\f```\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside \u2014 prose.\n",
+      "expected": "```text\r\nliteral\f```\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside, prose.\n",
+      "wrap_input": "```text\r\nliteral\f```\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "```text\r\nliteral\f```\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r\\n' '\\x0c' ``` after",
+      "code": "```text\r\n```\f\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\n",
+      "input": "```text\r\n```\f\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside \u2014 prose.\n",
+      "expected": "```text\r\n```\f\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside, prose.\n",
+      "wrap_input": "```text\r\n```\f\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "```text\r\n```\f\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r\\n' '\\x0c' ~~~ before",
+      "code": "~~~text\r\nliteral\f~~~\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\n",
+      "input": "~~~text\r\nliteral\f~~~\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside \u2014 prose.\n",
+      "expected": "~~~text\r\nliteral\f~~~\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside, prose.\n",
+      "wrap_input": "~~~text\r\nliteral\f~~~\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "~~~text\r\nliteral\f~~~\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r\\n' '\\x0c' ~~~ after",
+      "code": "~~~text\r\n~~~\f\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\n",
+      "input": "~~~text\r\n~~~\f\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside \u2014 prose.\n",
+      "expected": "~~~text\r\n~~~\f\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside, prose.\n",
+      "wrap_input": "~~~text\r\n~~~\f\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "~~~text\r\n~~~\f\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r\\n' '\\x1c' ``` before",
+      "code": "```text\r\nliteral\u001c```\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\n",
+      "input": "```text\r\nliteral\u001c```\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside \u2014 prose.\n",
+      "expected": "```text\r\nliteral\u001c```\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside, prose.\n",
+      "wrap_input": "```text\r\nliteral\u001c```\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "```text\r\nliteral\u001c```\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r\\n' '\\x1c' ``` after",
+      "code": "```text\r\n```\u001c\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\n",
+      "input": "```text\r\n```\u001c\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside \u2014 prose.\n",
+      "expected": "```text\r\n```\u001c\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside, prose.\n",
+      "wrap_input": "```text\r\n```\u001c\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "```text\r\n```\u001c\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r\\n' '\\x1c' ~~~ before",
+      "code": "~~~text\r\nliteral\u001c~~~\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\n",
+      "input": "~~~text\r\nliteral\u001c~~~\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside \u2014 prose.\n",
+      "expected": "~~~text\r\nliteral\u001c~~~\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside, prose.\n",
+      "wrap_input": "~~~text\r\nliteral\u001c~~~\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "~~~text\r\nliteral\u001c~~~\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r\\n' '\\x1c' ~~~ after",
+      "code": "~~~text\r\n~~~\u001c\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\n",
+      "input": "~~~text\r\n~~~\u001c\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside \u2014 prose.\n",
+      "expected": "~~~text\r\n~~~\u001c\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside, prose.\n",
+      "wrap_input": "~~~text\r\n~~~\u001c\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "~~~text\r\n~~~\u001c\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r\\n' '\\x1d' ``` before",
+      "code": "```text\r\nliteral\u001d```\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\n",
+      "input": "```text\r\nliteral\u001d```\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside \u2014 prose.\n",
+      "expected": "```text\r\nliteral\u001d```\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside, prose.\n",
+      "wrap_input": "```text\r\nliteral\u001d```\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "```text\r\nliteral\u001d```\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r\\n' '\\x1d' ``` after",
+      "code": "```text\r\n```\u001d\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\n",
+      "input": "```text\r\n```\u001d\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside \u2014 prose.\n",
+      "expected": "```text\r\n```\u001d\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside, prose.\n",
+      "wrap_input": "```text\r\n```\u001d\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "```text\r\n```\u001d\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r\\n' '\\x1d' ~~~ before",
+      "code": "~~~text\r\nliteral\u001d~~~\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\n",
+      "input": "~~~text\r\nliteral\u001d~~~\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside \u2014 prose.\n",
+      "expected": "~~~text\r\nliteral\u001d~~~\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside, prose.\n",
+      "wrap_input": "~~~text\r\nliteral\u001d~~~\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "~~~text\r\nliteral\u001d~~~\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r\\n' '\\x1d' ~~~ after",
+      "code": "~~~text\r\n~~~\u001d\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\n",
+      "input": "~~~text\r\n~~~\u001d\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside \u2014 prose.\n",
+      "expected": "~~~text\r\n~~~\u001d\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside, prose.\n",
+      "wrap_input": "~~~text\r\n~~~\u001d\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "~~~text\r\n~~~\u001d\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r\\n' '\\x1e' ``` before",
+      "code": "```text\r\nliteral\u001e```\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\n",
+      "input": "```text\r\nliteral\u001e```\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside \u2014 prose.\n",
+      "expected": "```text\r\nliteral\u001e```\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside, prose.\n",
+      "wrap_input": "```text\r\nliteral\u001e```\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "```text\r\nliteral\u001e```\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r\\n' '\\x1e' ``` after",
+      "code": "```text\r\n```\u001e\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\n",
+      "input": "```text\r\n```\u001e\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside \u2014 prose.\n",
+      "expected": "```text\r\n```\u001e\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside, prose.\n",
+      "wrap_input": "```text\r\n```\u001e\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "```text\r\n```\u001e\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r\\n' '\\x1e' ~~~ before",
+      "code": "~~~text\r\nliteral\u001e~~~\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\n",
+      "input": "~~~text\r\nliteral\u001e~~~\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside \u2014 prose.\n",
+      "expected": "~~~text\r\nliteral\u001e~~~\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside, prose.\n",
+      "wrap_input": "~~~text\r\nliteral\u001e~~~\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "~~~text\r\nliteral\u001e~~~\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r\\n' '\\x1e' ~~~ after",
+      "code": "~~~text\r\n~~~\u001e\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\n",
+      "input": "~~~text\r\n~~~\u001e\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside \u2014 prose.\n",
+      "expected": "~~~text\r\n~~~\u001e\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside, prose.\n",
+      "wrap_input": "~~~text\r\n~~~\u001e\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "~~~text\r\n~~~\u001e\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r\\n' '\\x85' ``` before",
+      "code": "```text\r\nliteral\u0085```\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\n",
+      "input": "```text\r\nliteral\u0085```\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside \u2014 prose.\n",
+      "expected": "```text\r\nliteral\u0085```\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside, prose.\n",
+      "wrap_input": "```text\r\nliteral\u0085```\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "```text\r\nliteral\u0085```\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r\\n' '\\x85' ``` after",
+      "code": "```text\r\n```\u0085\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\n",
+      "input": "```text\r\n```\u0085\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside \u2014 prose.\n",
+      "expected": "```text\r\n```\u0085\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside, prose.\n",
+      "wrap_input": "```text\r\n```\u0085\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "```text\r\n```\u0085\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r\\n' '\\x85' ~~~ before",
+      "code": "~~~text\r\nliteral\u0085~~~\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\n",
+      "input": "~~~text\r\nliteral\u0085~~~\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside \u2014 prose.\n",
+      "expected": "~~~text\r\nliteral\u0085~~~\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside, prose.\n",
+      "wrap_input": "~~~text\r\nliteral\u0085~~~\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "~~~text\r\nliteral\u0085~~~\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r\\n' '\\x85' ~~~ after",
+      "code": "~~~text\r\n~~~\u0085\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\n",
+      "input": "~~~text\r\n~~~\u0085\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside \u2014 prose.\n",
+      "expected": "~~~text\r\n~~~\u0085\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside, prose.\n",
+      "wrap_input": "~~~text\r\n~~~\u0085\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "~~~text\r\n~~~\u0085\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r\\n' '\\u2028' ``` before",
+      "code": "```text\r\nliteral\u2028```\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\n",
+      "input": "```text\r\nliteral\u2028```\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside \u2014 prose.\n",
+      "expected": "```text\r\nliteral\u2028```\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside, prose.\n",
+      "wrap_input": "```text\r\nliteral\u2028```\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "```text\r\nliteral\u2028```\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r\\n' '\\u2028' ``` after",
+      "code": "```text\r\n```\u2028\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\n",
+      "input": "```text\r\n```\u2028\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside \u2014 prose.\n",
+      "expected": "```text\r\n```\u2028\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside, prose.\n",
+      "wrap_input": "```text\r\n```\u2028\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "```text\r\n```\u2028\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r\\n' '\\u2028' ~~~ before",
+      "code": "~~~text\r\nliteral\u2028~~~\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\n",
+      "input": "~~~text\r\nliteral\u2028~~~\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside \u2014 prose.\n",
+      "expected": "~~~text\r\nliteral\u2028~~~\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside, prose.\n",
+      "wrap_input": "~~~text\r\nliteral\u2028~~~\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "~~~text\r\nliteral\u2028~~~\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r\\n' '\\u2028' ~~~ after",
+      "code": "~~~text\r\n~~~\u2028\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\n",
+      "input": "~~~text\r\n~~~\u2028\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside \u2014 prose.\n",
+      "expected": "~~~text\r\n~~~\u2028\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside, prose.\n",
+      "wrap_input": "~~~text\r\n~~~\u2028\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "~~~text\r\n~~~\u2028\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r\\n' '\\u2029' ``` before",
+      "code": "```text\r\nliteral\u2029```\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\n",
+      "input": "```text\r\nliteral\u2029```\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside \u2014 prose.\n",
+      "expected": "```text\r\nliteral\u2029```\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside, prose.\n",
+      "wrap_input": "```text\r\nliteral\u2029```\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "```text\r\nliteral\u2029```\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r\\n' '\\u2029' ``` after",
+      "code": "```text\r\n```\u2029\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\n",
+      "input": "```text\r\n```\u2029\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside \u2014 prose.\n",
+      "expected": "```text\r\n```\u2029\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside, prose.\n",
+      "wrap_input": "```text\r\n```\u2029\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "```text\r\n```\u2029\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n```\r\n\r\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r\\n' '\\u2029' ~~~ before",
+      "code": "~~~text\r\nliteral\u2029~~~\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\n",
+      "input": "~~~text\r\nliteral\u2029~~~\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside \u2014 prose.\n",
+      "expected": "~~~text\r\nliteral\u2029~~~\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside, prose.\n",
+      "wrap_input": "~~~text\r\nliteral\u2029~~~\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "~~~text\r\nliteral\u2029~~~\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r\\n' '\\u2029' ~~~ after",
+      "code": "~~~text\r\n~~~\u2029\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\n",
+      "input": "~~~text\r\n~~~\u2029\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside \u2014 prose.\n",
+      "expected": "~~~text\r\n~~~\u2029\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside, prose.\n",
+      "wrap_input": "~~~text\r\n~~~\u2029\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "~~~text\r\n~~~\u2029\r\nfirst synthetic vector branch \u2014 literal\r\nsecond buffer return signal output token\r\n~~~\r\n\r\nOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r' '\\x0b' ``` before",
+      "code": "```text\rliteral\u000b```\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\r",
+      "input": "```text\rliteral\u000b```\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside \u2014 prose.\n",
+      "expected": "```text\rliteral\u000b```\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside, prose.\n",
+      "wrap_input": "```text\rliteral\u000b```\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "```text\rliteral\u000b```\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r' '\\x0b' ``` after",
+      "code": "```text\r```\u000b\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\r",
+      "input": "```text\r```\u000b\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside \u2014 prose.\n",
+      "expected": "```text\r```\u000b\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside, prose.\n",
+      "wrap_input": "```text\r```\u000b\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "```text\r```\u000b\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r' '\\x0b' ~~~ before",
+      "code": "~~~text\rliteral\u000b~~~\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\r",
+      "input": "~~~text\rliteral\u000b~~~\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside \u2014 prose.\n",
+      "expected": "~~~text\rliteral\u000b~~~\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside, prose.\n",
+      "wrap_input": "~~~text\rliteral\u000b~~~\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "~~~text\rliteral\u000b~~~\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r' '\\x0b' ~~~ after",
+      "code": "~~~text\r~~~\u000b\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\r",
+      "input": "~~~text\r~~~\u000b\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside \u2014 prose.\n",
+      "expected": "~~~text\r~~~\u000b\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside, prose.\n",
+      "wrap_input": "~~~text\r~~~\u000b\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "~~~text\r~~~\u000b\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r' '\\x0c' ``` before",
+      "code": "```text\rliteral\f```\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\r",
+      "input": "```text\rliteral\f```\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside \u2014 prose.\n",
+      "expected": "```text\rliteral\f```\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside, prose.\n",
+      "wrap_input": "```text\rliteral\f```\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "```text\rliteral\f```\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r' '\\x0c' ``` after",
+      "code": "```text\r```\f\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\r",
+      "input": "```text\r```\f\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside \u2014 prose.\n",
+      "expected": "```text\r```\f\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside, prose.\n",
+      "wrap_input": "```text\r```\f\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "```text\r```\f\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r' '\\x0c' ~~~ before",
+      "code": "~~~text\rliteral\f~~~\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\r",
+      "input": "~~~text\rliteral\f~~~\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside \u2014 prose.\n",
+      "expected": "~~~text\rliteral\f~~~\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside, prose.\n",
+      "wrap_input": "~~~text\rliteral\f~~~\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "~~~text\rliteral\f~~~\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r' '\\x0c' ~~~ after",
+      "code": "~~~text\r~~~\f\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\r",
+      "input": "~~~text\r~~~\f\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside \u2014 prose.\n",
+      "expected": "~~~text\r~~~\f\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside, prose.\n",
+      "wrap_input": "~~~text\r~~~\f\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "~~~text\r~~~\f\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r' '\\x1c' ``` before",
+      "code": "```text\rliteral\u001c```\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\r",
+      "input": "```text\rliteral\u001c```\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside \u2014 prose.\n",
+      "expected": "```text\rliteral\u001c```\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside, prose.\n",
+      "wrap_input": "```text\rliteral\u001c```\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "```text\rliteral\u001c```\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r' '\\x1c' ``` after",
+      "code": "```text\r```\u001c\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\r",
+      "input": "```text\r```\u001c\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside \u2014 prose.\n",
+      "expected": "```text\r```\u001c\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside, prose.\n",
+      "wrap_input": "```text\r```\u001c\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "```text\r```\u001c\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r' '\\x1c' ~~~ before",
+      "code": "~~~text\rliteral\u001c~~~\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\r",
+      "input": "~~~text\rliteral\u001c~~~\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside \u2014 prose.\n",
+      "expected": "~~~text\rliteral\u001c~~~\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside, prose.\n",
+      "wrap_input": "~~~text\rliteral\u001c~~~\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "~~~text\rliteral\u001c~~~\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r' '\\x1c' ~~~ after",
+      "code": "~~~text\r~~~\u001c\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\r",
+      "input": "~~~text\r~~~\u001c\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside \u2014 prose.\n",
+      "expected": "~~~text\r~~~\u001c\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside, prose.\n",
+      "wrap_input": "~~~text\r~~~\u001c\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "~~~text\r~~~\u001c\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r' '\\x1d' ``` before",
+      "code": "```text\rliteral\u001d```\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\r",
+      "input": "```text\rliteral\u001d```\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside \u2014 prose.\n",
+      "expected": "```text\rliteral\u001d```\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside, prose.\n",
+      "wrap_input": "```text\rliteral\u001d```\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "```text\rliteral\u001d```\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r' '\\x1d' ``` after",
+      "code": "```text\r```\u001d\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\r",
+      "input": "```text\r```\u001d\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside \u2014 prose.\n",
+      "expected": "```text\r```\u001d\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside, prose.\n",
+      "wrap_input": "```text\r```\u001d\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "```text\r```\u001d\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r' '\\x1d' ~~~ before",
+      "code": "~~~text\rliteral\u001d~~~\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\r",
+      "input": "~~~text\rliteral\u001d~~~\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside \u2014 prose.\n",
+      "expected": "~~~text\rliteral\u001d~~~\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside, prose.\n",
+      "wrap_input": "~~~text\rliteral\u001d~~~\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "~~~text\rliteral\u001d~~~\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r' '\\x1d' ~~~ after",
+      "code": "~~~text\r~~~\u001d\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\r",
+      "input": "~~~text\r~~~\u001d\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside \u2014 prose.\n",
+      "expected": "~~~text\r~~~\u001d\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside, prose.\n",
+      "wrap_input": "~~~text\r~~~\u001d\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "~~~text\r~~~\u001d\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r' '\\x1e' ``` before",
+      "code": "```text\rliteral\u001e```\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\r",
+      "input": "```text\rliteral\u001e```\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside \u2014 prose.\n",
+      "expected": "```text\rliteral\u001e```\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside, prose.\n",
+      "wrap_input": "```text\rliteral\u001e```\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "```text\rliteral\u001e```\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r' '\\x1e' ``` after",
+      "code": "```text\r```\u001e\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\r",
+      "input": "```text\r```\u001e\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside \u2014 prose.\n",
+      "expected": "```text\r```\u001e\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside, prose.\n",
+      "wrap_input": "```text\r```\u001e\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "```text\r```\u001e\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r' '\\x1e' ~~~ before",
+      "code": "~~~text\rliteral\u001e~~~\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\r",
+      "input": "~~~text\rliteral\u001e~~~\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside \u2014 prose.\n",
+      "expected": "~~~text\rliteral\u001e~~~\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside, prose.\n",
+      "wrap_input": "~~~text\rliteral\u001e~~~\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "~~~text\rliteral\u001e~~~\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r' '\\x1e' ~~~ after",
+      "code": "~~~text\r~~~\u001e\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\r",
+      "input": "~~~text\r~~~\u001e\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside \u2014 prose.\n",
+      "expected": "~~~text\r~~~\u001e\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside, prose.\n",
+      "wrap_input": "~~~text\r~~~\u001e\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "~~~text\r~~~\u001e\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r' '\\x85' ``` before",
+      "code": "```text\rliteral\u0085```\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\r",
+      "input": "```text\rliteral\u0085```\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside \u2014 prose.\n",
+      "expected": "```text\rliteral\u0085```\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside, prose.\n",
+      "wrap_input": "```text\rliteral\u0085```\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "```text\rliteral\u0085```\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r' '\\x85' ``` after",
+      "code": "```text\r```\u0085\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\r",
+      "input": "```text\r```\u0085\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside \u2014 prose.\n",
+      "expected": "```text\r```\u0085\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside, prose.\n",
+      "wrap_input": "```text\r```\u0085\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "```text\r```\u0085\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r' '\\x85' ~~~ before",
+      "code": "~~~text\rliteral\u0085~~~\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\r",
+      "input": "~~~text\rliteral\u0085~~~\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside \u2014 prose.\n",
+      "expected": "~~~text\rliteral\u0085~~~\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside, prose.\n",
+      "wrap_input": "~~~text\rliteral\u0085~~~\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "~~~text\rliteral\u0085~~~\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r' '\\x85' ~~~ after",
+      "code": "~~~text\r~~~\u0085\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\r",
+      "input": "~~~text\r~~~\u0085\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside \u2014 prose.\n",
+      "expected": "~~~text\r~~~\u0085\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside, prose.\n",
+      "wrap_input": "~~~text\r~~~\u0085\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "~~~text\r~~~\u0085\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r' '\\u2028' ``` before",
+      "code": "```text\rliteral\u2028```\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\r",
+      "input": "```text\rliteral\u2028```\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside \u2014 prose.\n",
+      "expected": "```text\rliteral\u2028```\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside, prose.\n",
+      "wrap_input": "```text\rliteral\u2028```\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "```text\rliteral\u2028```\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r' '\\u2028' ``` after",
+      "code": "```text\r```\u2028\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\r",
+      "input": "```text\r```\u2028\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside \u2014 prose.\n",
+      "expected": "```text\r```\u2028\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside, prose.\n",
+      "wrap_input": "```text\r```\u2028\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "```text\r```\u2028\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r' '\\u2028' ~~~ before",
+      "code": "~~~text\rliteral\u2028~~~\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\r",
+      "input": "~~~text\rliteral\u2028~~~\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside \u2014 prose.\n",
+      "expected": "~~~text\rliteral\u2028~~~\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside, prose.\n",
+      "wrap_input": "~~~text\rliteral\u2028~~~\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "~~~text\rliteral\u2028~~~\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r' '\\u2028' ~~~ after",
+      "code": "~~~text\r~~~\u2028\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\r",
+      "input": "~~~text\r~~~\u2028\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside \u2014 prose.\n",
+      "expected": "~~~text\r~~~\u2028\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside, prose.\n",
+      "wrap_input": "~~~text\r~~~\u2028\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "~~~text\r~~~\u2028\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r' '\\u2029' ``` before",
+      "code": "```text\rliteral\u2029```\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\r",
+      "input": "```text\rliteral\u2029```\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside \u2014 prose.\n",
+      "expected": "```text\rliteral\u2029```\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside, prose.\n",
+      "wrap_input": "```text\rliteral\u2029```\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "```text\rliteral\u2029```\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r' '\\u2029' ``` after",
+      "code": "```text\r```\u2029\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\r",
+      "input": "```text\r```\u2029\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside \u2014 prose.\n",
+      "expected": "```text\r```\u2029\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside, prose.\n",
+      "wrap_input": "```text\r```\u2029\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "```text\r```\u2029\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r```\r\rOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r' '\\u2029' ~~~ before",
+      "code": "~~~text\rliteral\u2029~~~\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\r",
+      "input": "~~~text\rliteral\u2029~~~\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside \u2014 prose.\n",
+      "expected": "~~~text\rliteral\u2029~~~\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside, prose.\n",
+      "wrap_input": "~~~text\rliteral\u2029~~~\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "~~~text\rliteral\u2029~~~\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside paragraph continues here.\n"
+    },
+    {
+      "name": "physical fence '\\r' '\\u2029' ~~~ after",
+      "code": "~~~text\r~~~\u2029\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\r",
+      "input": "~~~text\r~~~\u2029\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside \u2014 prose.\n",
+      "expected": "~~~text\r~~~\u2029\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside, prose.\n",
+      "wrap_input": "~~~text\r~~~\u2029\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside paragraph\ncontinues here.\n",
+      "wrap_expected": "~~~text\r~~~\u2029\rfirst synthetic vector branch \u2014 literal\rsecond buffer return signal output token\r~~~\r\rOutside paragraph continues here.\n"
+    }
+  ]
 }

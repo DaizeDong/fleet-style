@@ -560,3 +560,13 @@ def test_contract_added_only_maps_markdown_lines_to_git_lines(tmp_path, case):
     path.write_bytes(case["input"].encode("utf-8"))
     _contract_git(tmp_path, "-c", "core.autocrlf=false", "add", "--", path.name)
     assert W.main(["--repo", str(tmp_path), "--added-only"]) == 1
+
+
+@pytest.mark.parametrize("case", _WRAP["message_cases"], ids=lambda case: case["name"])
+def test_contract_scissors_tail_is_ignored_and_visible_coordinates_remain(tmp_path, capsys, case):
+    path = tmp_path / "MSG"
+    path.write_bytes(case["input"].encode("utf-8"))
+    assert W.main(["--message", str(path)]) == case["exit_code"]
+    output = capsys.readouterr().out
+    if case["line"] is not None:
+        assert f'{path}:{case["line"]}  [paragraph]' in output

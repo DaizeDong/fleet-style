@@ -37,6 +37,8 @@ Comment scanning also covers JavaScript, TypeScript, YAML, shell, PowerShell and
 
 `wrap_guard.py` uses the same safe file access and Markdown block parser. Its staged checks read text and `.wrap-allow` from the index; `--added-only` checks changed lines using textual Git ranges even when attributes mark Markdown as binary. Missing inputs and unavailable ranges block. Repair preserves code blocks, HTML blocks, explicit Markdown hard breaks, and allowed paragraphs or list items. It joins only reported spans and retains other bytes, including line endings and Unicode separators inside code. Repair rejects links and files that change during access, and `--fix --staged` is refused to preserve unstaged edits.
 
+The shared Markdown parser treats LF, CRLF and CR as line endings. Unicode separators inside a physical code line cannot open or close a fence. Commit-message checks stop at Git's scissors marker and report visible body findings at their original source line numbers, including when comments have been removed.
+
 Use `--fix --tree` to repair worktree files, inspect the diff, and stage the changes you want. `--fix --staged` is refused because replacing worktree files from the index would discard unstaged edits. `--check` and `--fix` are mutually exclusive.
 
     python tools/make_fixtures.py --check

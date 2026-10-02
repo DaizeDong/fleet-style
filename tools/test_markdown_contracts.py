@@ -22,6 +22,14 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class MarkdownContracts(unittest.TestCase):
+    def test_only_physical_newlines_change_fence_state(self):
+        for case in CASES["physical_lines"]:
+            with self.subTest(case=case["name"]):
+                actual, hits = dash_guard.process_text(case["input"], "md")
+                self.assertEqual(actual, case["expected"])
+                self.assertEqual(len(hits), 1)
+                self.assertEqual(load_budget.shingles(case["code"]), set())
+
     def test_code_bytes_survive_and_neighboring_prose_is_fixed(self):
         for case in CASES["markdown"]:
             with self.subTest(case=case["name"]):
