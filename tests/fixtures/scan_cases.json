@@ -3,6 +3,27 @@
   "dash": "A synthetic guide \u2014 with an aside.\n",
   "broken_python": "def sample(:\n    # synthetic prose \u2014 unfinished\n",
   "invalid_utf8_hex": "fffe616263",
+  "comment_inputs": {
+    "sample.js": "// synthetic prose \u2014 comment\n",
+    "sample.yml": "# synthetic prose \u2014 comment\n",
+    "sample.sh": "# synthetic prose \u2014 comment\n",
+    "sample.ps1": "# synthetic prose \u2014 comment\n",
+    "sample.cmd": "rem synthetic prose \u2014 comment\n",
+    "hook": "#!/usr/bin/env sh\n# synthetic prose \u2014 comment\n"
+  },
+  "gitlink_index_row": "160000 0000000000000000000000000000000000000000 0\tdependency\u0000",
+  "wrap_added_diff": "@@ -1,0 +2,1 @@\n+++ synthetic continuation\n",
+  "wrap_inputs": {
+    "wrapped": "Synthetic paragraph begins here\nand continues here.\n",
+    "clean": "Synthetic paragraph stays on one line.\n",
+    "allow": "guide.md # Synthetic archived-document exemption\n",
+    "message": "Synthetic subject\n\nSynthetic paragraph begins here\nand continues here.\n",
+    "fences": [
+      "````markdown\n```\nalpha\nbeta\n```\n````\n",
+      "```text\n~~~\nalpha\nbeta\n~~~\n```\n",
+      "> ````markdown\n> ```\n> alpha\n> beta\n> ```\n> ````\n"
+    ]
+  },
   "filenames": [
     "r\u00e9sum\u00e9.md",
     "\u91c7\u8d2d.md",
