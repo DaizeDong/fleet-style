@@ -1,0 +1,548 @@
+{
+  "paragraphs": [
+    {
+      "name": "('`', '', '\\n')",
+      "input": "First `unfinished\n\nOutside \u2014 prose.\n\nLast `unfinished",
+      "expected": "First `unfinished\n\nOutside, prose.\n\nLast `unfinished"
+    },
+    {
+      "name": "('`', '', '\\r\\n')",
+      "input": "First `unfinished\r\n\r\nOutside \u2014 prose.\r\n\r\nLast `unfinished",
+      "expected": "First `unfinished\r\n\r\nOutside, prose.\r\n\r\nLast `unfinished"
+    },
+    {
+      "name": "('`', '   ', '\\n')",
+      "input": "First `unfinished\n   \nOutside \u2014 prose.\n   \nLast `unfinished",
+      "expected": "First `unfinished\n   \nOutside, prose.\n   \nLast `unfinished"
+    },
+    {
+      "name": "('`', '   ', '\\r\\n')",
+      "input": "First `unfinished\r\n   \r\nOutside \u2014 prose.\r\n   \r\nLast `unfinished",
+      "expected": "First `unfinished\r\n   \r\nOutside, prose.\r\n   \r\nLast `unfinished"
+    },
+    {
+      "name": "('`', '\\t', '\\n')",
+      "input": "First `unfinished\n\t\nOutside \u2014 prose.\n\t\nLast `unfinished",
+      "expected": "First `unfinished\n\t\nOutside, prose.\n\t\nLast `unfinished"
+    },
+    {
+      "name": "('`', '\\t', '\\r\\n')",
+      "input": "First `unfinished\r\n\t\r\nOutside \u2014 prose.\r\n\t\r\nLast `unfinished",
+      "expected": "First `unfinished\r\n\t\r\nOutside, prose.\r\n\t\r\nLast `unfinished"
+    },
+    {
+      "name": "('``', '', '\\n')",
+      "input": "First ``unfinished\n\nOutside \u2014 prose.\n\nLast ``unfinished",
+      "expected": "First ``unfinished\n\nOutside, prose.\n\nLast ``unfinished"
+    },
+    {
+      "name": "('``', '', '\\r\\n')",
+      "input": "First ``unfinished\r\n\r\nOutside \u2014 prose.\r\n\r\nLast ``unfinished",
+      "expected": "First ``unfinished\r\n\r\nOutside, prose.\r\n\r\nLast ``unfinished"
+    },
+    {
+      "name": "('``', '   ', '\\n')",
+      "input": "First ``unfinished\n   \nOutside \u2014 prose.\n   \nLast ``unfinished",
+      "expected": "First ``unfinished\n   \nOutside, prose.\n   \nLast ``unfinished"
+    },
+    {
+      "name": "('``', '   ', '\\r\\n')",
+      "input": "First ``unfinished\r\n   \r\nOutside \u2014 prose.\r\n   \r\nLast ``unfinished",
+      "expected": "First ``unfinished\r\n   \r\nOutside, prose.\r\n   \r\nLast ``unfinished"
+    },
+    {
+      "name": "('``', '\\t', '\\n')",
+      "input": "First ``unfinished\n\t\nOutside \u2014 prose.\n\t\nLast ``unfinished",
+      "expected": "First ``unfinished\n\t\nOutside, prose.\n\t\nLast ``unfinished"
+    },
+    {
+      "name": "('``', '\\t', '\\r\\n')",
+      "input": "First ``unfinished\r\n\t\r\nOutside \u2014 prose.\r\n\t\r\nLast ``unfinished",
+      "expected": "First ``unfinished\r\n\t\r\nOutside, prose.\r\n\t\r\nLast ``unfinished"
+    }
+  ],
+  "block_starts": [
+    {
+      "name": "# Heading",
+      "input": "First `unfinished\n# Heading \u2014 body\nLast `unfinished",
+      "expected": "First `unfinished\n# Heading, body\nLast `unfinished"
+    },
+    {
+      "name": "- Item",
+      "input": "First `unfinished\n- Item \u2014 body\nLast `unfinished",
+      "expected": "First `unfinished\n- Item, body\nLast `unfinished"
+    },
+    {
+      "name": "1. Item",
+      "input": "First `unfinished\n1. Item \u2014 body\nLast `unfinished",
+      "expected": "First `unfinished\n1. Item, body\nLast `unfinished"
+    },
+    {
+      "name": "> Quote",
+      "input": "First `unfinished\n> Quote \u2014 body\nLast `unfinished",
+      "expected": "First `unfinished\n> Quote, body\nLast `unfinished"
+    },
+    {
+      "name": "---",
+      "input": "First `unfinished\n---\nOutside \u2014 prose.\nLast `unfinished",
+      "expected": "First `unfinished\n---\nOutside, prose.\nLast `unfinished"
+    },
+    {
+      "name": "===",
+      "input": "First `unfinished\n===\nOutside \u2014 prose.\nLast `unfinished",
+      "expected": "First `unfinished\n===\nOutside, prose.\nLast `unfinished"
+    }
+  ],
+  "fences": [
+    {
+      "name": "quote ```",
+      "input": "> ```text\n> literal \u2014 value\n> ```\nOutside \u2014 prose.",
+      "expected": "> ```text\n> literal \u2014 value\n> ```\nOutside, prose."
+    },
+    {
+      "name": "quote ~~~",
+      "input": "> ~~~text\n> literal \u2014 value\n> ~~~\nOutside \u2014 prose.",
+      "expected": "> ~~~text\n> literal \u2014 value\n> ~~~\nOutside, prose."
+    },
+    {
+      "name": "quote ````",
+      "input": "> ````text\n> literal \u2014 value\n> ````\nOutside \u2014 prose.",
+      "expected": "> ````text\n> literal \u2014 value\n> ````\nOutside, prose."
+    },
+    {
+      "name": "quote ~~~~",
+      "input": "> ~~~~text\n> literal \u2014 value\n> ~~~~\nOutside \u2014 prose.",
+      "expected": "> ~~~~text\n> literal \u2014 value\n> ~~~~\nOutside, prose."
+    },
+    {
+      "name": "nested quote ```",
+      "input": "> > ```text\n> > literal \u2014 value\n> > ```\nOutside \u2014 prose.",
+      "expected": "> > ```text\n> > literal \u2014 value\n> > ```\nOutside, prose."
+    },
+    {
+      "name": "nested quote ~~~",
+      "input": "> > ~~~text\n> > literal \u2014 value\n> > ~~~\nOutside \u2014 prose.",
+      "expected": "> > ~~~text\n> > literal \u2014 value\n> > ~~~\nOutside, prose."
+    },
+    {
+      "name": "nested quote ````",
+      "input": "> > ````text\n> > literal \u2014 value\n> > ````\nOutside \u2014 prose.",
+      "expected": "> > ````text\n> > literal \u2014 value\n> > ````\nOutside, prose."
+    },
+    {
+      "name": "nested quote ~~~~",
+      "input": "> > ~~~~text\n> > literal \u2014 value\n> > ~~~~\nOutside \u2014 prose.",
+      "expected": "> > ~~~~text\n> > literal \u2014 value\n> > ~~~~\nOutside, prose."
+    },
+    {
+      "name": "bullet list ```",
+      "input": "- ```text\n  literal \u2014 value\n  ```\nOutside \u2014 prose.",
+      "expected": "- ```text\n  literal \u2014 value\n  ```\nOutside, prose."
+    },
+    {
+      "name": "bullet list ~~~",
+      "input": "- ~~~text\n  literal \u2014 value\n  ~~~\nOutside \u2014 prose.",
+      "expected": "- ~~~text\n  literal \u2014 value\n  ~~~\nOutside, prose."
+    },
+    {
+      "name": "bullet list ````",
+      "input": "- ````text\n  literal \u2014 value\n  ````\nOutside \u2014 prose.",
+      "expected": "- ````text\n  literal \u2014 value\n  ````\nOutside, prose."
+    },
+    {
+      "name": "bullet list ~~~~",
+      "input": "- ~~~~text\n  literal \u2014 value\n  ~~~~\nOutside \u2014 prose.",
+      "expected": "- ~~~~text\n  literal \u2014 value\n  ~~~~\nOutside, prose."
+    },
+    {
+      "name": "ordered list ```",
+      "input": "12. ```text\n    literal \u2014 value\n    ```\nOutside \u2014 prose.",
+      "expected": "12. ```text\n    literal \u2014 value\n    ```\nOutside, prose."
+    },
+    {
+      "name": "ordered list ~~~",
+      "input": "12. ~~~text\n    literal \u2014 value\n    ~~~\nOutside \u2014 prose.",
+      "expected": "12. ~~~text\n    literal \u2014 value\n    ~~~\nOutside, prose."
+    },
+    {
+      "name": "ordered list ````",
+      "input": "12. ````text\n    literal \u2014 value\n    ````\nOutside \u2014 prose.",
+      "expected": "12. ````text\n    literal \u2014 value\n    ````\nOutside, prose."
+    },
+    {
+      "name": "ordered list ~~~~",
+      "input": "12. ~~~~text\n    literal \u2014 value\n    ~~~~\nOutside \u2014 prose.",
+      "expected": "12. ~~~~text\n    literal \u2014 value\n    ~~~~\nOutside, prose."
+    },
+    {
+      "name": "quote list ```",
+      "input": "> - ```text\n>   literal \u2014 value\n>   ```\nOutside \u2014 prose.",
+      "expected": "> - ```text\n>   literal \u2014 value\n>   ```\nOutside, prose."
+    },
+    {
+      "name": "quote list ~~~",
+      "input": "> - ~~~text\n>   literal \u2014 value\n>   ~~~\nOutside \u2014 prose.",
+      "expected": "> - ~~~text\n>   literal \u2014 value\n>   ~~~\nOutside, prose."
+    },
+    {
+      "name": "quote list ````",
+      "input": "> - ````text\n>   literal \u2014 value\n>   ````\nOutside \u2014 prose.",
+      "expected": "> - ````text\n>   literal \u2014 value\n>   ````\nOutside, prose."
+    },
+    {
+      "name": "quote list ~~~~",
+      "input": "> - ~~~~text\n>   literal \u2014 value\n>   ~~~~\nOutside \u2014 prose.",
+      "expected": "> - ~~~~text\n>   literal \u2014 value\n>   ~~~~\nOutside, prose."
+    },
+    {
+      "name": "list quote ```",
+      "input": "- > ```text\n  > literal \u2014 value\n  > ```\nOutside \u2014 prose.",
+      "expected": "- > ```text\n  > literal \u2014 value\n  > ```\nOutside, prose."
+    },
+    {
+      "name": "list quote ~~~",
+      "input": "- > ~~~text\n  > literal \u2014 value\n  > ~~~\nOutside \u2014 prose.",
+      "expected": "- > ~~~text\n  > literal \u2014 value\n  > ~~~\nOutside, prose."
+    },
+    {
+      "name": "list quote ````",
+      "input": "- > ````text\n  > literal \u2014 value\n  > ````\nOutside \u2014 prose.",
+      "expected": "- > ````text\n  > literal \u2014 value\n  > ````\nOutside, prose."
+    },
+    {
+      "name": "list quote ~~~~",
+      "input": "- > ~~~~text\n  > literal \u2014 value\n  > ~~~~\nOutside \u2014 prose.",
+      "expected": "- > ~~~~text\n  > literal \u2014 value\n  > ~~~~\nOutside, prose."
+    },
+    {
+      "name": "nested list ```",
+      "input": "- outer\n  - ```text\n    literal \u2014 value\n    ```\nOutside \u2014 prose.",
+      "expected": "- outer\n  - ```text\n    literal \u2014 value\n    ```\nOutside, prose."
+    },
+    {
+      "name": "nested list ~~~",
+      "input": "- outer\n  - ~~~text\n    literal \u2014 value\n    ~~~\nOutside \u2014 prose.",
+      "expected": "- outer\n  - ~~~text\n    literal \u2014 value\n    ~~~\nOutside, prose."
+    },
+    {
+      "name": "nested list ````",
+      "input": "- outer\n  - ````text\n    literal \u2014 value\n    ````\nOutside \u2014 prose.",
+      "expected": "- outer\n  - ````text\n    literal \u2014 value\n    ````\nOutside, prose."
+    },
+    {
+      "name": "nested list ~~~~",
+      "input": "- outer\n  - ~~~~text\n    literal \u2014 value\n    ~~~~\nOutside \u2014 prose.",
+      "expected": "- outer\n  - ~~~~text\n    literal \u2014 value\n    ~~~~\nOutside, prose."
+    },
+    {
+      "name": "later list block ```",
+      "input": "- item\n\n  ```text\n  literal \u2014 value\n  ```\nOutside \u2014 prose.",
+      "expected": "- item\n\n  ```text\n  literal \u2014 value\n  ```\nOutside, prose."
+    },
+    {
+      "name": "later list block ~~~",
+      "input": "- item\n\n  ~~~text\n  literal \u2014 value\n  ~~~\nOutside \u2014 prose.",
+      "expected": "- item\n\n  ~~~text\n  literal \u2014 value\n  ~~~\nOutside, prose."
+    },
+    {
+      "name": "later list block ````",
+      "input": "- item\n\n  ````text\n  literal \u2014 value\n  ````\nOutside \u2014 prose.",
+      "expected": "- item\n\n  ````text\n  literal \u2014 value\n  ````\nOutside, prose."
+    },
+    {
+      "name": "later list block ~~~~",
+      "input": "- item\n\n  ~~~~text\n  literal \u2014 value\n  ~~~~\nOutside \u2014 prose.",
+      "expected": "- item\n\n  ~~~~text\n  literal \u2014 value\n  ~~~~\nOutside, prose."
+    },
+    {
+      "name": "tab list ```",
+      "input": "-\t```text\n\tliteral \u2014 value\n\t```\nOutside \u2014 prose.",
+      "expected": "-\t```text\n\tliteral \u2014 value\n\t```\nOutside, prose."
+    },
+    {
+      "name": "tab list ~~~",
+      "input": "-\t~~~text\n\tliteral \u2014 value\n\t~~~\nOutside \u2014 prose.",
+      "expected": "-\t~~~text\n\tliteral \u2014 value\n\t~~~\nOutside, prose."
+    },
+    {
+      "name": "tab list ````",
+      "input": "-\t````text\n\tliteral \u2014 value\n\t````\nOutside \u2014 prose.",
+      "expected": "-\t````text\n\tliteral \u2014 value\n\t````\nOutside, prose."
+    },
+    {
+      "name": "tab list ~~~~",
+      "input": "-\t~~~~text\n\tliteral \u2014 value\n\t~~~~\nOutside \u2014 prose.",
+      "expected": "-\t~~~~text\n\tliteral \u2014 value\n\t~~~~\nOutside, prose."
+    }
+  ],
+  "unclosed": [
+    {
+      "name": "quote ```",
+      "input": "> ```\n> literal \u2014 value\nOutside \u2014 prose.",
+      "expected": "> ```\n> literal \u2014 value\nOutside, prose."
+    },
+    {
+      "name": "quote ~~~",
+      "input": "> ~~~\n> literal \u2014 value\nOutside \u2014 prose.",
+      "expected": "> ~~~\n> literal \u2014 value\nOutside, prose."
+    },
+    {
+      "name": "quote ````",
+      "input": "> ````\n> literal \u2014 value\nOutside \u2014 prose.",
+      "expected": "> ````\n> literal \u2014 value\nOutside, prose."
+    },
+    {
+      "name": "quote ~~~~",
+      "input": "> ~~~~\n> literal \u2014 value\nOutside \u2014 prose.",
+      "expected": "> ~~~~\n> literal \u2014 value\nOutside, prose."
+    },
+    {
+      "name": "nested quote ```",
+      "input": "> > ```\n> > literal \u2014 value\nOutside \u2014 prose.",
+      "expected": "> > ```\n> > literal \u2014 value\nOutside, prose."
+    },
+    {
+      "name": "nested quote ~~~",
+      "input": "> > ~~~\n> > literal \u2014 value\nOutside \u2014 prose.",
+      "expected": "> > ~~~\n> > literal \u2014 value\nOutside, prose."
+    },
+    {
+      "name": "nested quote ````",
+      "input": "> > ````\n> > literal \u2014 value\nOutside \u2014 prose.",
+      "expected": "> > ````\n> > literal \u2014 value\nOutside, prose."
+    },
+    {
+      "name": "nested quote ~~~~",
+      "input": "> > ~~~~\n> > literal \u2014 value\nOutside \u2014 prose.",
+      "expected": "> > ~~~~\n> > literal \u2014 value\nOutside, prose."
+    },
+    {
+      "name": "bullet list ```",
+      "input": "- ```\n  literal \u2014 value\nOutside \u2014 prose.",
+      "expected": "- ```\n  literal \u2014 value\nOutside, prose."
+    },
+    {
+      "name": "bullet list ~~~",
+      "input": "- ~~~\n  literal \u2014 value\nOutside \u2014 prose.",
+      "expected": "- ~~~\n  literal \u2014 value\nOutside, prose."
+    },
+    {
+      "name": "bullet list ````",
+      "input": "- ````\n  literal \u2014 value\nOutside \u2014 prose.",
+      "expected": "- ````\n  literal \u2014 value\nOutside, prose."
+    },
+    {
+      "name": "bullet list ~~~~",
+      "input": "- ~~~~\n  literal \u2014 value\nOutside \u2014 prose.",
+      "expected": "- ~~~~\n  literal \u2014 value\nOutside, prose."
+    },
+    {
+      "name": "ordered list ```",
+      "input": "12. ```\n    literal \u2014 value\nOutside \u2014 prose.",
+      "expected": "12. ```\n    literal \u2014 value\nOutside, prose."
+    },
+    {
+      "name": "ordered list ~~~",
+      "input": "12. ~~~\n    literal \u2014 value\nOutside \u2014 prose.",
+      "expected": "12. ~~~\n    literal \u2014 value\nOutside, prose."
+    },
+    {
+      "name": "ordered list ````",
+      "input": "12. ````\n    literal \u2014 value\nOutside \u2014 prose.",
+      "expected": "12. ````\n    literal \u2014 value\nOutside, prose."
+    },
+    {
+      "name": "ordered list ~~~~",
+      "input": "12. ~~~~\n    literal \u2014 value\nOutside \u2014 prose.",
+      "expected": "12. ~~~~\n    literal \u2014 value\nOutside, prose."
+    },
+    {
+      "name": "quote list ```",
+      "input": "> - ```\n>   literal \u2014 value\nOutside \u2014 prose.",
+      "expected": "> - ```\n>   literal \u2014 value\nOutside, prose."
+    },
+    {
+      "name": "quote list ~~~",
+      "input": "> - ~~~\n>   literal \u2014 value\nOutside \u2014 prose.",
+      "expected": "> - ~~~\n>   literal \u2014 value\nOutside, prose."
+    },
+    {
+      "name": "quote list ````",
+      "input": "> - ````\n>   literal \u2014 value\nOutside \u2014 prose.",
+      "expected": "> - ````\n>   literal \u2014 value\nOutside, prose."
+    },
+    {
+      "name": "quote list ~~~~",
+      "input": "> - ~~~~\n>   literal \u2014 value\nOutside \u2014 prose.",
+      "expected": "> - ~~~~\n>   literal \u2014 value\nOutside, prose."
+    },
+    {
+      "name": "list quote ```",
+      "input": "- > ```\n  > literal \u2014 value\nOutside \u2014 prose.",
+      "expected": "- > ```\n  > literal \u2014 value\nOutside, prose."
+    },
+    {
+      "name": "list quote ~~~",
+      "input": "- > ~~~\n  > literal \u2014 value\nOutside \u2014 prose.",
+      "expected": "- > ~~~\n  > literal \u2014 value\nOutside, prose."
+    },
+    {
+      "name": "list quote ````",
+      "input": "- > ````\n  > literal \u2014 value\nOutside \u2014 prose.",
+      "expected": "- > ````\n  > literal \u2014 value\nOutside, prose."
+    },
+    {
+      "name": "list quote ~~~~",
+      "input": "- > ~~~~\n  > literal \u2014 value\nOutside \u2014 prose.",
+      "expected": "- > ~~~~\n  > literal \u2014 value\nOutside, prose."
+    },
+    {
+      "name": "nested list ```",
+      "input": "- outer\n  - ```\n    literal \u2014 value\nOutside \u2014 prose.",
+      "expected": "- outer\n  - ```\n    literal \u2014 value\nOutside, prose."
+    },
+    {
+      "name": "nested list ~~~",
+      "input": "- outer\n  - ~~~\n    literal \u2014 value\nOutside \u2014 prose.",
+      "expected": "- outer\n  - ~~~\n    literal \u2014 value\nOutside, prose."
+    },
+    {
+      "name": "nested list ````",
+      "input": "- outer\n  - ````\n    literal \u2014 value\nOutside \u2014 prose.",
+      "expected": "- outer\n  - ````\n    literal \u2014 value\nOutside, prose."
+    },
+    {
+      "name": "nested list ~~~~",
+      "input": "- outer\n  - ~~~~\n    literal \u2014 value\nOutside \u2014 prose.",
+      "expected": "- outer\n  - ~~~~\n    literal \u2014 value\nOutside, prose."
+    },
+    {
+      "name": "later list block ```",
+      "input": "- item\n\n  ```\n  literal \u2014 value\nOutside \u2014 prose.",
+      "expected": "- item\n\n  ```\n  literal \u2014 value\nOutside, prose."
+    },
+    {
+      "name": "later list block ~~~",
+      "input": "- item\n\n  ~~~\n  literal \u2014 value\nOutside \u2014 prose.",
+      "expected": "- item\n\n  ~~~\n  literal \u2014 value\nOutside, prose."
+    },
+    {
+      "name": "later list block ````",
+      "input": "- item\n\n  ````\n  literal \u2014 value\nOutside \u2014 prose.",
+      "expected": "- item\n\n  ````\n  literal \u2014 value\nOutside, prose."
+    },
+    {
+      "name": "later list block ~~~~",
+      "input": "- item\n\n  ~~~~\n  literal \u2014 value\nOutside \u2014 prose.",
+      "expected": "- item\n\n  ~~~~\n  literal \u2014 value\nOutside, prose."
+    },
+    {
+      "name": "tab list ```",
+      "input": "-\t```\n\tliteral \u2014 value\nOutside \u2014 prose.",
+      "expected": "-\t```\n\tliteral \u2014 value\nOutside, prose."
+    },
+    {
+      "name": "tab list ~~~",
+      "input": "-\t~~~\n\tliteral \u2014 value\nOutside \u2014 prose.",
+      "expected": "-\t~~~\n\tliteral \u2014 value\nOutside, prose."
+    },
+    {
+      "name": "tab list ````",
+      "input": "-\t````\n\tliteral \u2014 value\nOutside \u2014 prose.",
+      "expected": "-\t````\n\tliteral \u2014 value\nOutside, prose."
+    },
+    {
+      "name": "tab list ~~~~",
+      "input": "-\t~~~~\n\tliteral \u2014 value\nOutside \u2014 prose.",
+      "expected": "-\t~~~~\n\tliteral \u2014 value\nOutside, prose."
+    }
+  ],
+  "multiline": [
+    {
+      "name": "('', '', '`')",
+      "input": "A `first\nliteral \u2014 value\nlast` Outside \u2014 prose.",
+      "expected": "A `first\nliteral \u2014 value\nlast` Outside, prose."
+    },
+    {
+      "name": "('', '', '``')",
+      "input": "A ``first\nliteral \u2014 value\nlast`` Outside \u2014 prose.",
+      "expected": "A ``first\nliteral \u2014 value\nlast`` Outside, prose."
+    },
+    {
+      "name": "('> ', '> ', '`')",
+      "input": "> A `first\n> literal \u2014 value\n> last` Outside \u2014 prose.",
+      "expected": "> A `first\n> literal \u2014 value\n> last` Outside, prose."
+    },
+    {
+      "name": "('> ', '> ', '``')",
+      "input": "> A ``first\n> literal \u2014 value\n> last`` Outside \u2014 prose.",
+      "expected": "> A ``first\n> literal \u2014 value\n> last`` Outside, prose."
+    },
+    {
+      "name": "('- ', '  ', '`')",
+      "input": "- A `first\n  literal \u2014 value\n  last` Outside \u2014 prose.",
+      "expected": "- A `first\n  literal \u2014 value\n  last` Outside, prose."
+    },
+    {
+      "name": "('- ', '  ', '``')",
+      "input": "- A ``first\n  literal \u2014 value\n  last`` Outside \u2014 prose.",
+      "expected": "- A ``first\n  literal \u2014 value\n  last`` Outside, prose."
+    },
+    {
+      "name": "('> ', '', '`')",
+      "input": "> A `first\nliteral \u2014 value\nlast` Outside \u2014 prose.",
+      "expected": "> A `first\nliteral \u2014 value\nlast` Outside, prose."
+    },
+    {
+      "name": "('> ', '', '``')",
+      "input": "> A ``first\nliteral \u2014 value\nlast`` Outside \u2014 prose.",
+      "expected": "> A ``first\nliteral \u2014 value\nlast`` Outside, prose."
+    },
+    {
+      "name": "('- ', '', '`')",
+      "input": "- A `first\nliteral \u2014 value\nlast` Outside \u2014 prose.",
+      "expected": "- A `first\nliteral \u2014 value\nlast` Outside, prose."
+    },
+    {
+      "name": "('- ', '', '``')",
+      "input": "- A ``first\nliteral \u2014 value\nlast`` Outside \u2014 prose.",
+      "expected": "- A ``first\nliteral \u2014 value\nlast`` Outside, prose."
+    }
+  ],
+  "code_blocks": [
+    "> ```\n> shared vector branch value buffer return sample tuple signal input output token\n> ```\n",
+    "> ~~~\n> shared vector branch value buffer return sample tuple signal input output token\n> ~~~\n",
+    "> ````\n> shared vector branch value buffer return sample tuple signal input output token\n> ````\n",
+    "> ~~~~\n> shared vector branch value buffer return sample tuple signal input output token\n> ~~~~\n",
+    "> > ```\n> > shared vector branch value buffer return sample tuple signal input output token\n> > ```\n",
+    "> > ~~~\n> > shared vector branch value buffer return sample tuple signal input output token\n> > ~~~\n",
+    "> > ````\n> > shared vector branch value buffer return sample tuple signal input output token\n> > ````\n",
+    "> > ~~~~\n> > shared vector branch value buffer return sample tuple signal input output token\n> > ~~~~\n",
+    "- ```\n  shared vector branch value buffer return sample tuple signal input output token\n  ```\n",
+    "- ~~~\n  shared vector branch value buffer return sample tuple signal input output token\n  ~~~\n",
+    "- ````\n  shared vector branch value buffer return sample tuple signal input output token\n  ````\n",
+    "- ~~~~\n  shared vector branch value buffer return sample tuple signal input output token\n  ~~~~\n",
+    "12. ```\n    shared vector branch value buffer return sample tuple signal input output token\n    ```\n",
+    "12. ~~~\n    shared vector branch value buffer return sample tuple signal input output token\n    ~~~\n",
+    "12. ````\n    shared vector branch value buffer return sample tuple signal input output token\n    ````\n",
+    "12. ~~~~\n    shared vector branch value buffer return sample tuple signal input output token\n    ~~~~\n",
+    "> - ```\n>   shared vector branch value buffer return sample tuple signal input output token\n>   ```\n",
+    "> - ~~~\n>   shared vector branch value buffer return sample tuple signal input output token\n>   ~~~\n",
+    "> - ````\n>   shared vector branch value buffer return sample tuple signal input output token\n>   ````\n",
+    "> - ~~~~\n>   shared vector branch value buffer return sample tuple signal input output token\n>   ~~~~\n",
+    "- > ```\n  > shared vector branch value buffer return sample tuple signal input output token\n  > ```\n",
+    "- > ~~~\n  > shared vector branch value buffer return sample tuple signal input output token\n  > ~~~\n",
+    "- > ````\n  > shared vector branch value buffer return sample tuple signal input output token\n  > ````\n",
+    "- > ~~~~\n  > shared vector branch value buffer return sample tuple signal input output token\n  > ~~~~\n",
+    "-\t```\n\tshared vector branch value buffer return sample tuple signal input output token\n\t```\n",
+    "-\t~~~\n\tshared vector branch value buffer return sample tuple signal input output token\n\t~~~\n",
+    "-\t````\n\tshared vector branch value buffer return sample tuple signal input output token\n\t````\n",
+    "-\t~~~~\n\tshared vector branch value buffer return sample tuple signal input output token\n\t~~~~\n"
+  ],
+  "duplicate_prose": [
+    "Opening `unfinished\n\nshared vector branch value buffer return sample tuple signal input output token\n\nClosing `unfinished",
+    "Opening `unfinished\n   \nshared vector branch value buffer return sample tuple signal input output token\n   \nClosing `unfinished",
+    "Opening `unfinished\n\t\nshared vector branch value buffer return sample tuple signal input output token\n\t\nClosing `unfinished"
+  ],
+  "shared_prose": "shared vector branch value buffer return sample tuple signal input output token"
+}

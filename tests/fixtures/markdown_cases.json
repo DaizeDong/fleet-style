@@ -1,0 +1,72 @@
+{
+  "markdown": [
+    {
+      "name": "double inline",
+      "input": "``a \u2014 b`` Outside \u2014 prose.",
+      "expected": "``a \u2014 b`` Outside, prose."
+    },
+    {
+      "name": "embedded backtick",
+      "input": "``a ` b \u2014 c`` Outside \u2014 prose.",
+      "expected": "``a ` b \u2014 c`` Outside, prose."
+    },
+    {
+      "name": "mixed fence",
+      "input": "```text\n~~~\na \u2014 b\n```\nOutside \u2014 prose.",
+      "expected": "```text\n~~~\na \u2014 b\n```\nOutside, prose."
+    },
+    {
+      "name": "shorter fence",
+      "input": "````text\n```\na \u2014 b\n````\nOutside \u2014 prose.",
+      "expected": "````text\n```\na \u2014 b\n````\nOutside, prose."
+    },
+    {
+      "name": "closer with text",
+      "input": "```text\n``` still code\na \u2014 b\n```\nOutside \u2014 prose.",
+      "expected": "```text\n``` still code\na \u2014 b\n```\nOutside, prose."
+    },
+    {
+      "name": "tilde fence",
+      "input": "~~~~text\n~~~\na \u2014 b\n~~~~\nOutside \u2014 prose.",
+      "expected": "~~~~text\n~~~\na \u2014 b\n~~~~\nOutside, prose."
+    },
+    {
+      "name": "escaped table pipe in code",
+      "input": "| `\\| \u2014 item` | \u2014 |",
+      "expected": "| `\\| \u2014 item` | none |"
+    },
+    {
+      "name": "escaped table pipe in prose",
+      "input": "| value \\| \u2014 suffix | \u2014 |",
+      "expected": "| value \\|, suffix | none |"
+    },
+    {
+      "name": "multiline inline",
+      "input": "A ``multi\na \u2014 b\nline`` Outside \u2014 prose.",
+      "expected": "A ``multi\na \u2014 b\nline`` Outside, prose."
+    },
+    {
+      "name": "unmatched backtick",
+      "input": "A `open \u2014 prose.",
+      "expected": "A `open, prose."
+    },
+    {
+      "name": "escaped backtick",
+      "input": "A \\`escaped \u2014 prose.",
+      "expected": "A \\`escaped, prose."
+    },
+    {
+      "name": "placeholder collision",
+      "input": "\u00000\u0000 ``a \u2014 b`` Outside \u2014 prose.",
+      "expected": "\u00000\u0000 ``a \u2014 b`` Outside, prose."
+    }
+  ],
+  "code_blocks": [
+    "~~~\nshared vector branch value buffer return sample tuple signal input output token\n~~~\n",
+    "````\n```\nshared vector branch value buffer return sample tuple signal input output token\n```\n````\n",
+    "```\nshared vector branch value buffer return sample tuple signal input output token\n"
+  ],
+  "prose_a": "alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu\n",
+  "prose_b": "orange violet amber green copper silver purple indigo yellow black white teal\n",
+  "marker": "gitdir: synthetic\n"
+}

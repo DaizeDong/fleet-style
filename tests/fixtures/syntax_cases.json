@@ -1,0 +1,115 @@
+{
+  "shared": "alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu",
+  "literal": [
+    {
+      "input": "Before <span title=\"literal ` attribute\">label</span> alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 body ` suffix.",
+      "expected": "Before <span title=\"literal ` attribute\">label</span> alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, body ` suffix."
+    },
+    {
+      "input": "Before <!-- literal ` comment --> alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 body ` suffix.",
+      "expected": "Before <!-- literal ` comment --> alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, body ` suffix."
+    },
+    {
+      "input": "Before [label](https://example.com/`path) alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 body ` suffix.",
+      "expected": "Before [label](https://example.com/`path) alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, body ` suffix."
+    },
+    {
+      "input": "Before [label](https://example.com/ \"literal ` title\") alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 body ` suffix.",
+      "expected": "Before [label](https://example.com/ \"literal ` title\") alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, body ` suffix."
+    },
+    {
+      "input": "Before [label](<https://example.com/`path> 'literal title') alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 body ` suffix.",
+      "expected": "Before [label](<https://example.com/`path> 'literal title') alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, body ` suffix."
+    }
+  ],
+  "protected": [
+    "Before `literal <span title=\"value\"> \u2014 body` Outside \u2014 prose.",
+    "Before [literal `\u2014 body`](https://example.com/) Outside \u2014 prose.",
+    "Before <span title=\"literal \u2014 attribute\">label</span> Outside \u2014 prose.",
+    "Before [label](https://example.com/\u2014path \"title\") Outside \u2014 prose.",
+    "Before \\[label](`literal \u2014 body`) Outside \u2014 prose."
+  ],
+  "tables": [
+    {
+      "input": "alpha | beta\n--- | ---\n\u2014 | \u2014 detail\n",
+      "expected": "alpha | beta\n--- | ---\nnone | - detail\n"
+    },
+    {
+      "input": "alpha | beta\n--- | ---\n`literal \\| \u2014 body` | \u2014 detail\n",
+      "expected": "alpha | beta\n--- | ---\n`literal \\| \u2014 body` | - detail\n"
+    },
+    {
+      "input": "> alpha | beta\n> --- | ---\n> \u2014 | \u2014 detail\n",
+      "expected": "> alpha | beta\n> --- | ---\n> none | - detail\n"
+    },
+    {
+      "input": "> alpha | beta\n> --- | ---\n> `literal \\| \u2014 body` | \u2014 detail\n",
+      "expected": "> alpha | beta\n> --- | ---\n> `literal \\| \u2014 body` | - detail\n"
+    },
+    {
+      "input": "- alpha | beta\n  --- | ---\n  \u2014 | \u2014 detail\n",
+      "expected": "- alpha | beta\n  --- | ---\n  none | - detail\n"
+    },
+    {
+      "input": "- alpha | beta\n  --- | ---\n  `literal \\| \u2014 body` | \u2014 detail\n",
+      "expected": "- alpha | beta\n  --- | ---\n  `literal \\| \u2014 body` | - detail\n"
+    },
+    {
+      "input": "> - alpha | beta\n>   --- | ---\n>   \u2014 | \u2014 detail\n",
+      "expected": "> - alpha | beta\n>   --- | ---\n>   none | - detail\n"
+    },
+    {
+      "input": "> - alpha | beta\n>   --- | ---\n>   `literal \\| \u2014 body` | \u2014 detail\n",
+      "expected": "> - alpha | beta\n>   --- | ---\n>   `literal \\| \u2014 body` | - detail\n"
+    },
+    {
+      "input": "- > alpha | beta\n  > --- | ---\n  > \u2014 | \u2014 detail\n",
+      "expected": "- > alpha | beta\n  > --- | ---\n  > none | - detail\n"
+    },
+    {
+      "input": "- > alpha | beta\n  > --- | ---\n  > `literal \\| \u2014 body` | \u2014 detail\n",
+      "expected": "- > alpha | beta\n  > --- | ---\n  > `literal \\| \u2014 body` | - detail\n"
+    },
+    {
+      "input": "| alpha | beta |\n| --- | --- |\n| \u2014 | \u2014 detail |\n",
+      "expected": "| alpha | beta |\n| --- | --- |\n| none | - detail |\n"
+    },
+    {
+      "input": "| alpha | beta |\n| --- | --- |\n| `literal \\| \u2014 body` | \u2014 detail |\n",
+      "expected": "| alpha | beta |\n| --- | --- |\n| `literal \\| \u2014 body` | - detail |\n"
+    },
+    {
+      "input": "> | alpha | beta |\n> | --- | --- |\n> | \u2014 | \u2014 detail |\n",
+      "expected": "> | alpha | beta |\n> | --- | --- |\n> | none | - detail |\n"
+    },
+    {
+      "input": "> | alpha | beta |\n> | --- | --- |\n> | `literal \\| \u2014 body` | \u2014 detail |\n",
+      "expected": "> | alpha | beta |\n> | --- | --- |\n> | `literal \\| \u2014 body` | - detail |\n"
+    },
+    {
+      "input": "- | alpha | beta |\n  | --- | --- |\n  | \u2014 | \u2014 detail |\n",
+      "expected": "- | alpha | beta |\n  | --- | --- |\n  | none | - detail |\n"
+    },
+    {
+      "input": "- | alpha | beta |\n  | --- | --- |\n  | `literal \\| \u2014 body` | \u2014 detail |\n",
+      "expected": "- | alpha | beta |\n  | --- | --- |\n  | `literal \\| \u2014 body` | - detail |\n"
+    },
+    {
+      "input": "> - | alpha | beta |\n>   | --- | --- |\n>   | \u2014 | \u2014 detail |\n",
+      "expected": "> - | alpha | beta |\n>   | --- | --- |\n>   | none | - detail |\n"
+    },
+    {
+      "input": "> - | alpha | beta |\n>   | --- | --- |\n>   | `literal \\| \u2014 body` | \u2014 detail |\n",
+      "expected": "> - | alpha | beta |\n>   | --- | --- |\n>   | `literal \\| \u2014 body` | - detail |\n"
+    },
+    {
+      "input": "- > | alpha | beta |\n  > | --- | --- |\n  > | \u2014 | \u2014 detail |\n",
+      "expected": "- > | alpha | beta |\n  > | --- | --- |\n  > | none | - detail |\n"
+    },
+    {
+      "input": "- > | alpha | beta |\n  > | --- | --- |\n  > | `literal \\| \u2014 body` | \u2014 detail |\n",
+      "expected": "- > | alpha | beta |\n  > | --- | --- |\n  > | `literal \\| \u2014 body` | - detail |\n"
+    }
+  ],
+  "ancestor_name": "synthetic-alias"
+}

@@ -1,0 +1,97 @@
+{
+  "shared": "alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu",
+  "tables": [
+    "| alpha | beta |\n| --- | --- |\n| alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu | value |\n",
+    "> | alpha | beta |\n> | --- | --- |\n> | alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu | value |\n",
+    "- | alpha | beta |\n  | --- | --- |\n  | alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu | value |\n",
+    "> - | alpha | beta |\n>   | --- | --- |\n>   | alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu | value |\n",
+    "alpha | beta\n--- | ---\nalpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu | value\n",
+    "> alpha | beta\n> --- | ---\n> alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu | value\n",
+    "- alpha | beta\n  --- | ---\n  alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu | value\n",
+    "> - alpha | beta\n>   --- | ---\n>   alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu | value\n"
+  ],
+  "ordinary": [
+    "| alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu |\n",
+    "alpha | beta\nnot a delimiter\nalpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu",
+    "| alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu | value |\n| --- | --- | --- |\n"
+  ],
+  "html": [
+    {
+      "input": "<div>\nliteral `alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 body`\n</div>\n",
+      "expected": "<div>\nliteral `alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, body`\n</div>\n"
+    },
+    {
+      "input": "> <div>\n> literal `alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 body`\n> </div>\n",
+      "expected": "> <div>\n> literal `alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, body`\n> </div>\n"
+    },
+    {
+      "input": "<script>\nliteral `alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 body`\n</script>\n",
+      "expected": "<script>\nliteral `alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, body`\n</script>\n"
+    },
+    {
+      "input": "> <script>\n> literal `alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 body`\n> </script>\n",
+      "expected": "> <script>\n> literal `alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, body`\n> </script>\n"
+    },
+    {
+      "input": "<!--\nliteral `alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 body`\n-->\n",
+      "expected": "<!--\nliteral `alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, body`\n-->\n"
+    },
+    {
+      "input": "> <!--\n> literal `alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 body`\n> -->\n",
+      "expected": "> <!--\n> literal `alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, body`\n> -->\n"
+    },
+    {
+      "input": "<?sample\nliteral `alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 body`\n?>\n",
+      "expected": "<?sample\nliteral `alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, body`\n?>\n"
+    },
+    {
+      "input": "> <?sample\n> literal `alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 body`\n> ?>\n",
+      "expected": "> <?sample\n> literal `alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, body`\n> ?>\n"
+    },
+    {
+      "input": "<!DOCTYPE sample [\nliteral `alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 body`\n>\n",
+      "expected": "<!DOCTYPE sample [\nliteral `alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, body`\n>\n"
+    },
+    {
+      "input": "> <!DOCTYPE sample [\n> literal `alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 body`\n> >\n",
+      "expected": "> <!DOCTYPE sample [\n> literal `alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, body`\n> >\n"
+    },
+    {
+      "input": "<![CDATA[\nliteral `alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 body`\n]]>\n",
+      "expected": "<![CDATA[\nliteral `alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, body`\n]]>\n"
+    },
+    {
+      "input": "> <![CDATA[\n> literal `alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 body`\n> ]]>\n",
+      "expected": "> <![CDATA[\n> literal `alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, body`\n> ]]>\n"
+    },
+    {
+      "input": "<sample-card label=\"value\">\nliteral `alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 body`\n</sample-card>\n",
+      "expected": "<sample-card label=\"value\">\nliteral `alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, body`\n</sample-card>\n"
+    },
+    {
+      "input": "> <sample-card label=\"value\">\n> literal `alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 body`\n> </sample-card>\n",
+      "expected": "> <sample-card label=\"value\">\n> literal `alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, body`\n> </sample-card>\n"
+    }
+  ],
+  "after_html": [
+    "<div>\ntext\n</div>\n\nA `literal \u2014 value` Outside \u2014 prose.",
+    "<!-- text -->\nA `literal \u2014 value` Outside \u2014 prose.",
+    "> <div>\n> text\nOutside \u2014 prose.\n\nA `literal \u2014 value`.",
+    "An ordinary paragraph\n<span>\nA `literal \u2014 value` Outside \u2014 prose.",
+    "An ordinary <span>`literal \u2014 value`</span> Outside \u2014 prose."
+  ],
+  "code": [
+    "```html\n<div>\n`literal \u2014 value`\n</div>\n```\n",
+    "    <div>\n    `literal \u2014 value`\n    </div>\n"
+  ],
+  "invalid_utf8_hex": "616c70686120626574612067616d6d612064656c746120657073696c6f6e207a6574612065746120746865746120696f7461206b61707061206c616d626461206d750aff0a",
+  "invalid_thresholds": [
+    "nan",
+    "NaN",
+    "inf",
+    "-inf",
+    "-0.01",
+    "100.01"
+  ],
+  "marker": "gitdir: synthetic\n"
+}

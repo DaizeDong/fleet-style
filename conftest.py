@@ -1,4 +1,4 @@
-"""Keep this kit's own tests (116 on 2026-09-25) out of a CONSUMER's test run, without hiding them.
+"""Keep this kit's own tests out of a CONSUMER's test run, without hiding them.
 
 THE PROBLEM THIS SOLVES. Consumed as a submodule at <repo>/style, this directory is an ordinary
 subdirectory as far as pytest is concerned. A bare `pytest` at a consumer's root went from
@@ -34,13 +34,14 @@ def _asked_for_explicitly(config):
     "asked for by name", and getting that backwards would break the one command consumers use to
     verify their pinned commit.
     """
-    here = os.path.realpath(os.path.dirname(__file__))
+    here = os.path.normcase(os.path.realpath(os.path.dirname(__file__)))
     for a in config.invocation_params.args:
-        p = os.path.realpath(os.path.abspath(str(a).split("::", 1)[0]))
+        p = os.path.normcase(os.path.realpath(os.path.abspath(str(a).split("::", 1)[0])))
         if p == here or p.startswith(here + os.sep):
             return True
     # Invoked from inside the kit with no path argument at all.
-    return os.path.realpath(config.invocation_params.dir) == here
+    invoked = os.path.normcase(os.path.realpath(config.invocation_params.dir))
+    return invoked == here or invoked.startswith(here + os.sep)
 
 
 def pytest_ignore_collect(collection_path, config):

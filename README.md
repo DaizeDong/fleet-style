@@ -1,139 +1,105 @@
 # fleet-style
 
-Three house gates that are not about security, kept in one place and consumed as a git submodule.
+The two house gates that are NOT about security, in one place, consumed as a git submodule.
 
-[![Git Submodule](https://img.shields.io/badge/Git%20Submodule-Style%20Kit-orange?style=flat)](#install)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Gates](https://img.shields.io/badge/Gates-3-green?style=flat)](#gates-at-a-glance)
-[![Languages](https://img.shields.io/badge/Languages-EN%20%2F%20CN-blue?style=flat)](#languages)
-[![Roadmap](https://img.shields.io/badge/Roadmap-v0.3.0-purple?style=flat)](ROADMAP.md)
+    dash_guard    published prose carries no en/em dash (the ASCII hyphen is code syntax)
+    load_budget   PHILOSOPHY P7: the always-loaded budget and the no-second-copy rule
 
-[English](README.md) | [中文版](README_CN.md)
+## Why this is a separate repo from fleet-guards
 
----
+fleet-guards exists to keep a real identifier out of a public history. Nothing here does that.
+These two catch a house style rule and an architecture rule, and both are worth catching, but a
+repo that wants the security kit should not be made to carry them: they were 17.5% of that kit and
+none of it was about the thing the kit is for.
 
-## ⭐ Read this first, the design philosophy
-
-Three commitments shape this kit, and they matter more than the three rules it enforces.
-
-**A scan that never ran is not a clean scan.** Both tools refuse to confuse "nothing was found" with "nothing was examined". `dash_guard` exits 2 when git is unusable or the directory is not a work tree, rather than enumerating zero files and printing clean. `load_budget` exits 3 when it locates no skill to measure, rather than reporting a state. Every CI step here fails on a missing scanner instead of skipping it, because an empty `style/` directory left by a clone without `--recursive` reads exactly like a gate that passed.
-
-**A gate that cannot fail is not a gate.** Each action runs the guard's own tests before
-it runs the guard, and each guarantee in those tests is paired with a negative control:
-an over budget `SKILL.md` that must exit 1, a duplicated paragraph that must exit 1, a
-threshold flipped across the same fixture that must flip the verdict. The rule comes from
-this repository's own history, where half of `load_budget` blocked nothing while printing
-`ok`.
-
-**One copy, pinned, never vendored.** These tools were copied by hand into every repository that wanted them, and copies drift silently. A submodule replaces the hand written list of repositories with a pointer that lives in the consumer, and the consumer decides when the pointer moves.
-
-## What it is (and isn't)
-
-It is a git submodule holding two scanners, their tests and two composite GitHub Actions. `dash_guard` enforces the house rule that published prose carries no en dash, em dash or horizontal bar, while leaving the ASCII hyphen alone because that is code syntax. `load_budget` measures what a `SKILL.md` costs on every invocation and how much of it is prose duplicated from an on demand reference.
-
-It is **not** a Claude Code skill or plugin, and it ships no `SKILL.md`: it is a submodule you add to a repository and call from CI. It is **not** the security kit. `fleet-guards` exists to keep a real identifier out of a public history, and nothing here does that; these two catch a style rule and an architecture rule instead. It is **not** wired to `core.hooksPath`, because that setting points at one directory and that directory belongs to the gates standing between an identifier and a public push.
-
-Keeping the two kits apart also keeps their answers apart. Every public repository needs the security gates. A repository with no `SKILL.md` has nothing for the load budget to measure, and says so on every run.
+Separating them also makes the answer to "must every public repo have this" different for each,
+which it always was. Every public repo needs the security gates. A repo with no SKILL.md has
+nothing for the load budget to measure, and said so on every run.
 
 ## Install
 
-```bash
-git submodule add -b main https://github.com/DaizeDong/fleet-style.git style
-```
+    git submodule add -b main https://github.com/DaizeDong/fleet-style.git style
 
 Then in each workflow that wants a gate:
 
-```yaml
-- uses: actions/checkout@v4
-  with: {submodules: true}
-- uses: actions/setup-python@v5
-  with: {python-version: '3.x'}
-- uses: ./style/ci/dash-guard        # or ./style/ci/load-budget
-```
+    - uses: actions/checkout@v4
+      with: {submodules: true}
+    - uses: actions/setup-python@v5
+      with: {python-version: '3.x'}
+    - uses: ./style/ci/dash-guard        # or ./style/ci/load-budget
 
-`ci/dash-guard` takes one optional input, `block-kinds`. The kinds added in v0.3.0 (JS, YAML, shell, PowerShell and cmd comments, commit messages, and files the guard could not read) report without failing until a consumer names them there, for example `with: {block-kinds: 'js,yaml'}`. Leaving it empty keeps the verdict exactly what it was before v0.3.0.
+Hooks are NOT wired here. `core.hooksPath` can only point at one directory, and it belongs to
+fleet-guards, whose hooks are the thing standing between an identifier and a public push. These
+two run in CI, which cannot be skipped with `--no-verify` anyway.
 
-Moving the pin:
+## Checking files locally
 
-```bash
-git -C style fetch && git -C style checkout <sha>
-```
+    python tools/dash_guard.py --check --tree
+    python tools/dash_guard.py --check --staged
+    python tools/dash_guard.py --added-only
 
-then commit the new pointer. A submodule pins one commit. Consumers may also enroll in [automatic synchronization](docs/AUTOMATIC_SYNC.md): once the source workflow passes, a dispatch event advances the pin through the consumer's normal commit gates.
+The staged modes read the index blobs, including when explicit paths are supplied. An unstaged
+edit or removal cannot hide content that is about to be committed. `--added-only` checks the
+added lines of that same staged version. Unreadable or untokenizable inputs produce an incomplete
+result and a nonzero exit. Deliberate exclusions are listed separately with the examined count.
 
-## Quick start
+Use `--fix --tree` to repair worktree files, inspect the diff, and stage the changes you want.
+`--fix --staged` is refused because replacing worktree files from the index would discard
+unstaged edits. `--check` and `--fix` are mutually exclusive.
 
-Run either tool directly against the repository that consumes it:
+    python tools/make_fixtures.py --check
+    python -m pytest tools/ -q
 
-```bash
-python style/tools/dash_guard.py --tree      # every tracked text file
-python style/tools/dash_guard.py --staged    # the staged blobs only
-python style/tools/dash_guard.py --fix FILE  # deterministic repair, not a gate
-python style/tools/dash_guard.py --message .git/COMMIT_EDITMSG   # one commit message
-python style/tools/dash_guard.py --tree --block-kinds js,yaml    # promote report kinds
-python style/tools/load_budget.py .          # the always loaded budget
-```
+The first command verifies the generated synthetic scanner inputs. The second runs both gates'
+full test suites, including controls for incomplete scans and staged content.
 
-To check that the commit you pinned still passes here, ask for this kit's suite by path:
+The scanners share Markdown code protection that respects paragraph and container boundaries.
+Fenced and indented code, including code in quotes and lists, stays unchanged when fixing prose
+and is excluded from duplication measurements. Inline code can span physical lines within one
+paragraph. An unmatched delimiter cannot hide prose in a later block. Dependency references are
+excluded when a submodule marker exists at any ancestor below the skill's reference root.
 
-```bash
-pytest style/tools/
-```
+In GitHub Markdown tables, inline code stays within its own cell. An escaped pipe remains part
+of that cell. Ordinary paragraphs containing pipes retain normal inline-code behavior.
+The no-value and leading-item repairs also apply to recognized tables in containers and without
+outer pipes, preserving their container prefixes. Literal backticks inside inline HTML or link
+destinations and titles cannot open a code span over following prose. Those literal fields retain
+their bytes, and code in link labels or around HTML keeps normal code-span precedence.
+Duplication measurements exclude complete tables, including tables without outer pipes and
+tables in quotes or lists. HTML blocks follow their own boundaries: literal backticks there do
+not hide prose, while HTML inside a Markdown code block remains protected.
 
-A bare `pytest` at the consumer's root does not collect it. `conftest.py` keeps these tests out of a consumer's count, because several repositories in this fleet gate on a minimum test count and a floor met by unrelated tests is a floor that says nothing.
+Link reference definitions are parsed before inline code. Their destinations and
+titles remain literal, including multiline definitions in quotes and lists, and
+cannot hide the next paragraph. Full, collapsed and shortcut references use the
+document's defined labels. Completing a link disables enclosing link openers;
+image openers retain their separate nesting rules, preserving genuine code after
+an invalid nested link.
 
-## Gates at a glance
+Duplication checks use those same parsed links to normalize inline, reference and
+image labels. Their delimiters and targets are removed while adjacent label text
+stays joined. Escaped, unresolved and rejected link syntax remains visible prose,
+so a link-shaped tail cannot erase words that should be compared.
 
-| Gate | What it asserts | Exit codes |
-| --- | --- | --- |
-| `tools/dash_guard.py` | Published prose carries no en dash, em dash or horizontal bar. Markdown fences and inline code spans are exempt, a line marked `dash-guard: allow` is exempt, and the scanner's own source is exempt by name because it carries the dash set as data. Markdown, plain text and Python comments block. JS `//` and `/* */` comments, YAML `#` comments, shell, PowerShell and cmd comments, commit messages (`--message`) and files the guard could not read are REPORT kinds: printed with their kind and counted on the verdict line, and blocking only when named in `--block-kinds`. Every string, template and regex literal is code and is never examined. | 0 clean, 1 blocking findings, 2 the scan could not run |
-| `tools/wrap_guard.py` | Prose paragraphs carry no hard wraps: a paragraph is one line, blank lines separate paragraphs. Newlines belong only between paragraphs, between list items, inside code blocks and inside tables. Fences, tables, quotes, headings, badge rows and git trailers are exempt, a paragraph preceded by `wrap-guard:allow` is exempt, and the scanner's own source is exempt by name because it carries wrapped examples. `--fix` rejoins the lines, gluing CJK without a space and everything else with one. | 0 clean, 1 findings, 2 the scan could not run |
-| `tools/load_budget.py` | A skill's always loaded lines stay under budget, and prose in `SKILL.md` is not a second copy of prose in a reference. Duplication is detected with word shingles, so a rule's own wording appearing in the reference that elaborates it does not trip it. | 0 within budget, 1 over budget, 3 nothing was measured |
+`load_budget.py --max-dup` accepts a finite percentage from 0 through 100. A decoding, discovery
+or read error exits 3 and reports the affected input on stderr; it emits no partial JSON success.
+Inputs must be regular files in physical directories, including the supplied root's ancestors.
+Links are reported as unsupported, and
+submodules are pruned before traversing their contents. Missing references still produce the
+explicit `NOT CHECKED` result described by the tool.
 
-| CI action | Wiring |
-| --- | --- |
-| `ci/dash-guard` | Installs pytest, runs `tools/test_dash_guard.py`, then scans the calling repository's tree. The `block-kinds` input promotes report kinds to blocking. |
-| `ci/wrap-guard` | Installs pytest, runs `tools/test_wrap_guard.py`, then scans the calling repository's tree. |
-| `ci/load-budget` | Installs pytest, fails if `tools/test_load_budget.py` is absent, runs it, then measures the calling repository. |
+`tools/make_fixtures.py --out DIRECTORY` writes the synthetic fixtures by basename for the shared
+data-boundary check. Add `--check` to verify that directory without rewriting it.
 
-## How it runs
+## Moving the pin
 
-The gates run in CI, on the calling repository, and nowhere else. They scan the current tree and never the history: a dash in an old commit is harmless and is not worth rewriting a history for, which is the sharpest difference between this kit and the security one.
+    git -C style fetch && git -C style checkout <sha>
 
-This repository runs its own gates through its own actions. `.github/workflows/style.yml` calls `./ci/dash-guard`, so a break shows up here before it reaches a consumer. There is no load budget job in it, because this repository declares no skill and the tool would exit 3 on every commit.
+then commit the new pointer. A submodule pins one commit and does not follow the source on its
+own, which is deliberate: a bad commit here cannot reach every consumer by itself.
 
-## Example output
+## An empty style/ is not a pass
 
-```
-$ python tools/dash_guard.py --tree
-dash_guard: 2 file(s) deliberately excluded:
-  tools/dash_guard.py                    the guard's own source (contains the dash set by design)
-  tools/test_dash_guard.py               the guard's own source (contains the dash set by design)
-dash_guard: clean (16 file(s) examined, 2 skipped)
-```
-
-```
-$ python tools/load_budget.py .
-load_budget: FAIL, measured NOTHING under /path/to/fleet-style
-  looked for: skills/*/SKILL.md and SKILL.md at the root
-  This repo declares no skill (no .claude-plugin/plugin.json, no skills/, no root
-  SKILL.md), so load_budget has nothing here to guard. Drop tools/load_budget.py
-  from it rather than letting an inert gate report a result.
-```
-
-The second one is the design working. A repository with nothing to measure is told to stop carrying the gate, instead of collecting a green check that means nothing.
-
-## Limitations
-
-Neither gate protects a history. Both read the tree as it is now, so a violation already in an old commit stays there. Neither gate is a hook here, so a consumer that only runs them in CI learns about a violation after the push rather than before it. `dash_guard --fix` rewrites files in place and is deliberately not usable as a gate: it exits 0 after a successful repair, so wiring it into CI installs a check that cannot fail. The comment kinds added in v0.3.0 have no fixer and are report only until a consumer promotes them. Their lexers are small and hand written, not parsers; YAML scalars, including prose ones such as `description:`, are not examined yet, and a `#` line inside a block scalar is text, except inside a `run:` block, where it is counted because it is a shell comment. The JS lexer has not been measured on `.jsx` or `.tsx` files, because no consumer carries one yet; that recall has to be measured before `js` can block. And `load_budget` only understands two repository shapes, `skills/*/SKILL.md` and a `SKILL.md` at the root; anything else is reported as nothing measured.
-
-## Languages
-
-English (`README.md`) · 中文 (`README_CN.md`)
-
-## Roadmap · Contributing · License
-
-See [ROADMAP.md](ROADMAP.md) · [CHANGELOG.md](CHANGELOG.md).
-
-The deviations from the house repository spec, and the reason for each, are recorded in
-[docs/2026-09-22-spec-adaptation.md](docs/2026-09-22-spec-adaptation.md).
+A plain `git clone` without `--recursive` leaves it EMPTY, and so does a CI checkout without
+`submodules: true`. Every action here fails on a missing scanner rather than skipping, because a
+gate that is not there is not a gate that passed.

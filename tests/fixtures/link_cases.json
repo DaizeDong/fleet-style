@@ -1,0 +1,226 @@
+{
+  "shared": "alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu",
+  "visible": [
+    {
+      "input": "[ref]: https://example.com/`\nalpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 tail`\n",
+      "expected": "[ref]: https://example.com/`\nalpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, tail`\n"
+    },
+    {
+      "input": "> [ref]: https://example.com/`\n> alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 tail`\n",
+      "expected": "> [ref]: https://example.com/`\n> alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, tail`\n"
+    },
+    {
+      "input": "- [ref]: https://example.com/`\n  alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 tail`\n",
+      "expected": "- [ref]: https://example.com/`\n  alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, tail`\n"
+    },
+    {
+      "input": "> - [ref]: https://example.com/`\n>   alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 tail`\n",
+      "expected": "> - [ref]: https://example.com/`\n>   alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, tail`\n"
+    },
+    {
+      "input": "- > [ref]: https://example.com/`\n  > alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 tail`\n",
+      "expected": "- > [ref]: https://example.com/`\n  > alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, tail`\n"
+    },
+    {
+      "input": "[ref]: https://example.com/ \"literal ` title\"\nalpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 tail`\n",
+      "expected": "[ref]: https://example.com/ \"literal ` title\"\nalpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, tail`\n"
+    },
+    {
+      "input": "> [ref]: https://example.com/ \"literal ` title\"\n> alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 tail`\n",
+      "expected": "> [ref]: https://example.com/ \"literal ` title\"\n> alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, tail`\n"
+    },
+    {
+      "input": "- [ref]: https://example.com/ \"literal ` title\"\n  alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 tail`\n",
+      "expected": "- [ref]: https://example.com/ \"literal ` title\"\n  alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, tail`\n"
+    },
+    {
+      "input": "> - [ref]: https://example.com/ \"literal ` title\"\n>   alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 tail`\n",
+      "expected": "> - [ref]: https://example.com/ \"literal ` title\"\n>   alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, tail`\n"
+    },
+    {
+      "input": "- > [ref]: https://example.com/ \"literal ` title\"\n  > alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 tail`\n",
+      "expected": "- > [ref]: https://example.com/ \"literal ` title\"\n  > alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, tail`\n"
+    },
+    {
+      "input": "[ref]: https://example.com/ 'literal ` title'\nalpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 tail`\n",
+      "expected": "[ref]: https://example.com/ 'literal ` title'\nalpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, tail`\n"
+    },
+    {
+      "input": "> [ref]: https://example.com/ 'literal ` title'\n> alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 tail`\n",
+      "expected": "> [ref]: https://example.com/ 'literal ` title'\n> alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, tail`\n"
+    },
+    {
+      "input": "- [ref]: https://example.com/ 'literal ` title'\n  alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 tail`\n",
+      "expected": "- [ref]: https://example.com/ 'literal ` title'\n  alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, tail`\n"
+    },
+    {
+      "input": "> - [ref]: https://example.com/ 'literal ` title'\n>   alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 tail`\n",
+      "expected": "> - [ref]: https://example.com/ 'literal ` title'\n>   alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, tail`\n"
+    },
+    {
+      "input": "- > [ref]: https://example.com/ 'literal ` title'\n  > alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 tail`\n",
+      "expected": "- > [ref]: https://example.com/ 'literal ` title'\n  > alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, tail`\n"
+    },
+    {
+      "input": "[ref]: https://example.com/\n  \"literal ` title\"\nalpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 tail`\n",
+      "expected": "[ref]: https://example.com/\n  \"literal ` title\"\nalpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, tail`\n"
+    },
+    {
+      "input": "> [ref]: https://example.com/\n>   \"literal ` title\"\n> alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 tail`\n",
+      "expected": "> [ref]: https://example.com/\n>   \"literal ` title\"\n> alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, tail`\n"
+    },
+    {
+      "input": "- [ref]: https://example.com/\n    \"literal ` title\"\n  alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 tail`\n",
+      "expected": "- [ref]: https://example.com/\n    \"literal ` title\"\n  alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, tail`\n"
+    },
+    {
+      "input": "> - [ref]: https://example.com/\n>     \"literal ` title\"\n>   alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 tail`\n",
+      "expected": "> - [ref]: https://example.com/\n>     \"literal ` title\"\n>   alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, tail`\n"
+    },
+    {
+      "input": "- > [ref]: https://example.com/\n  >   \"literal ` title\"\n  > alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 tail`\n",
+      "expected": "- > [ref]: https://example.com/\n  >   \"literal ` title\"\n  > alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, tail`\n"
+    },
+    {
+      "input": "[ref]:\n  https://example.com/`\nalpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 tail`\n",
+      "expected": "[ref]:\n  https://example.com/`\nalpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, tail`\n"
+    },
+    {
+      "input": "> [ref]:\n>   https://example.com/`\n> alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 tail`\n",
+      "expected": "> [ref]:\n>   https://example.com/`\n> alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, tail`\n"
+    },
+    {
+      "input": "- [ref]:\n    https://example.com/`\n  alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 tail`\n",
+      "expected": "- [ref]:\n    https://example.com/`\n  alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, tail`\n"
+    },
+    {
+      "input": "> - [ref]:\n>     https://example.com/`\n>   alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 tail`\n",
+      "expected": "> - [ref]:\n>     https://example.com/`\n>   alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, tail`\n"
+    },
+    {
+      "input": "- > [ref]:\n  >   https://example.com/`\n  > alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 tail`\n",
+      "expected": "- > [ref]:\n  >   https://example.com/`\n  > alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, tail`\n"
+    },
+    {
+      "input": "[ref]: <https://example.com/`>\n  \"multiline\n  title\"\nalpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 tail`\n",
+      "expected": "[ref]: <https://example.com/`>\n  \"multiline\n  title\"\nalpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, tail`\n"
+    },
+    {
+      "input": "> [ref]: <https://example.com/`>\n>   \"multiline\n>   title\"\n> alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 tail`\n",
+      "expected": "> [ref]: <https://example.com/`>\n>   \"multiline\n>   title\"\n> alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, tail`\n"
+    },
+    {
+      "input": "- [ref]: <https://example.com/`>\n    \"multiline\n    title\"\n  alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 tail`\n",
+      "expected": "- [ref]: <https://example.com/`>\n    \"multiline\n    title\"\n  alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, tail`\n"
+    },
+    {
+      "input": "> - [ref]: <https://example.com/`>\n>     \"multiline\n>     title\"\n>   alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 tail`\n",
+      "expected": "> - [ref]: <https://example.com/`>\n>     \"multiline\n>     title\"\n>   alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, tail`\n"
+    },
+    {
+      "input": "- > [ref]: <https://example.com/`>\n  >   \"multiline\n  >   title\"\n  > alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 tail`\n",
+      "expected": "- > [ref]: <https://example.com/`>\n  >   \"multiline\n  >   title\"\n  > alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, tail`\n"
+    },
+    {
+      "input": "[two\n words]: https://example.com/`\nalpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 tail`\n",
+      "expected": "[two\n words]: https://example.com/`\nalpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, tail`\n"
+    },
+    {
+      "input": "> [two\n>  words]: https://example.com/`\n> alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 tail`\n",
+      "expected": "> [two\n>  words]: https://example.com/`\n> alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, tail`\n"
+    },
+    {
+      "input": "- [two\n   words]: https://example.com/`\n  alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 tail`\n",
+      "expected": "- [two\n   words]: https://example.com/`\n  alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, tail`\n"
+    },
+    {
+      "input": "> - [two\n>    words]: https://example.com/`\n>   alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 tail`\n",
+      "expected": "> - [two\n>    words]: https://example.com/`\n>   alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, tail`\n"
+    },
+    {
+      "input": "- > [two\n  >  words]: https://example.com/`\n  > alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 tail`\n",
+      "expected": "- > [two\n  >  words]: https://example.com/`\n  > alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, tail`\n"
+    },
+    {
+      "input": "[ref]: https://example.com/`\n[second]: /another\nalpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 tail`\n",
+      "expected": "[ref]: https://example.com/`\n[second]: /another\nalpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, tail`\n"
+    },
+    {
+      "input": "> [ref]: https://example.com/`\n> [second]: /another\n> alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 tail`\n",
+      "expected": "> [ref]: https://example.com/`\n> [second]: /another\n> alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, tail`\n"
+    },
+    {
+      "input": "- [ref]: https://example.com/`\n  [second]: /another\n  alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 tail`\n",
+      "expected": "- [ref]: https://example.com/`\n  [second]: /another\n  alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, tail`\n"
+    },
+    {
+      "input": "> - [ref]: https://example.com/`\n>   [second]: /another\n>   alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 tail`\n",
+      "expected": "> - [ref]: https://example.com/`\n>   [second]: /another\n>   alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, tail`\n"
+    },
+    {
+      "input": "- > [ref]: https://example.com/`\n  > [second]: /another\n  > alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 tail`\n",
+      "expected": "- > [ref]: https://example.com/`\n  > [second]: /another\n  > alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, tail`\n"
+    },
+    {
+      "input": "[ref]: <https://example.com/\u2014> \"literal \u2014 ` title\"\nalpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 tail`\n",
+      "expected": "[ref]: <https://example.com/\u2014> \"literal \u2014 ` title\"\nalpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, tail`\n"
+    },
+    {
+      "input": "> [ref]: <https://example.com/\u2014> \"literal \u2014 ` title\"\n> alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 tail`\n",
+      "expected": "> [ref]: <https://example.com/\u2014> \"literal \u2014 ` title\"\n> alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, tail`\n"
+    },
+    {
+      "input": "- [ref]: <https://example.com/\u2014> \"literal \u2014 ` title\"\n  alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 tail`\n",
+      "expected": "- [ref]: <https://example.com/\u2014> \"literal \u2014 ` title\"\n  alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, tail`\n"
+    },
+    {
+      "input": "> - [ref]: <https://example.com/\u2014> \"literal \u2014 ` title\"\n>   alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 tail`\n",
+      "expected": "> - [ref]: <https://example.com/\u2014> \"literal \u2014 ` title\"\n>   alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, tail`\n"
+    },
+    {
+      "input": "- > [ref]: <https://example.com/\u2014> \"literal \u2014 ` title\"\n  > alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 tail`\n",
+      "expected": "- > [ref]: <https://example.com/\u2014> \"literal \u2014 ` title\"\n  > alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, tail`\n"
+    },
+    {
+      "input": "[outer ![image](https://example.com/)](dest`) alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 tail`\n",
+      "expected": "[outer ![image](https://example.com/)](dest`) alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, tail`\n"
+    },
+    {
+      "input": "![outer [inner](https://example.com/)](dest`) alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 tail`\n",
+      "expected": "![outer [inner](https://example.com/)](dest`) alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, tail`\n"
+    },
+    {
+      "input": "[outer ![image][ref]](dest`) alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 tail`\n\n[ref]: /image\n",
+      "expected": "[outer ![image][ref]](dest`) alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, tail`\n\n[ref]: /image\n"
+    },
+    {
+      "input": "[ref]: /literal\u2014path\n\nVisible \u2014 prose.\n",
+      "expected": "[ref]: /literal\u2014path\n\nVisible, prose.\n"
+    },
+    {
+      "input": "[label][literal`id] alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 tail`\n\n[literal`id]: /target\n",
+      "expected": "[label][literal`id] alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, tail`\n\n[literal`id]: /target\n"
+    },
+    {
+      "input": "[ref]: /target \"title with \u2014 value\"\nVisible \u2014 prose.\n",
+      "expected": "[ref]: /target \"title with \u2014 value\"\nVisible, prose.\n"
+    },
+    {
+      "input": "[ref]: /target \"literal`\n# Heading\nalpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 tail` title\"\n",
+      "expected": "[ref]: /target \"literal`\n# Heading\nalpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu, tail` title\"\n"
+    }
+  ],
+  "protected": [
+    "[outer [inner](https://example.com/)](dest`) alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 tail`\n",
+    "[outer *[inner](https://example.com/)*](dest`) alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 tail`\n",
+    "[outer [inner][ref]](dest`) alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 tail`\n\n[ref]: https://example.com/\n",
+    "[outer [ref][]](dest`) alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 tail`\n\n[ref]: https://example.com/\n",
+    "[outer [ref]](dest`) alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 tail`\n\n[ref]: https://example.com/\n"
+  ],
+  "invalid": [
+    "[]: /literal`\nalpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 tail`\n",
+    "[ref]: /literal` trailing\nalpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 tail`\n",
+    "[ref]: /literal` \"unclosed\nalpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 tail`\n",
+    "Paragraph [ref]: /literal`\nalpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu \u2014 tail`\n"
+  ]
+}

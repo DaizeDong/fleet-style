@@ -1,0 +1,57 @@
+{
+  "shared": "copper silver nickel cobalt zinc tin lead iron",
+  "filler": "orchard meadow canyon glacier plateau valley forest coast",
+  "visible": [
+    "\\[guide](prefix copper silver nickel cobalt zinc tin lead iron suffix)",
+    "\\\\\\[guide](prefix copper silver nickel cobalt zinc tin lead iron suffix)",
+    "guide](prefix copper silver nickel cobalt zinc tin lead iron suffix)",
+    "[outer [inner](/target)](prefix copper silver nickel cobalt zinc tin lead iron suffix)",
+    "[outer [inner][ref]](prefix copper silver nickel cobalt zinc tin lead iron suffix)\n\n[ref]: /target\n"
+  ],
+  "labels": [
+    "[copper silver nickel cobalt zinc tin lead iron](/target)",
+    "[copper silver nickel cobalt zinc tin lead iron][ref]\n\n[ref]: /target\n",
+    "[copper silver nickel cobalt zinc tin lead iron][]\n\n[copper silver nickel cobalt zinc tin lead iron]: /target\n",
+    "[copper silver nickel cobalt zinc tin lead iron]\n\n[copper silver nickel cobalt zinc tin lead iron]: /target\n",
+    "[ref]: /target\n\n[copper silver nickel cobalt zinc tin lead iron][REF]\n",
+    "![copper silver nickel cobalt zinc tin lead iron](/image)",
+    "![copper silver nickel cobalt zinc tin lead iron][ref]\n\n[ref]: /image\n",
+    "![copper silver nickel cobalt zinc tin lead iron][]\n\n[copper silver nickel cobalt zinc tin lead iron]: /image\n",
+    "![copper silver nickel cobalt zinc tin lead iron]\n\n[copper silver nickel cobalt zinc tin lead iron]: /image\n"
+  ],
+  "protected": [
+    "[guide](/target \"prefix copper silver nickel cobalt zinc tin lead iron suffix\")",
+    "[guide][ref]\n\n[ref]: /target \"prefix copper silver nickel cobalt zinc tin lead iron suffix\"\n",
+    "`copper silver nickel cobalt zinc tin lead iron`"
+  ],
+  "spelling": [
+    {
+      "input": "s[ilver](/target)",
+      "expected": "silver"
+    },
+    {
+      "input": "[sil](/target)ver",
+      "expected": "silver"
+    },
+    {
+      "input": "s[il][ref]ver\n\n[ref]: /target\n",
+      "expected": "silver"
+    },
+    {
+      "input": "s![il](/image)ver",
+      "expected": "silver"
+    },
+    {
+      "input": "[literal][missing]",
+      "expected": "[literal][missing]"
+    },
+    {
+      "input": "\\[literal](tail)",
+      "expected": "\\[literal](tail)"
+    },
+    {
+      "input": "[outer [inner](/target)](tail)",
+      "expected": "[outer inner](tail)"
+    }
+  ]
+}

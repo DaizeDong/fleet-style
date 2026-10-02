@@ -1,0 +1,149 @@
+{
+  "cross_cells": [
+    {
+      "name": "`",
+      "input": "| alpha | beta | gamma |\n| --- | :---: | ---: |\n| `open | \u2014 | close` |\n",
+      "expected": "| alpha | beta | gamma |\n| --- | :---: | ---: |\n| `open | none | close` |\n"
+    },
+    {
+      "name": "``",
+      "input": "| alpha | beta | gamma |\n| --- | :---: | ---: |\n| ``open | \u2014 | close`` |\n",
+      "expected": "| alpha | beta | gamma |\n| --- | :---: | ---: |\n| ``open | none | close`` |\n"
+    }
+  ],
+  "cross_rows": [
+    {
+      "name": "`",
+      "input": "| alpha | beta | gamma |\n| --- | :---: | ---: |\n| `open | value | last |\n| middle | \u2014 | last |\n| first | value | close` |\n",
+      "expected": "| alpha | beta | gamma |\n| --- | :---: | ---: |\n| `open | value | last |\n| middle | none | last |\n| first | value | close` |\n"
+    },
+    {
+      "name": "``",
+      "input": "| alpha | beta | gamma |\n| --- | :---: | ---: |\n| ``open | value | last |\n| middle | \u2014 | last |\n| first | value | close`` |\n",
+      "expected": "| alpha | beta | gamma |\n| --- | :---: | ---: |\n| ``open | value | last |\n| middle | none | last |\n| first | value | close`` |\n"
+    }
+  ],
+  "cell_code": [
+    {
+      "name": "`literal \u2014 value`",
+      "input": "| alpha | beta | gamma |\n| --- | :---: | ---: |\n| `literal \u2014 value` | \u2014 | last |\n",
+      "expected": "| alpha | beta | gamma |\n| --- | :---: | ---: |\n| `literal \u2014 value` | none | last |\n"
+    },
+    {
+      "name": "`literal \\| \u2014 value`",
+      "input": "| alpha | beta | gamma |\n| --- | :---: | ---: |\n| `literal \\| \u2014 value` | \u2014 | last |\n",
+      "expected": "| alpha | beta | gamma |\n| --- | :---: | ---: |\n| `literal \\| \u2014 value` | none | last |\n"
+    },
+    {
+      "name": "``literal \u2014 value``",
+      "input": "| alpha | beta | gamma |\n| --- | :---: | ---: |\n| ``literal \u2014 value`` | \u2014 | last |\n",
+      "expected": "| alpha | beta | gamma |\n| --- | :---: | ---: |\n| ``literal \u2014 value`` | none | last |\n"
+    },
+    {
+      "name": "``literal \\| \u2014 value``",
+      "input": "| alpha | beta | gamma |\n| --- | :---: | ---: |\n| ``literal \\| \u2014 value`` | \u2014 | last |\n",
+      "expected": "| alpha | beta | gamma |\n| --- | :---: | ---: |\n| ``literal \\| \u2014 value`` | none | last |\n"
+    }
+  ],
+  "contextual": [
+    {
+      "name": "> ",
+      "input": "> | alpha | beta | gamma |\n> | --- | --- | --- |\n> | `open | text \u2014 body | close` |\n",
+      "expected": "> | alpha | beta | gamma |\n> | --- | --- | --- |\n> | `open | text, body | close` |\n"
+    },
+    {
+      "name": "- ",
+      "input": "- | alpha | beta | gamma |\n  | --- | --- | --- |\n  | `open | text \u2014 body | close` |\n",
+      "expected": "- | alpha | beta | gamma |\n  | --- | --- | --- |\n  | `open | text, body | close` |\n"
+    },
+    {
+      "name": "> - ",
+      "input": "> - | alpha | beta | gamma |\n>   | --- | --- | --- |\n>   | `open | text \u2014 body | close` |\n",
+      "expected": "> - | alpha | beta | gamma |\n>   | --- | --- | --- |\n>   | `open | text, body | close` |\n"
+    },
+    {
+      "name": "- > ",
+      "input": "- > | alpha | beta | gamma |\n  > | --- | --- | --- |\n  > | `open | text \u2014 body | close` |\n",
+      "expected": "- > | alpha | beta | gamma |\n  > | --- | --- | --- |\n  > | `open | text, body | close` |\n"
+    }
+  ],
+  "ordinary": [
+    {
+      "name": "Ordinary `literal | \u2014 value` Outside \u2014 prose.",
+      "input": "Ordinary `literal | \u2014 value` Outside \u2014 prose.",
+      "expected": "Ordinary `literal | \u2014 value` Outside, prose."
+    },
+    {
+      "name": "| `literal | \u2014 value` |",
+      "input": "| `literal | \u2014 value` |\n| --- | --- | --- |\nOutside \u2014 prose.",
+      "expected": "| `literal | \u2014 value` |\n| --- | --- | --- |\nOutside, prose."
+    },
+    {
+      "name": "Ordinary `literal",
+      "input": "Ordinary `literal\nvalue | \u2014 body\nlast` Outside \u2014 prose.",
+      "expected": "Ordinary `literal\nvalue | \u2014 body\nlast` Outside, prose."
+    }
+  ],
+  "escaped_runs": [
+    {
+      "name": "(1, 1)",
+      "input": "\\``literal \u2014 body` Outside \u2014 prose.",
+      "expected": "\\``literal \u2014 body` Outside, prose."
+    },
+    {
+      "name": "(1, 2)",
+      "input": "\\\\`literal \u2014 body` Outside \u2014 prose.",
+      "expected": "\\\\`literal \u2014 body` Outside, prose."
+    },
+    {
+      "name": "(1, 3)",
+      "input": "\\\\\\``literal \u2014 body` Outside \u2014 prose.",
+      "expected": "\\\\\\``literal \u2014 body` Outside, prose."
+    },
+    {
+      "name": "(1, 4)",
+      "input": "\\\\\\\\`literal \u2014 body` Outside \u2014 prose.",
+      "expected": "\\\\\\\\`literal \u2014 body` Outside, prose."
+    },
+    {
+      "name": "(2, 1)",
+      "input": "\\```literal \u2014 body`` Outside \u2014 prose.",
+      "expected": "\\```literal \u2014 body`` Outside, prose."
+    },
+    {
+      "name": "(2, 2)",
+      "input": "\\\\``literal \u2014 body`` Outside \u2014 prose.",
+      "expected": "\\\\``literal \u2014 body`` Outside, prose."
+    },
+    {
+      "name": "(2, 3)",
+      "input": "\\\\\\```literal \u2014 body`` Outside \u2014 prose.",
+      "expected": "\\\\\\```literal \u2014 body`` Outside, prose."
+    },
+    {
+      "name": "(2, 4)",
+      "input": "\\\\\\\\``literal \u2014 body`` Outside \u2014 prose.",
+      "expected": "\\\\\\\\``literal \u2014 body`` Outside, prose."
+    },
+    {
+      "name": "(3, 1)",
+      "input": "\\````literal \u2014 body``` Outside \u2014 prose.",
+      "expected": "\\````literal \u2014 body``` Outside, prose."
+    },
+    {
+      "name": "(3, 2)",
+      "input": "\\\\```literal \u2014 body``` Outside \u2014 prose.",
+      "expected": "\\\\```literal \u2014 body``` Outside, prose."
+    },
+    {
+      "name": "(3, 3)",
+      "input": "\\\\\\````literal \u2014 body``` Outside \u2014 prose.",
+      "expected": "\\\\\\````literal \u2014 body``` Outside, prose."
+    },
+    {
+      "name": "(3, 4)",
+      "input": "\\\\\\\\```literal \u2014 body``` Outside \u2014 prose.",
+      "expected": "\\\\\\\\```literal \u2014 body``` Outside, prose."
+    }
+  ]
+}

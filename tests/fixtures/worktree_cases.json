@@ -1,0 +1,47 @@
+{
+  "content": "A synthetic guide \u2014 with an aside.\n",
+  "fixed": "A synthetic guide, with an aside.\n",
+  "clean": "A synthetic neighbor with ordinary punctuation.\n",
+  "changed_content": "A synthetic draft \u2014 with an aside.\n",
+  "outside": "An external synthetic target \u2014 must stay unchanged.\n",
+  "unsafe": [
+    {
+      "name": "leaf_symlink",
+      "where": "leaf",
+      "kind": "symlink"
+    },
+    {
+      "name": "ancestor_symlink",
+      "where": "ancestor",
+      "kind": "symlink"
+    },
+    {
+      "name": "leaf_reparse",
+      "where": "leaf",
+      "kind": "reparse"
+    },
+    {
+      "name": "ancestor_reparse",
+      "where": "ancestor",
+      "kind": "reparse"
+    },
+    {
+      "name": "hardlink_leaf",
+      "where": "leaf",
+      "kind": "hardlink"
+    }
+  ],
+  "changes": [
+    "leaf_symlink",
+    "ancestor_symlink",
+    "leaf_reparse",
+    "ancestor_reparse",
+    "hardlink_leaf",
+    "replacement",
+    "content"
+  ],
+  "phases": [
+    "after_transform",
+    "before_open"
+  ]
+}
