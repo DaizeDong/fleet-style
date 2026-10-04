@@ -424,13 +424,130 @@ def worktree_regression_bytes():
     return '"""Generated worktree-path regressions; all contents and path states are synthetic."""\nimport contextlib\nimport io\nimport json\nimport os\nfrom pathlib import Path\nimport stat\nimport sys\nimport tempfile\nfrom types import SimpleNamespace\nimport unittest\nfrom unittest import mock\n\nsys.path.insert(0, str(Path(__file__).resolve().parents[2] / "tools"))\nimport dash_guard as guard\n\nCASES = json.loads(Path(__file__).with_name("worktree_cases.json").read_text(encoding="utf-8"))\n\n\nclass WorktreePathContracts(unittest.TestCase):\n    def setUp(self):\n        workspace = tempfile.TemporaryDirectory(prefix="style-worktree-")\n        self.addCleanup(workspace.cleanup)\n        self.root = Path(workspace.name)\n        self.repo = self.root / "repo"\n        self.target = self.repo / "nested" / "guide.txt"\n        self.target.parent.mkdir(parents=True)\n        self.neighbor = self.repo / "neighbor.txt"\n        self.outside = self.root / "outside.txt"\n        self.target.write_text(CASES["content"], encoding="utf-8")\n        self.neighbor.write_text(CASES["clean"], encoding="utf-8")\n        self.outside.write_text(CASES["outside"], encoding="utf-8")\n        self.paths = ["nested/guide.txt", "neighbor.txt"]\n\n    def invoke(self, *args):\n        out, err = io.StringIO(), io.StringIO()\n        argv = ["dash_guard.py", "--repo", str(self.repo), *map(str, args)]\n        with mock.patch.object(sys, "argv", argv), contextlib.redirect_stdout(out), \\\n                contextlib.redirect_stderr(err), \\\n                mock.patch.object(guard, "_tracked", return_value=(self.paths, self.paths)):\n            code = guard.cli()\n        return code, out.getvalue(), err.getvalue()\n\n    def metadata(self, original, case, path, *args, **kwargs):\n        info = original(path, *args, **kwargs)\n        selected = self.target if case["where"] == "leaf" else self.target.parent\n        if os.path.normcase(os.path.abspath(path)) != os.path.normcase(str(selected)):\n            return info\n        fields = {name: getattr(info, name) for name in (\n            "st_dev", "st_ino", "st_mode", "st_nlink", "st_size", "st_mtime_ns", "st_ctime_ns")}\n        fields["st_file_attributes"] = getattr(info, "st_file_attributes", 0)\n        if case["kind"] == "symlink":\n            fields["st_mode"] = stat.S_IFLNK | 0o777\n        elif case["kind"] == "reparse":\n            fields["st_file_attributes"] |= 1024\n        else:\n            fields["st_nlink"] = 2\n        return SimpleNamespace(**fields)\n\n    def test_linked_paths_are_incomplete_before_any_payload_open(self):\n        original_lstat, original_open = os.lstat, open\n        for case in CASES["unsafe"]:\n            for args in (("--tree",), ("--tree", "--fix"),\n                         (self.target,), ("--fix", self.target)):\n                with self.subTest(case=case["name"], args=args):\n                    opened = []\n                    def access(path, *positional, **keywords):\n                        if os.path.normcase(os.path.abspath(path)) == os.path.normcase(str(self.target)):\n                            opened.append(positional)\n                        return original_open(path, *positional, **keywords)\n                    with mock.patch.object(guard.os, "lstat",\n                            side_effect=lambda path, *a, **k: self.metadata(original_lstat, case, path, *a, **k)), \\\n                            mock.patch("builtins.open", side_effect=access):\n                        code, out, err = self.invoke(*args)\n                    self.assertEqual(code, 1, (out, err))\n                    self.assertNotIn("clean", out.lower())\n                    self.assertIn("could NOT be examined", err)\n                    self.assertIn("unsafe worktree path", err)\n                    self.assertEqual(opened, [])\n                    self.assertEqual(self.target.read_text(encoding="utf-8"), CASES["content"])\n                    self.assertEqual(self.outside.read_text(encoding="utf-8"), CASES["outside"])\n                    if "--fix" in args:\n                        self.assertIn("fixed 0 line(s)", out)\n\n    def test_target_changes_after_read_or_at_open_are_not_repaired(self):\n        original_lstat, original_open = os.lstat, open\n        original_process = guard.process_text\n        by_name = {case["name"]: case for case in CASES["unsafe"]}\n        for name in CASES["changes"]:\n            for phase in CASES["phases"]:\n                with self.subTest(change=name, phase=phase):\n                    self.target.write_text(CASES["content"], encoding="utf-8")\n                    state = {"changed": False}\n                    def change():\n                        state["changed"] = True\n                        if name == "replacement":\n                            replacement = self.target.with_suffix(".tmp")\n                            replacement.write_text(CASES["changed_content"], encoding="utf-8")\n                            os.replace(replacement, self.target)\n                        elif name == "content":\n                            self.target.write_text(CASES["changed_content"], encoding="utf-8")\n                    def metadata(path, *args, **kwargs):\n                        if state["changed"] and name in by_name:\n                            return self.metadata(original_lstat, by_name[name], path, *args, **kwargs)\n                        return original_lstat(path, *args, **kwargs)\n                    def process(*args, **kwargs):\n                        result = original_process(*args, **kwargs)\n                        if phase == "after_transform" and args[0] == CASES["content"]:\n                            change()\n                        return result\n                    def access(path, mode="r", *args, **kwargs):\n                        if os.path.normcase(os.path.abspath(path)) == os.path.normcase(str(self.target)) and mode == "w" and phase == "before_open":\n                            change()\n                        return original_open(path, mode, *args, **kwargs)\n                    with mock.patch.object(guard.os, "lstat", side_effect=metadata), \\\n                            mock.patch.object(guard, "process_text", side_effect=process), \\\n                            mock.patch("builtins.open", side_effect=access):\n                        code, out, err = self.invoke("--tree", "--fix")\n                    self.assertTrue(state["changed"], "scheduled mutation was not reached")\n                    self.assertEqual(code, 1, (out, err))\n                    self.assertIn("fixed 0 line(s)", out)\n                    self.assertIn("could not repair", err)\n                    expected = CASES["changed_content"] if name in {"replacement", "content"} else CASES["content"]\n                    self.assertEqual(self.target.read_text(encoding="utf-8"), expected)\n                    self.assertEqual(self.outside.read_text(encoding="utf-8"), CASES["outside"])\n\n    def test_descriptor_redirection_cannot_read_or_truncate_external_target(self):\n        original_open = os.open\n        for phase in ("read", "write"):\n            with self.subTest(phase=phase):\n                self.target.write_text(CASES["content"], encoding="utf-8")\n                flags_seen = []\n                def descriptor(path, flags, *args, **kwargs):\n                    writing = bool(flags & (os.O_WRONLY | os.O_RDWR))\n                    if os.path.normcase(os.path.abspath(path)) == os.path.normcase(str(self.target)) and writing == (phase == "write"):\n                        flags_seen.append(flags)\n                        return original_open(self.outside, flags, *args, **kwargs)\n                    return original_open(path, flags, *args, **kwargs)\n                with mock.patch.object(guard.os, "open", side_effect=descriptor):\n                    code, out, err = self.invoke("--tree", "--fix")\n                self.assertEqual(code, 1, (out, err))\n                self.assertIn("fixed 0 line(s)", out)\n                self.assertTrue(flags_seen)\n                self.assertTrue(all(not flags & (os.O_TRUNC | os.O_CREAT) for flags in flags_seen))\n                self.assertEqual(self.target.read_text(encoding="utf-8"), CASES["content"])\n                self.assertEqual(self.outside.read_text(encoding="utf-8"), CASES["outside"])\n\n    def test_open_return_topology_change_is_not_repaired(self):\n        original_lstat, original_open = os.lstat, open\n        for case in CASES["unsafe"]:\n            with self.subTest(case=case["name"]):\n                self.target.write_text(CASES["content"], encoding="utf-8")\n                state = {"changed": False}\n                def metadata(path, *args, **kwargs):\n                    if state["changed"]:\n                        return self.metadata(original_lstat, case, path, *args, **kwargs)\n                    return original_lstat(path, *args, **kwargs)\n                def access(path, mode="r", *args, **kwargs):\n                    stream = original_open(path, mode, *args, **kwargs)\n                    if os.path.normcase(os.path.abspath(path)) == os.path.normcase(str(self.target)) and mode == "w":\n                        state["changed"] = True\n                    return stream\n                with mock.patch.object(guard.os, "lstat", side_effect=metadata), \\\n                        mock.patch("builtins.open", side_effect=access):\n                    code, out, err = self.invoke("--tree", "--fix")\n                self.assertTrue(state["changed"], "scheduled mutation was not reached")\n                self.assertEqual(code, 1, (out, err))\n                self.assertIn("fixed 0 line(s)", out)\n                self.assertIn("could not repair", err)\n                self.assertEqual(self.target.read_text(encoding="utf-8"), CASES["content"])\n                self.assertEqual(self.outside.read_text(encoding="utf-8"), CASES["outside"])\n\n    def test_safe_ordinary_file_still_repairs_and_truncates(self):\n        code, out, err = self.invoke("--tree", "--fix")\n        self.assertEqual(code, 0, (out, err))\n        self.assertIn("fixed 1 line(s) across 1 file(s)", out)\n        self.assertEqual(self.target.read_text(encoding="utf-8"), CASES["fixed"])\n        self.assertEqual(self.neighbor.read_text(encoding="utf-8"), CASES["clean"])\n        self.assertEqual(self.outside.read_text(encoding="utf-8"), CASES["outside"])\n\n    def test_edited_file_can_be_scanned_and_repaired_again(self):\n        for content in (CASES["changed_content"], CASES["content"]):\n            self.target.write_text(content, encoding="utf-8")\n            code, out, err = self.invoke("--tree", "--fix")\n            self.assertEqual(code, 0, (out, err))\n            self.assertIn("fixed 1 line(s) across 1 file(s)", out)\n            code, out, err = self.invoke("--tree")\n            self.assertEqual(code, 0, (out, err))\n            self.assertIn("2 file(s) examined", out)\n        self.assertEqual(self.target.read_text(encoding="utf-8"), CASES["fixed"])\n        self.assertEqual(self.outside.read_text(encoding="utf-8"), CASES["outside"])\n\n    def test_staged_blobs_do_not_inspect_worktree_topology(self):\n        with mock.patch.object(guard, "_git", return_value=str(self.repo) + "\\n"), \\\n                mock.patch.object(guard, "_staged", return_value=(self.paths, self.paths)), \\\n                mock.patch.object(guard, "_index_text", return_value=CASES["clean"]), \\\n                mock.patch.object(guard, "_worktree_snapshot", side_effect=AssertionError("worktree consulted")):\n            code, out, err = self.invoke("--staged")\n        self.assertEqual(code, 0, (out, err))\n        self.assertIn("2 file(s) examined", out)\n\n\nif __name__ == "__main__":\n    unittest.main()\n'.encode("utf-8")
 
 
+def doc_fixture_bytes():
+    """Generate every document contract example from synthetic constants."""
+    from copy import deepcopy
+
+    version = "1.2.0-rc.1+build.7"
+    philosophy = ("The tool prevents unfinished guides from becoming accepted deliverables. "
+                  "It uses bounded deterministic checks so results stay reproducible. "
+                  "These checks cover structure; reviewers still assess meaning and tradeoffs.")
+    chinese = ("这个工具避免把尚未完成的文档交付给使用者。检查范围固定，结果可以重复。"
+               "自动检查只判断结构，设计取舍和真实能力仍由评审确认。")
+    files = {
+        "README.md": f"# Synthetic tool\n\n![Version](https://img.shields.io/badge/version-{version}-blue)\n\n"
+                     f"## Design Philosophy\n\n{philosophy}\n\n## Installation\n\n"
+                     "Run the declared setup entry.\n\n```sh\npython tools/install.py\n```\n\n"
+                     "[Roadmap](ROADMAP.md#planned)\n",
+        "README_CN.md": f"# 合成工具\n\n![Version](https://img.shields.io/badge/version-{version}-blue)\n\n"
+                        f"## 设计哲学\n\n{chinese}\n\n## 安装\n\n运行安装入口。\n\n"
+                        "```sh\npython tools/install.py\n```\n",
+        "ROADMAP.md": f"# Roadmap\n\nCurrent: **v{version}**\n\n## v{version} (current)\n\n"
+                      "The bounded document checks are implemented.\n\n## Planned\n\n"
+                      "- TODO: evaluate broader language support after independent review.\n",
+        "CHANGELOG.md": f"# Changelog\n\n## [Unreleased]\n\n### Changed\n\n"
+                        "- Refined the installation explanation.\n\n"
+                        f"## [{version}] - 2024-06-10\n\n- Added bounded document checking.\n\n"
+                        "## [1.1.0] - 2024-06-01\n\n- Added synthetic guide examples.\n",
+        ".claude-plugin/plugin.json": json.dumps({"name": "synthetic", "version": version}),
+        "tools/install.py": "print('synthetic setup')\n",
+    }
+    cases = [{"name": "valid skill with future TODO and historical release", "files": deepcopy(files)}]
+
+    def case(name, failure, path=None, old=None, new=None, profile="skill", stage="accepted"):
+        data = deepcopy(files)
+        if path is not None:
+            if old is None:
+                data[path] = new
+            else:
+                data[path] = data[path].replace(old, new)
+        result = {"name": name, "files": data, "profile": profile, "stage": stage}
+        if failure:
+            result["failure"] = failure
+        cases.append(result)
+        return data
+
+    case("star heading is not philosophy", "readme.philosophy", "README.md", "Design Philosophy", "⭐ Read this first")
+    case("generic filler is not philosophy", "readme.philosophy", "README.md", philosophy, "Explain the design choices here.")
+    case("philosophy after install fails", "readme.philosophy", "README.md", None,
+         files["README.md"].replace(f"## Design Philosophy\n\n{philosophy}\n\n", "") +
+         f"\n## Design Philosophy\n\n{philosophy}\n")
+    case("Chinese philosophy missing", "readme.philosophy", "README_CN.md", "设计哲学", "先读这里")
+    case("current README TODO fails", "docs.placeholders", "README.md", "Run the declared setup entry.", "TODO: write setup details.")
+    case("draft may carry TODO", None, "README.md", "Run the declared setup entry.", "TODO: write setup details.", stage="draft")
+    case("draft philosophy placeholder is explicit", None, "README.md", philosophy, "TODO: write the design philosophy.", stage="draft")
+    case("release stage still rejects current TODO", "docs.placeholders", "README.md", "Run the declared setup entry.", "TODO: write setup details.", stage="release")
+    case("repository draft flag cannot bypass accepted", "docs.placeholders", "README.md", "Run the declared setup entry.", "TODO: write setup details.")[".doc-contract.json"] = '{"stage":"draft"}'
+    case("missing install heading fails", "readme.install", "README.md", "## Installation", "## Usage")
+    case("missing declared install file fails", "readme.install", "README.md", "tools/install.py", "tools/missing.py")
+    case("prerelease suffix mismatch fails", "version.current", "README_CN.md", version, "1.2.0-rc.2+build.7")
+    case("package manifest conflict fails", "version.source")["package.json"] = '{"version":"1.2.0-rc.2+build.7"}'
+    case("duplicate manifest field fails", "version.source", ".claude-plugin/plugin.json", None,
+         '{"version":"1.2.0","version":"1.3.0"}')
+    case("invalid semver fails", "version.source", ".claude-plugin/plugin.json", version, "01.2.0")
+    case("malformed release date fails", "changelog.releases", "CHANGELOG.md", "2024-06-10", "2024-02-30")
+    case("unparseable release date fails", "changelog.releases", "CHANGELOG.md", "2024-06-10", "tomorrow")
+    case("future release date fails", "changelog.releases", "CHANGELOG.md", "2024-06-10", "9999-06-10")
+    case("hidden newer release fails", "changelog.releases", "CHANGELOG.md", "## [1.1.0]", "## [2.0.0]")
+    case("release date order fails", "changelog.releases", "CHANGELOG.md", "2024-06-01", "2024-07-01")
+    case("release scaffold TODO fails", "docs.placeholders", "CHANGELOG.md", "Added bounded document checking.", "TODO: write release notes.")
+    case("empty Unreleased remains valid", None, "CHANGELOG.md", "### Changed\n\n- Refined the installation explanation.\n\n", "")
+    case("release requires substantive latest notes", "changelog.releases", "CHANGELOG.md", "- Added bounded document checking.", "", stage="release")
+    case("conflicting roadmap current fails", "roadmap.current", "ROADMAP.md", "## Planned", "Current: v2.0.0\n\n## Planned")
+    case("current placeholder after planned fails", "docs.placeholders", "ROADMAP.md", None,
+         f"# Roadmap\n\nCurrent: v{version}\n\n## Planned\n\n- TODO: evaluate another language.\n\n"
+         "## Current behavior\n\nTODO: explain the accepted behavior.\n")
+    case("numeric prerelease with leading zero fails", "version.source", ".claude-plugin/plugin.json", version, "1.2.0-01")
+    case("current roadmap invalid semver fails", "roadmap.current", "ROADMAP.md", version, "01.2.0")
+    case("current version field mismatch fails", "version.current", "README.md", "# Synthetic tool", "# Synthetic tool\n\nVersion: **v1.3.0**")
+    case("malformed current version field fails", "version.current", "README.md", "# Synthetic tool", "# Synthetic tool\n\nVersion: **v01.3.0**")
+    case("escaped literal link is not destination", None, "README.md", "[Roadmap](ROADMAP.md#planned)", "[Roadmap](ROADMAP.md#planned)\n\\[literal](missing.md)")
+    case("ancestor traversal link fails", "links.local", "README.md", "ROADMAP.md#planned", "../missing.md")
+    case("missing root README fails", "docs.required").pop("README_CN.md")
+    data = case("submodule install missing initialization fails", "readme.install")
+    data[".gitmodules"] = '[submodule "kit"]\n path = kit\n url = https://example.com/kit.git\n'
+    data["README.md"] = data["README.md"].replace("python tools/install.py", "git clone https://example.com/synthetic.git")
+    data["README_CN.md"] = data["README_CN.md"].replace("python tools/install.py", "git clone --recurse-submodules https://example.com/synthetic.git")
+    data = case("submodule install recursive initialization valid", None)
+    data[".gitmodules"] = '[submodule "kit"]\n path = kit\n url = https://example.com/kit.git\n'
+    for name in ("README.md", "README_CN.md"):
+        data[name] = data[name].replace("python tools/install.py", "git clone https://example.com/synthetic.git\ngit submodule update --init --recursive")
+    case("missing roadmap current fails", "roadmap.current", "ROADMAP.md", None, "# Roadmap\n\n## Planned\n\nFuture work remains under review.\n")
+    case("manifest-linked current roadmap valid", None, "ROADMAP.md", None,
+         "# Roadmap\n\n## Current\n\nVersion follows [plugin manifest](.claude-plugin/plugin.json).\n\n"
+         "Bounded checks are implemented.\n\n## Planned\n\n- TODO: review another language.\n")
+    data = case("bare purposeful current with manifest valid", None, "ROADMAP.md", None,
+                "# Roadmap\n\n## Current\n\nThe current implementation checks root documentation.\n")
+    data["README.md"] = data["README.md"].replace("ROADMAP.md#planned", "ROADMAP.md#current")
+    case("missing local root link fails", "links.local", "README.md", "ROADMAP.md#planned", "MISSING.md")
+    case("missing root anchor fails", "links.local", "README.md", "ROADMAP.md#planned", "ROADMAP.md#missing")
+    case("reference link missing destination fails", "links.local", "README.md", "[Roadmap](ROADMAP.md#planned)", "[Roadmap][plan]\n\n[plan]: MISSING.md")
+    data = case("literal links in inline code are not destinations", None)
+    data["README.md"] += "\nLiteral syntax `[sample](missing.md)` and `TODO` are code examples.\n"
+    data = case("protected payload link is metadata only", None)
+    data["README.md"] += "\n[Payload](eval/poison.json#never-open)\n"
+    data["eval/poison.json"] = "This synthetic payload is not documentation."
+    data = case("software requires no plugin", None, profile="software")
+    del data[".claude-plugin/plugin.json"]
+    data["package.json"] = json.dumps({"version": version})
+    data = case("manifest-free current roadmap is version source", None)
+    del data[".claude-plugin/plugin.json"]
+    cases.append({"name": "valid companion only maintenance entry", "profile": "companion",
+                  "files": {"README.md": "# Synthetic companion\n\nConfiguration and real DATA stay private and versioned.\n\n"
+                           "Restore by cloning this private repository. Retain historical records during maintenance.\n"}})
+    cases.append({"name": "valid companion DATA maintenance entry", "profile": "companion",
+                  "files": {"DATA.md": "# Private DATA\n\nRestore and retain the versioned configuration in this private companion.\n"}})
+    cases.append({"name": "missing companion entry fails", "profile": "companion", "files": {}, "failure": "docs.required"})
+    return (json.dumps(cases, ensure_ascii=True, indent=2) + "\n").encode("utf-8")
+
+
 def artifacts():
     return {"scan_cases.json": fixture_bytes(), "markdown_cases.json": markdown_fixture_bytes(),
             "block_cases.json": block_fixture_bytes(), "table_cases.json": table_fixture_bytes(),
             "input_cases.json": input_fixture_bytes(), "syntax_cases.json": syntax_fixture_bytes(),
             "link_cases.json": link_fixture_bytes(), "prose_cases.json": prose_fixture_bytes(),
             "worktree_cases.json": worktree_fixture_bytes(),
-            "_worktree_contracts.py": worktree_regression_bytes()}
+            "_worktree_contracts.py": worktree_regression_bytes(), "doc_cases.json": doc_fixture_bytes()}
 
 
 def main():

@@ -13,6 +13,17 @@ on:
   pull_request:
 
 jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - uses: ./ci/doc-contract
+        with:
+          profile: software
+          stage: accepted
   dash:
     runs-on: ubuntu-latest
     steps:

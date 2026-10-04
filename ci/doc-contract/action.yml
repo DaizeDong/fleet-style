@@ -1,0 +1,25 @@
+name: document-contract
+description: Bounded structural documentation checks for the calling repository.
+inputs:
+  profile:
+    description: Repository kind, skill, software or companion.
+    default: skill
+  stage:
+    description: Trusted lifecycle stage, draft, accepted or release.
+    default: accepted
+runs:
+  using: composite
+  steps:
+    - name: Document checker's generated regression controls
+      shell: bash
+      run: |
+        python -m pip install --quiet pytest
+        python "$GITHUB_ACTION_PATH/../../tools/make_fixtures.py" --check
+        test -f "$GITHUB_ACTION_PATH/../../tools/doc_contract.py" || { echo "::error::missing document checker"; exit 1; }
+        python -m pytest "$GITHUB_ACTION_PATH/../../tools/test_doc_contract.py" -q
+    - name: Calling repository document contract
+      shell: bash
+      env:
+        DOC_PROFILE: ${{ inputs.profile }}
+        DOC_STAGE: ${{ inputs.stage }}
+      run: python "$GITHUB_ACTION_PATH/../../tools/doc_contract.py" --root . --profile "$DOC_PROFILE" --stage "$DOC_STAGE"

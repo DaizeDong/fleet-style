@@ -1,10 +1,10 @@
 # fleet-style
 
-三个与安全无关的房规闸门，放在一个仓里，以 git submodule 的方式被消费。
+四个文档和文风闸门，放在一个仓里，以 git submodule 的方式被消费。
 
 [![子模块](https://img.shields.io/badge/%E5%AD%90%E6%A8%A1%E5%9D%97-%E6%A0%B7%E5%BC%8F%E5%A5%97%E4%BB%B6-orange?style=flat)](#安装)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![闸门](https://img.shields.io/badge/%E9%97%B8%E9%97%A8-2-green?style=flat)](#闸门总览)
+[![闸门](https://img.shields.io/badge/%E9%97%B8%E9%97%A8-4-green?style=flat)](#闸门总览)
 [![语言](https://img.shields.io/badge/%E8%AF%AD%E8%A8%80-EN%20%2F%20CN-blue?style=flat)](#语言)
 [![路线图](https://img.shields.io/badge/%E8%B7%AF%E7%BA%BF%E5%9B%BE-v0.3.0-purple?style=flat)](ROADMAP.md)
 
@@ -12,9 +12,9 @@
 
 ---
 
-## ⭐ 先读这里, 设计理念
+## 设计哲学
 
-有三条承诺撑着这套 kit，它们比里面那三条规则本身更值得先看。
+有三条承诺撑着这套 kit。它们也决定文档检查的边界：自动检查判断结构，独立评审判断设计取舍和真实能力。
 
 **没跑过的扫描不叫干净。** 两个工具都拒绝把「没查出问题」和「压根没查」混为一谈。git 不可用、或者当前目录根本不是一个 work tree 时，`dash_guard` 退 2，而不是枚举到零个文件然后打印 clean。找不到可测的 skill 时，`load_budget` 退 3，而不是把它报成一种状态。这里每一个 CI 步骤遇到扫描器缺失都是失败而不是跳过，因为一次不带 `--recursive` 的克隆留下的空 `style/` 目录，读起来和一个通过了的闸门一模一样。
 
@@ -24,7 +24,7 @@
 
 ## 它是什么（不是什么）
 
-它是一个 git submodule，里面装着两个扫描器、它们的测试，以及两个 composite GitHub Action。 `dash_guard` 执行那条房规：公开的 prose 不带 en dash、em dash 和 horizontal bar，同时不碰 ASCII 连字符，因为那是代码语法。`load_budget` 量的是一份 `SKILL.md` 在每次调用时要付的成本，以及其中有多少正文是从按需加载的 reference 里复制过来的。
+它是一个 git submodule，里面有四个检查器、对应测试和 composite GitHub Actions。`dash_guard` 检查公开正文的破折号，`wrap_guard` 检查段落硬折行，`load_budget` 检查常驻加载成本和重复正文，`doc_contract` 检查根文档结构、版本、日期和入口链接。
 
 它**不是** Claude Code 的 skill 或 plugin，也不带 `SKILL.md`：它是一个你加进仓里、再从 CI 调用的 submodule。它**不是**那套安全 kit。`fleet-guards` 的存在是为了让真实标识符不进公开历史，而这里没有任何东西干这件事；这两个闸门抓的是一条文风规则和一条架构规则。它也**不接** `core.hooksPath`，因为那个设置只能指向一个目录，而那个目录属于站在标识符与公开 push 之间的那套闸门。
 
@@ -43,7 +43,7 @@ git submodule add -b main https://github.com/DaizeDong/fleet-style.git style
   with: {submodules: true}
 - uses: actions/setup-python@v5
   with: {python-version: '3.x'}
-- uses: ./style/ci/dash-guard        # 或者 ./style/ci/load-budget
+- uses: ./style/ci/dash-guard        # 也可选择 wrap-guard、load-budget、doc-contract
 ```
 
 `ci/dash-guard` 有一个可选输入 `block-kinds`。JS、YAML、shell、PowerShell 和 cmd 的注释，以及 commit message，默认只报告发现；消费方可以用 `with: {block-kinds: 'js,yaml'}` 将指定类别设为阻断。文件读不了、无法完整解析或读取期间发生变化时，一律阻断，不受这个输入影响。
@@ -67,6 +67,7 @@ python style/tools/dash_guard.py --fix FILE  # 确定性修复，不是闸门
 python style/tools/dash_guard.py --message .git/COMMIT_EDITMSG   # 查一条 commit message
 python style/tools/dash_guard.py --tree --block-kinds js,yaml    # 把报告类升为阻断
 python style/tools/load_budget.py .          # 常驻加载预算
+python style/tools/doc_contract.py --root . --profile skill --stage accepted
 ```
 
 要验证你钉住的那个 commit 在这里仍然是过的，按路径显式点名这套 kit 的测试：
@@ -90,6 +91,7 @@ pytest style/tools/
 | `ci/dash-guard` | 装 pytest，跑 `tools/test_dash_guard.py`，然后扫调用方仓库的树。输入 `block-kinds` 把报告类升为阻断。 |
 | `ci/wrap-guard` | 装 pytest，验证生成的测试数据，跑 wrap、共享文件读写和 Markdown 合同测试，然后扫调用方仓库的树。 |
 | `ci/load-budget` | 装 pytest，`tools/test_load_budget.py` 不在就失败，跑它，然后测量调用方仓库。 |
+| `ci/doc-contract` | 先验证合成测试，再检查调用方根文档。`profile` 默认 `skill`，`stage` 默认 `accepted`。 |
 
 共享 Markdown 解析器只把 LF、CRLF 和 CR 当作换行；代码行中的 Unicode 分隔符不会打开或关闭围栏。Commit message 检查在 Git scissors 标记处停止，移除注释后仍按原始文件行号报告正文问题。
 
@@ -97,7 +99,19 @@ pytest style/tools/
 
 闸门跑在 CI 上，针对调用方那个仓，别处都不跑。它们只扫当前树，从不查历史：老 commit 里的一个破折号无害，不值得为它重写一段历史，这也是这套 kit 与安全那套最尖锐的区别。
 
-本仓用自己的 action 跑自己的闸门。`.github/workflows/style.yml` 调用 `./ci/dash-guard`，所以一处损坏会先在这里暴露，再轮到消费方。里面没有 load budget 这个 job，因为本仓不声明任何 skill，那个工具每次提交都会退 3。
+本仓用自己的 action 跑 dash、wrap 和文档检查，另外独立运行加载预算回归测试与 workflow pin 检查。本仓不声明 skill，因此只测试加载预算工具，不拿本仓当它的测量对象。
+
+## 文档完成契约
+
+`doc_contract.py` 的 `--profile` 接受 `skill`、`software`、`companion`，`--stage` 接受 `draft`、`accepted`、`release`。调用方 CLI 或 CI 提供阶段，仓内声明不能自行降为草稿。Skill 和软件需要双语 README、ROADMAP、CHANGELOG；伴生仓只需要根 README 或 DATA 维护入口，其他安全和类型义务由相应闸门负责。
+
+两份 README 都要在安装前放置有实质正文的设计哲学，安装节需要命令或链接入口。检查会发现当前正文的已知模板占位、缺失的安装脚本，以及没有初始化必要 submodule 的 clone 步骤。草稿允许占位，接受和发布阶段拒绝。未来路线图的 `TODO` 与历史发布说明仍然合法。
+
+版本取自 `.claude-plugin/plugin.json`，其次是 `package.json`，两者同时存在时必须一致；没有这两者时，ROADMAP 必须声明唯一数字版本。完整 SemVer 包括预发布与 build 后缀。README 版本徽章、当前版本字段、ROADMAP 的当前数字和最新 CHANGELOG 发布必须一致；有明确用途的 Current 节也可跟随 manifest，不重复数字。发布日期必须是有效、非未来的 ISO 日期，版本和日期从新到旧排列。空 Unreleased 可以通过，发布阶段还要求最新数字发布有实质说明。
+
+检查只读取限定根文档、根设计哲学文档和已知元数据，每个输入最多 1 MiB。本地链接检查路径元数据，只有目标为限定根文档时才检查 anchor，其他 payload 不打开。链接、reparse 路径和越出根目录的路径会失败。文档命令不执行。`--json` 返回 schema 1、`ok`、具名 `checks`、`failures`、推断的 `version` 和 `unverified` 边界；通过退 0，检查失败或不完整退 1，参数无效退 2。
+
+结构检查不能证明设计质量、双语准确性、变更记录完整、安装成功或外部效果。接受交付前，独立评审仍要根据证据核对这些内容。
 
 ## 输出示例
 

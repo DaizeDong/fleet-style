@@ -1,11 +1,17 @@
 # fleet-style
 
-The two house gates that are NOT about security, in one place, consumed as a git submodule.
+Four document and house-style gates in one place, consumed as a git submodule.
 
     dash_guard    published prose carries no en/em dash (the ASCII hyphen is code syntax)
     load_budget   PHILOSOPHY P7: the always-loaded budget and the no-second-copy rule
+    wrap_guard    keep prose paragraphs on one physical line
+    doc_contract  bounded root-document completion, versions and entry links
 
-## Why this is a separate repo from fleet-guards
+## Design Philosophy
+
+Every reported pass needs an observed check and a negative control that can fail. Missing inputs and unavailable scanners block; a reusable kit holds one tested implementation, and each consumer pins the commit it accepts. The documentation contract follows the same rule: it catches bounded structural problems while independent review assesses meaning, tradeoffs and demonstrated behavior.
+
+### Why this is a separate repo from fleet-guards
 
 fleet-guards exists to keep a real identifier out of a public history. Nothing here does that. These two catch a house style rule and an architecture rule, and both are worth catching, but a repo that wants the security kit should not be made to carry them: they were 17.5% of that kit and none of it was about the thing the kit is for.
 
@@ -21,7 +27,7 @@ Then in each workflow that wants a gate:
       with: {submodules: true}
     - uses: actions/setup-python@v5
       with: {python-version: '3.x'}
-    - uses: ./style/ci/dash-guard        # or ./style/ci/load-budget
+    - uses: ./style/ci/dash-guard        # or wrap-guard, load-budget, doc-contract
 
 Hooks are NOT wired here. `core.hooksPath` can only point at one directory, and it belongs to fleet-guards, whose hooks are the thing standing between an identifier and a public push. These two run in CI, which cannot be skipped with `--no-verify` anyway.
 
@@ -44,7 +50,7 @@ Use `--fix --tree` to repair worktree files, inspect the diff, and stage the cha
     python tools/make_fixtures.py --check
     python -m pytest tools/ -q
 
-The first command verifies the generated synthetic scanner inputs. The second runs both gates' full test suites, including controls for incomplete scans and staged content.
+The first command verifies the generated synthetic inputs. The second runs the kit's full test suites, including controls for incomplete scans and staged content.
 
 The scanners share Markdown code protection that respects paragraph and container boundaries. Fenced and indented code, including code in quotes and lists, stays unchanged when fixing prose and is excluded from duplication measurements. Inline code can span physical lines within one paragraph. An unmatched delimiter cannot hide prose in a later block. Dependency references are excluded when a submodule marker exists at any ancestor below the skill's reference root.
 
@@ -57,6 +63,20 @@ Duplication checks use those same parsed links to normalize inline, reference an
 `load_budget.py --max-dup` accepts a finite percentage from 0 through 100. A decoding, discovery or read error exits 3 and reports the affected input on stderr; it emits no partial JSON success. Inputs must be regular files in physical directories, including the supplied root's ancestors. Links are reported as unsupported, and submodules are pruned before traversing their contents. Missing references still produce the explicit `NOT CHECKED` result described by the tool.
 
 `tools/make_fixtures.py --out DIRECTORY` writes the synthetic fixtures by basename for the shared data-boundary check. Add `--check` to verify that directory without rewriting it.
+
+## Document completion contract
+
+    python style/tools/doc_contract.py --root . --profile skill --stage accepted
+
+`--profile` selects `skill`, `software` or `companion`; `--stage` selects `draft`, `accepted` or `release`. The calling CLI or CI supplies these values. Repository content cannot declare itself draft to bypass accepted checks. The [doc-contract action](ci/doc-contract/action.yml) defaults to `skill` and `accepted` and runs generated regression controls before checking the caller.
+
+Skills and software need both READMEs, ROADMAP and CHANGELOG. Each README needs a substantive Design Philosophy before installation and an installation command or linked entry. The checker catches known placeholders in current prose, unavailable declared script paths and clone entries that omit required submodule initialization. Draft permits placeholders; acceptance and release reject them. A companion needs only a root README or DATA maintenance entry. Safety and repository-specific gates own further requirements.
+
+Version provenance follows a unique full SemVer in `.claude-plugin/plugin.json`, then `package.json`, with both agreeing when present. Without either, ROADMAP declares one numeric current version. README version badges and explicit version fields, ROADMAP current declarations and the newest CHANGELOG release must agree. A meaningful `Current` section can follow the manifest without duplicating a version. Dates must be valid, nonfuture ISO dates; releases must be unique and ordered newest first. Empty Unreleased is valid, while release stage requires substantive notes in the newest numeric release. Future roadmap TODOs and prior releases remain valid.
+
+The checker reads only admitted root docs, root philosophy documents and known metadata, at most 1 MiB per input. Local links are checked by path metadata; anchors are checked only when their target is an admitted root doc. Other linked payloads are never opened. Linked/reparse inputs and paths escaping the caller root fail. Markdown commands are never executed. `--json` emits schema version 1, `ok`, named `checks`, named `failures`, inferred `version` and explicit `unverified` boundaries; exits are 0 for pass, 1 for failed or incomplete checks, 2 for invalid arguments.
+
+These checks establish structure and visible consistency. They cannot establish design quality, bilingual accuracy, complete change history, successful installation or external effectiveness. A reviewer must assess those against independent evidence before acceptance.
 
 ## Moving the pin
 
