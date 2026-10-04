@@ -481,6 +481,11 @@ def doc_fixture_bytes():
     case("missing install heading fails", "readme.install", "README.md", "## Installation", "## Usage")
     case("missing declared install file fails", "readme.install", "README.md", "tools/install.py", "tools/missing.py")
     case("prerelease suffix mismatch fails", "version.current", "README_CN.md", version, "1.2.0-rc.2+build.7")
+    case("roadmap badge mismatch fails", "version.current", "README.md", f"version-{version}", "Roadmap-v9.9.9")
+    case("encoded Chinese roadmap badge mismatch fails", "version.current", "README_CN.md", f"version-{version}", "%E8%B7%AF%E7%BA%BF%E5%9B%BE-v9.9.9")
+    case("current roadmap badge is valid", None, "README.md", f"version-{version}", f"Roadmap-v{version}")
+    case("nonnumeric current roadmap badge valid", None, "README.md", f"version-{version}", "Roadmap-current")
+    case("encoded Chinese roadmap badge is valid", None, "README_CN.md", f"version-{version}", f"%E8%B7%AF%E7%BA%BF%E5%9B%BE-v{version}")
     case("package manifest conflict fails", "version.source")["package.json"] = '{"version":"1.2.0-rc.2+build.7"}'
     case("duplicate manifest field fails", "version.source", ".claude-plugin/plugin.json", None,
          '{"version":"1.2.0","version":"1.3.0"}')
@@ -488,15 +493,32 @@ def doc_fixture_bytes():
     case("malformed release date fails", "changelog.releases", "CHANGELOG.md", "2024-06-10", "2024-02-30")
     case("unparseable release date fails", "changelog.releases", "CHANGELOG.md", "2024-06-10", "tomorrow")
     case("future release date fails", "changelog.releases", "CHANGELOG.md", "2024-06-10", "9999-06-10")
-    case("hidden newer release fails", "changelog.releases", "CHANGELOG.md", "## [1.1.0]", "## [2.0.0]")
+    case("historical maintenance branch release valid", None, "CHANGELOG.md", "## [1.1.0]", "## [2.0.0]")
+    case("duplicate raw release version fails", "changelog.releases", "CHANGELOG.md", "## [1.1.0]", f"## [{version}]")
+    data = case("distinct build metadata releases valid", None)
+    for name in ("README.md", "README_CN.md", "ROADMAP.md", "CHANGELOG.md", ".claude-plugin/plugin.json"):
+        data[name] = data[name].replace(version, "1.2.0+fork.2")
+    data["CHANGELOG.md"] = data["CHANGELOG.md"].replace("[1.1.0]", "[1.2.0+fork.1]")
     case("release date order fails", "changelog.releases", "CHANGELOG.md", "2024-06-01", "2024-07-01")
     case("release scaffold TODO fails", "docs.placeholders", "CHANGELOG.md", "Added bounded document checking.", "TODO: write release notes.")
+    case("lowercase todo feature description valid", None, "README.md", "Run the declared setup entry.", "Run setup to manage todo entries and calendar events.")
+    data = case("lowercase todo filename valid", None, "README.md", "[Roadmap](ROADMAP.md#planned)", "[Roadmap](ROADMAP.md#planned) and [Guide](todo.md)")
+    data["todo.md"] = "# Synthetic guide\n"
+    case("historical TODO feature description valid", None, "CHANGELOG.md", "Added synthetic guide examples.", "Added TODO items to the task list.")
+    case("historical scaffold note retained as history", None, "CHANGELOG.md", "Added synthetic guide examples.", "TODO: archive the initial scaffold note.")
+    case("Unreleased placeholder still fails", "docs.placeholders", "CHANGELOG.md", "Refined the installation explanation.", "TODO: write change notes.")
     case("empty Unreleased remains valid", None, "CHANGELOG.md", "### Changed\n\n- Refined the installation explanation.\n\n", "")
     case("release requires substantive latest notes", "changelog.releases", "CHANGELOG.md", "- Added bounded document checking.", "", stage="release")
     case("conflicting roadmap current fails", "roadmap.current", "ROADMAP.md", "## Planned", "Current: v2.0.0\n\n## Planned")
     case("current placeholder after planned fails", "docs.placeholders", "ROADMAP.md", None,
          f"# Roadmap\n\nCurrent: v{version}\n\n## Planned\n\n- TODO: evaluate another language.\n\n"
          "## Current behavior\n\nTODO: explain the accepted behavior.\n")
+    case("current placeholder after nested plans fails", "docs.placeholders", "ROADMAP.md", None,
+         f"# Roadmap\n\nCurrent: v{version}\n\n## Planned\n\n### Next\n\n- TODO: evaluate another language.\n\n"
+         "## Current behavior\n\nTODO: explain the accepted behavior.\n")
+    case("nested future plans without current placeholder valid", None, "ROADMAP.md", None,
+         f"# Roadmap\n\nCurrent: v{version}\n\n## Planned\n\n### Next\n\n- TODO: evaluate another language.\n\n"
+         "## Current behavior\n\nThe current implementation checks root documentation.\n")
     case("numeric prerelease with leading zero fails", "version.source", ".claude-plugin/plugin.json", version, "1.2.0-01")
     case("current roadmap invalid semver fails", "roadmap.current", "ROADMAP.md", version, "01.2.0")
     case("current version field mismatch fails", "version.current", "README.md", "# Synthetic tool", "# Synthetic tool\n\nVersion: **v1.3.0**")
@@ -521,12 +543,26 @@ def doc_fixture_bytes():
     data["README.md"] = data["README.md"].replace("ROADMAP.md#planned", "ROADMAP.md#current")
     case("missing local root link fails", "links.local", "README.md", "ROADMAP.md#planned", "MISSING.md")
     case("missing root anchor fails", "links.local", "README.md", "ROADMAP.md#planned", "ROADMAP.md#missing")
+    case("dot-relative root anchor fails", "links.local", "README.md", "ROADMAP.md#planned", "./ROADMAP.md#missing")
+    case("dot-relative valid root anchor passes", None, "README.md", "ROADMAP.md#planned", "./ROADMAP.md#planned")
+    case("malformed URL gives named failure", "links.local", "README.md", "[Roadmap](ROADMAP.md#planned)", "[Malformed](http://[)")
+    case("empty accepted changelog fails", "docs.required", "CHANGELOG.md", None, "")
+    case("heading-only accepted changelog fails", "docs.required", "CHANGELOG.md", None, "# Changelog\n")
     case("reference link missing destination fails", "links.local", "README.md", "[Roadmap](ROADMAP.md#planned)", "[Roadmap][plan]\n\n[plan]: MISSING.md")
     data = case("literal links in inline code are not destinations", None)
     data["README.md"] += "\nLiteral syntax `[sample](missing.md)` and `TODO` are code examples.\n"
     data = case("protected payload link is metadata only", None)
     data["README.md"] += "\n[Payload](eval/poison.json#never-open)\n"
     data["eval/poison.json"] = "This synthetic payload is not documentation."
+    for name, skip, mode, failure in (("sparse regular index target valid", True, "100644", None),
+                                      ("sparse executable index target valid", True, "100755", None),
+                                      ("ordinary tracked missing target fails", False, "100644", "links.local"),
+                                      ("sparse index symlink target fails", True, "120000", "links.local"),
+                                      ("sparse index submodule target fails", True, "160000", "links.local")):
+        data = case(name, failure)
+        data["README.md"] += "\n[Payload](eval/poison.json#never-open)\n"
+        data["eval/poison.json"] = "This synthetic payload is not documentation."
+        cases[-1]["index_case"] = {"path": "eval/poison.json", "skip": skip, "mode": mode}
     data = case("software requires no plugin", None, profile="software")
     del data[".claude-plugin/plugin.json"]
     data["package.json"] = json.dumps({"version": version})
@@ -538,6 +574,7 @@ def doc_fixture_bytes():
     cases.append({"name": "valid companion DATA maintenance entry", "profile": "companion",
                   "files": {"DATA.md": "# Private DATA\n\nRestore and retain the versioned configuration in this private companion.\n"}})
     cases.append({"name": "missing companion entry fails", "profile": "companion", "files": {}, "failure": "docs.required"})
+    cases.append({"name": "empty companion entry fails", "profile": "companion", "files": {"README.md": ""}, "failure": "docs.required"})
     return (json.dumps(cases, ensure_ascii=True, indent=2) + "\n").encode("utf-8")
 
 

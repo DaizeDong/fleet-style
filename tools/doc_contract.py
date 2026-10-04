@@ -15,6 +15,7 @@ import os
 from pathlib import Path
 import re
 import stat
+import subprocess
 from urllib.parse import unquote, urlsplit
 
 _SPEC = importlib.util.spec_from_file_location("_doc_markdown", Path(__file__).with_name("markdown_regions.py"))
@@ -28,9 +29,9 @@ _PHILOSOPHY = re.compile(r"design\s+philosophy|设计哲学|設計哲學|设计�
 _INSTALL = re.compile(r"install(?:ation)?|setup|getting\s+started|安装|安裝|部署", re.I)
 _FUTURE = re.compile(r"planned|future|next|backlog|待办|待辦|计划|計劃|未来|未來", re.I)
 _CURRENT = re.compile(r"current|当前|當前", re.I)
-_PLACEHOLDER = re.compile(r"\b(?:TODO|TBD|FIXME)\b|\{\{[^}\n]+\}\}|\b(?:YOUR_|REPLACE_ME|INSERT_HERE)\w*|"
+_PLACEHOLDER = re.compile(r"(?m)^\s*(?:[-*+]\s+|#+\s+)?(?:TODO|TBD|FIXME)(?:\s*[:：]|\s*$)|\{\{[^}\n]+\}\}|\b(?:YOUR_|REPLACE_ME|INSERT_HERE)\w*|"
                           r"待填写|待填寫|待补充|待補充|占位正文|placeholder\s+(?:text|body)|"
-                          r"fill\s+(?:this|in|out)|write\s+(?:the|your)\s+(?:description|philosophy)", re.I)
+                          r"fill\s+(?:this|in|out)|write\s+(?:the|your)\s+(?:description|philosophy)")
 _FILLER = re.compile(r"explain\s+(?:the\s+)?design\s+choices\s+here|initial release\.?$|设计哲学写在这里", re.I)
 _ROOT_DOCS = ("README.md", "README_CN.md", "CHANGELOG.md", "ROADMAP.md", "PHILOSOPHY.md", "PHILOSOPHY_CN.md")
 _METADATA = (".claude-plugin/plugin.json", "package.json", ".gitmodules")
@@ -84,11 +85,6 @@ def semver(value):
     return tuple(map(int, base.split("."))), tuple(ids)
 
 
-def version_order(value):
-    base, ids = semver(value)
-    return base, (1,) if not ids else (0, tuple((0, int(x)) if x.isdigit() else (1, x) for x in ids))
-
-
 def unique_json(pairs):
     result = {}
     for key, value in pairs:
@@ -117,6 +113,37 @@ def read_input(root, relative):
     if not path.is_file() or path.stat().st_size > 1024 * 1024:
         raise ValueError("input is not a bounded regular file")
     return path.read_text(encoding="utf-8-sig")
+
+
+def sparse_index_file(root, relative):
+    """Observe exact skipped regular-file index metadata, never payload content/OIDs."""
+    target = Path(os.path.abspath(root / relative))
+    if not target.is_relative_to(root):
+        return False
+    # Missing intermediate directories are normal in sparse worktrees. Every
+    # existing ancestor, including root and its parents, must remain physical.
+    for component in (target, *target.parents):
+        try:
+            info = component.lstat()
+        except FileNotFoundError:
+            continue
+        if stat.S_ISLNK(info.st_mode) or getattr(info, "st_file_attributes", 0) & 0x400:
+            return False
+    env = dict(os.environ, GIT_OPTIONAL_LOCKS="0", GIT_LITERAL_PATHSPECS="1")
+    try:
+        def git(*args):
+            run = subprocess.run(["git", "-C", str(root), *args], env=env,
+                                 capture_output=True, timeout=5)
+            return run.stdout if run.returncode == 0 else None
+        top = git("rev-parse", "--show-toplevel")
+        if top is None or Path(os.path.abspath(os.fsdecode(top).strip())) != root:
+            return False
+        name = target.relative_to(root).as_posix()
+        flags = git("ls-files", "-v", "-z", "--error-unmatch", "--", name)
+        modes = git("ls-files", "--format=%(objectmode)", "-z", "--error-unmatch", "--", name)
+        return flags in (b"S " + os.fsencode(name) + b"\0", b"s " + os.fsencode(name) + b"\0") and modes in (b"100644\0", b"100755\0")
+    except (OSError, subprocess.TimeoutExpired):
+        return False
 
 
 def local_links(text):
@@ -153,9 +180,13 @@ def current_versions(text):
 
 def displayed_versions(text):
     values = []
-    for payload in re.findall(r"/badge/(?:version|版本)[-:]([^\s)]+)", visible(text), re.I):
-        value = unquote(payload).rsplit("-", 1)[0].replace("--", "-").removeprefix("v")
-        values.append(value)
+    for payload in re.findall(r"/badge/([^\s)]+)", visible(text), re.I):
+        decoded = unquote(payload).split("?", 1)[0]
+        match = re.match(r"(?:version|版本|roadmap|路线图|路線圖)[-:](.+)", decoded, re.I)
+        if match:
+            value = match[1].rsplit("-", 1)[0].replace("--", "-").removeprefix("v")
+            if not re.fullmatch(r"current|当前|當前", value, re.I):
+                values.append(value)
     for line in visible(text).splitlines():
         match = re.match(r"\s*(?:\*\*)?(?:version|版本)\s*[:：]\s*(?:\*\*)?v?([\w.+-]+)", line, re.I)
         if match:
@@ -186,11 +217,15 @@ def check(root, profile="skill", stage="accepted"):
     if profile == "companion":
         if not any(name in docs for name in ("README.md", "DATA.md")):
             fail("docs.required", "companion needs README.md or DATA.md maintenance entry")
+        elif stage != "draft" and not any(substantive_notes(text) for text in docs.values()):
+            fail("docs.required", "companion maintenance entry needs substantive body")
         not_applicable.update(set(CHECK_NAMES) - {"docs.required", "docs.placeholders", "links.local"})
     else:
         for name in required:
             if name not in docs:
                 fail("docs.required", f"missing {name}")
+            elif stage != "draft" and name == "CHANGELOG.md" and not substantive_notes(docs[name]):
+                fail("docs.required", "CHANGELOG.md needs substantive body")
         for name in ("README.md", "README_CN.md"):
             if name not in docs:
                 continue
@@ -225,8 +260,17 @@ def check(root, profile="skill", stage="accepted"):
                 # Future work may legitimately remain TODO; only current/root material is checked.
                 ranges = [(start, end) for heading, start, _, end in section_ranges(text)
                           if _FUTURE.search(heading) and not _CURRENT.search(heading)]
-                for start, end in sorted(ranges, reverse=True):
-                    text = text[:start] + text[end:]
+                chars = list(text)
+                for start, end in ranges:
+                    chars[start:end] = " " * (end - start)
+                text = "".join(chars)
+            elif name == "CHANGELOG.md":
+                # Only preamble, Unreleased and newest release describe the
+                # current contract. Older releases retain historical truth.
+                releases = [start for heading, start, _, _ in section_ranges(text)
+                            if re.match(r"\[?v?\d", heading)]
+                if len(releases) > 1:
+                    text = text[:releases[1]]
             if _PLACEHOLDER.search(_MD.without_code(text)):
                 fail("docs.placeholders", f"{name}: unresolved scaffold placeholder in current documentation")
 
@@ -286,26 +330,41 @@ def check(root, profile="skill", stage="accepted"):
             releases.append((match[1], published, offset, body))
         if len(unreleased) > 1 or unreleased and releases and unreleased[0] > releases[0][2]:
             fail("changelog.releases", "Unreleased must occur once before releases")
+        if len({release[0] for release in releases}) != len(releases):
+            fail("changelog.releases", "CHANGELOG release versions must be unique")
         for earlier, later in zip(releases, releases[1:]):
-            if version_order(earlier[0]) <= version_order(later[0]) or earlier[1] < later[1]:
-                fail("changelog.releases", "CHANGELOG releases must be unique and ordered newest first by version/date")
+            if earlier[1] < later[1]:
+                fail("changelog.releases", "CHANGELOG releases must be ordered newest first by date")
         if releases and source and not errors["version.source"] and releases[0][0] != source:
             fail("changelog.releases", f"newest CHANGELOG release differs from {source}")
         if stage == "release" and (not releases or not substantive_notes(releases[0][3])):
             fail("changelog.releases", "release stage requires substantive notes for latest numeric release")
 
     unchecked_anchors = 0
+    index_metadata_paths = set()
     for name, text in docs.items():
         for target in local_links(text):
-            url = urlsplit(target)
+            try:
+                url = urlsplit(target)
+            except ValueError:
+                fail("links.local", f"{name}: malformed URL destination")
+                continue
             if url.scheme or url.netloc:
                 continue
             relative = unquote(url.path) or name
             try:
                 destination = path_metadata(root, relative)
+            except FileNotFoundError:
+                if sparse_index_file(root, relative):
+                    destination = Path(os.path.abspath(root / relative))
+                    index_metadata_paths.add(destination.relative_to(root).as_posix())
+                else:
+                    fail("links.local", f"{name}: missing or unsupported local destination: {relative}")
+                    continue
             except (OSError, ValueError):
                 fail("links.local", f"{name}: missing or unsupported local destination: {relative}")
                 continue
+            relative = destination.relative_to(root).as_posix()
             if url.fragment:
                 if relative in docs:
                     if unquote(url.fragment) not in anchors(docs[relative]):
@@ -319,6 +378,7 @@ def check(root, profile="skill", stage="accepted"):
     failures = [{"name": row["name"], "detail": row["detail"]} for row in checks if row["status"] == "FAIL"]
     return {"schema_version": 1, "profile": profile, "stage": stage, "ok": not failures,
             "checks": checks, "failures": failures, "version": source,
+            "index_metadata_paths": sorted(index_metadata_paths),
             "unverified": ["semantic completeness and bilingual accuracy", "documented commands and external behavior",
                            f"anchors outside admitted root docs ({unchecked_anchors}); targets metadata-checked only"]}
 

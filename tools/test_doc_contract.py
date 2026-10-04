@@ -17,6 +17,8 @@ def test_document_contract(case, tmp_path):
         target = tmp_path / name
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text(content, encoding="utf-8")
+    if case.get("index_case"):
+        setup_index_case(tmp_path, case["index_case"])
     run = subprocess.run([sys.executable, str(HERE / "doc_contract.py"), "--root", str(tmp_path),
                           "--profile", case.get("profile", "skill"), "--stage",
                           case.get("stage", "accepted"), "--json"], capture_output=True, text=True)
@@ -29,6 +31,23 @@ def test_document_contract(case, tmp_path):
     assert {check["name"] for check in result["checks"]} >= {
         "docs.required", "readme.philosophy", "readme.install", "docs.placeholders",
         "version.source", "version.current", "changelog.releases", "roadmap.current", "links.local"}
+    if case.get("index_case"):
+        assert result["index_metadata_paths"] == ([case["index_case"]["path"]] if not case.get("failure") else [])
+
+
+def setup_index_case(root, setup):
+    def git(*args):
+        return subprocess.run(["git", "-C", str(root), *args], check=True, capture_output=True).stdout
+    git("init", "--quiet")
+    git("add", "--", setup["path"])
+    # This object is generated synthetic test content; production checker never
+    # asks Git for an object ID or reads an indexed payload.
+    object_id = git("ls-files", "--format=%(objectname)", "--", setup["path"]).decode().strip()
+    if setup["mode"] != "100644":
+        git("update-index", "--cacheinfo", f"{setup['mode']},{object_id},{setup['path']}")
+    if setup["skip"]:
+        git("update-index", "--skip-worktree", "--", setup["path"])
+    (root / setup["path"]).unlink()
 
 
 def test_invalid_stage_cannot_be_self_declared(tmp_path):
@@ -73,6 +92,22 @@ def test_linked_payload_is_never_opened(tmp_path, monkeypatch):
     result = load_checker().check(tmp_path)
     assert result["ok"]
     assert any("(1)" in detail for detail in result["unverified"])
+
+
+def test_sparse_payload_is_never_opened(tmp_path, monkeypatch):
+    case = next(case for case in CASES if case["name"] == "sparse regular index target valid")
+    write_case(tmp_path, case)
+    setup_index_case(tmp_path, case["index_case"])
+    original = Path.open
+
+    def admitted_open(path, *args, **kwargs):
+        assert path != tmp_path / "eval/poison.json", "sparse payload content was opened"
+        return original(path, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "open", admitted_open)
+    result = load_checker().check(tmp_path)
+    assert result["ok"]
+    assert result["index_metadata_paths"] == ["eval/poison.json"]
 
 
 def test_linked_root_input_blocks_without_reading_target(tmp_path, monkeypatch):
