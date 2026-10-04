@@ -486,6 +486,14 @@ def doc_fixture_bytes():
     case("current roadmap badge is valid", None, "README.md", f"version-{version}", f"Roadmap-v{version}")
     case("nonnumeric current roadmap badge valid", None, "README.md", f"version-{version}", "Roadmap-current")
     case("encoded Chinese roadmap badge is valid", None, "README_CN.md", f"version-{version}", f"%E8%B7%AF%E7%BA%BF%E5%9B%BE-v{version}")
+    for name, english, chinese, failure in (("legacy badge suffix valid", "1.2.0 alpha", "1.2.0 alpha", None),
+                                           ("legacy badge base mismatch fails", "1.3.0 alpha", "1.2.0 alpha", "version.current"),
+                                           ("legacy badge bilingual suffix mismatch fails", "1.2.0 alpha", "1.2.0 beta", "version.current")):
+        data = case(name, failure)
+        for path in ("README.md", "README_CN.md", "ROADMAP.md", "CHANGELOG.md", ".claude-plugin/plugin.json"):
+            data[path] = data[path].replace(version, "1.2.0")
+        data["README.md"] = data["README.md"].replace("version-1.2.0", "Roadmap-v" + english.replace(" ", "%20"))
+        data["README_CN.md"] = data["README_CN.md"].replace("version-1.2.0", "Roadmap-v" + chinese.replace(" ", "%20"))
     case("package manifest conflict fails", "version.source")["package.json"] = '{"version":"1.2.0-rc.2+build.7"}'
     case("duplicate manifest field fails", "version.source", ".claude-plugin/plugin.json", None,
          '{"version":"1.2.0","version":"1.3.0"}')
@@ -500,6 +508,24 @@ def doc_fixture_bytes():
         data[name] = data[name].replace(version, "1.2.0+fork.2")
     data["CHANGELOG.md"] = data["CHANGELOG.md"].replace("[1.1.0]", "[1.2.0+fork.1]")
     case("release date order fails", "changelog.releases", "CHANGELOG.md", "2024-06-01", "2024-07-01")
+    case("legacy comma release headings valid", None, "CHANGELOG.md", None,
+         f"# Changelog\n\n## [{version}], 2024-06-10, Synthetic initial release\n\n"
+         "- Added bounded document checking.\n\n## [1.1.0], 2024-06-01\n\n- Added guide examples.\n")
+    case("legacy comma invalid date fails", "changelog.releases", "CHANGELOG.md", None,
+         f"# Changelog\n\n## [{version}], 2024-02-30, Synthetic initial release\n\n- Added bounded document checking.\n")
+    for name, stage, failure in (("undated software history explicitly unverified", "accepted", None),
+                                 ("undated software release date required", "release", "changelog.releases")):
+        data = case(name, failure, profile="software", stage=stage)
+        data["CHANGELOG.md"] = (f"# Changelog\n\n## v{version}\n\n- Added bounded document checking.\n\n"
+                                "## v1.1.0\n\n- Added guide examples.\n")
+        if not failure:
+            cases[-1]["unverified_contains"] = "software legacy release dates"
+    case("undated skill release still fails", "changelog.releases", "CHANGELOG.md", f"[{version}] - 2024-06-10", f"v{version}")
+    data = case("software undated annotated history valid", None, profile="software")
+    data["CHANGELOG.md"] = (f"# Changelog\n\n## v{version}\n\n- Added bounded document checking.\n\n"
+                            "## v1.1.0, validated against Synthetic Tool 1.1.0\n\n- Added guide examples.\n\n"
+                            "## v1.0.0 and earlier\n\nEarlier synthetic history is summarized here.\n")
+    cases[-1]["unverified_contains"] = "software legacy release dates"
     case("release scaffold TODO fails", "docs.placeholders", "CHANGELOG.md", "Added bounded document checking.", "TODO: write release notes.")
     case("lowercase todo feature description valid", None, "README.md", "Run the declared setup entry.", "Run setup to manage todo entries and calendar events.")
     data = case("lowercase todo filename valid", None, "README.md", "[Roadmap](ROADMAP.md#planned)", "[Roadmap](ROADMAP.md#planned) and [Guide](todo.md)")
@@ -545,6 +571,9 @@ def doc_fixture_bytes():
     case("missing root anchor fails", "links.local", "README.md", "ROADMAP.md#planned", "ROADMAP.md#missing")
     case("dot-relative root anchor fails", "links.local", "README.md", "ROADMAP.md#planned", "./ROADMAP.md#missing")
     case("dot-relative valid root anchor passes", None, "README.md", "ROADMAP.md#planned", "./ROADMAP.md#planned")
+    data = case("platform case root missing anchor fails", "links.local", "README.md", "ROADMAP.md#planned", "readme.md#never-existed")
+    data["readme.md"] = data["README.md"]
+    case("platform case root valid anchor passes", None, "README.md", "ROADMAP.md#planned", "readme.md#design-philosophy")["readme.md"] = files["README.md"]
     case("malformed URL gives named failure", "links.local", "README.md", "[Roadmap](ROADMAP.md#planned)", "[Malformed](http://[)")
     case("empty accepted changelog fails", "docs.required", "CHANGELOG.md", None, "")
     case("heading-only accepted changelog fails", "docs.required", "CHANGELOG.md", None, "# Changelog\n")
