@@ -12,6 +12,8 @@ CASES = json.loads((HERE.parent / "tests/fixtures/doc_cases.json").read_text(enc
 
 @pytest.mark.parametrize("case", CASES, ids=lambda case: case["name"])
 def test_document_contract(case, tmp_path):
+    if case["name"].startswith("platform case") and sys.platform != "win32":
+        pytest.skip("case-insensitive Windows path identity contract")
     # Losing any named predicate makes its single-fault case unexpectedly pass.
     for name, content in case["files"].items():
         target = tmp_path / name
@@ -33,6 +35,8 @@ def test_document_contract(case, tmp_path):
         "version.source", "version.current", "changelog.releases", "roadmap.current", "links.local"}
     if case.get("index_case"):
         assert result["index_metadata_paths"] == ([case["index_case"]["path"]] if not case.get("failure") else [])
+    if case.get("unverified_contains"):
+        assert any(case["unverified_contains"] in detail for detail in result["unverified"])
 
 
 def setup_index_case(root, setup):

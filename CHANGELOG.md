@@ -9,6 +9,7 @@ All notable changes to this project are documented here (Keep a Changelog style)
 - `doc_contract.py` and `ci/doc-contract` check bounded root documentation with explicit repository profiles and trusted lifecycle stages. Generated synthetic controls cover philosophy before installation, placeholders, full SemVer provenance, release dates/order and local entry links. Linked payload contents and documented commands are never opened or executed. Semantic completeness remains an independent review responsibility.
 - The kit runs its document action against its own software docs. Both READMEs document the checker and preserve the design rationale before installation.
 - Review controls also cover roadmap badges, normalized anchors, malformed URLs, nonempty maintenance/changelog entries, historical placeholder descriptions, nested future sections and maintenance/build release histories. Sparse linked files can use exact skip-worktree regular-file index metadata, reported separately without reading payload contents.
+- Legacy display labels compare numeric base versions and bilingual suffixes while genuine SemVer remains strict. Root anchors respect platform filename case. Historical comma/title release headings and undated software histories retain their original format, with undated chronology explicitly unverified.
 
 ### Changed
 

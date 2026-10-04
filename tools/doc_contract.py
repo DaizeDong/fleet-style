@@ -194,6 +194,12 @@ def displayed_versions(text):
     return values
 
 
+def display_version(value):
+    """Legacy whitespace labels are display metadata; full SemVer stays exact."""
+    match = re.fullmatch(r"((?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*))\s+([A-Za-z][\w ]*)", value)
+    return (match[1], " ".join(match[2].split())) if match else (value, "")
+
+
 def check(root, profile="skill", stage="accepted"):
     root = Path(os.path.abspath(root))
     errors = {name: [] for name in CHECK_NAMES}
@@ -275,6 +281,7 @@ def check(root, profile="skill", stage="accepted"):
                 fail("docs.placeholders", f"{name}: unresolved scaffold placeholder in current documentation")
 
     source = None
+    unverified_dates = []
     if profile != "companion":
         versions = []
         for name in _METADATA[:2]:
@@ -305,9 +312,14 @@ def check(root, profile="skill", stage="accepted"):
                                          for heading, body, _ in sections(roadmap)):
                 fail("roadmap.current", "ROADMAP needs a purposeful current section or current version declaration")
         if source and not errors["version.source"]:
+            suffixes = {}
             for name in ("README.md", "README_CN.md"):
-                if any(value != source for value in displayed_versions(docs.get(name, ""))):
+                displays = [display_version(value) for value in displayed_versions(docs.get(name, ""))]
+                suffixes[name] = {suffix for _, suffix in displays if suffix}
+                if any(value != source for value, _ in displays):
                     fail("version.current", f"{name}: displayed current version differs from {source}")
+            if all(name in docs for name in suffixes) and suffixes["README.md"] != suffixes["README_CN.md"]:
+                fail("version.current", "README bilingual legacy display suffixes differ")
         changelog = docs.get("CHANGELOG.md", "")
         releases, unreleased = [], []
         for heading, body, offset in sections(changelog):
@@ -316,23 +328,38 @@ def check(root, profile="skill", stage="accepted"):
                 continue
             if not re.match(r"\[?v?\d", heading):
                 continue
-            match = re.fullmatch(r"\[?v?(" + SEMVER + r")\]?\s+-\s+(\S+)", heading)
-            if not match or semver(match[1]) is None:
+            match = re.fullmatch(r"\[?v?(" + SEMVER + r")\]?(?:\s*(?:-|,)\s*(\S+?)(?:,\s*.+)?)?", heading)
+            if profile == "software" and re.fullmatch(r"v?" + SEMVER + r"\s+and earlier", heading):
+                unverified_dates.append("earlier release summary")
+                continue
+            annotated = (re.fullmatch(r"\[?v?(" + SEMVER + r")\]?,\s+validated against .+", heading)
+                         if profile == "software" else None)
+            value = annotated[1] if annotated else match[1] if match else None
+            date_text = None if annotated else match[2] if match else None
+            if value is None or semver(value) is None:
                 fail("changelog.releases", "CHANGELOG release needs full SemVer and ISO date")
                 continue
+            if date_text is None:
+                if profile == "software" and stage != "release":
+                    unverified_dates.append(value)
+                    releases.append((value, None, offset, body))
+                else:
+                    fail("changelog.releases", "CHANGELOG release date required for this profile/stage")
+                continue
             try:
-                published = date.fromisoformat(match[2])
-                if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", match[2]) or published > date.today():
+                published = date.fromisoformat(date_text)
+                if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", date_text) or published > date.today():
                     raise ValueError("invalid/future date")
             except ValueError:
                 fail("changelog.releases", "CHANGELOG release date is invalid or in the future")
                 continue
-            releases.append((match[1], published, offset, body))
+            releases.append((value, published, offset, body))
         if len(unreleased) > 1 or unreleased and releases and unreleased[0] > releases[0][2]:
             fail("changelog.releases", "Unreleased must occur once before releases")
         if len({release[0] for release in releases}) != len(releases):
             fail("changelog.releases", "CHANGELOG release versions must be unique")
-        for earlier, later in zip(releases, releases[1:]):
+        dated = [release for release in releases if release[1] is not None]
+        for earlier, later in zip(dated, dated[1:]):
             if earlier[1] < later[1]:
                 fail("changelog.releases", "CHANGELOG releases must be ordered newest first by date")
         if releases and source and not errors["version.source"] and releases[0][0] != source:
@@ -366,8 +393,10 @@ def check(root, profile="skill", stage="accepted"):
                 continue
             relative = destination.relative_to(root).as_posix()
             if url.fragment:
-                if relative in docs:
-                    if unquote(url.fragment) not in anchors(docs[relative]):
+                admitted = next((doc for doc in docs if os.path.normcase(os.path.abspath(root / doc))
+                                 == os.path.normcase(str(destination))), None)
+                if admitted:
+                    if unquote(url.fragment) not in anchors(docs[admitted]):
                         fail("links.local", f"{name}: unknown root-doc anchor: {target}")
                 else:
                     unchecked_anchors += 1
@@ -380,7 +409,9 @@ def check(root, profile="skill", stage="accepted"):
             "checks": checks, "failures": failures, "version": source,
             "index_metadata_paths": sorted(index_metadata_paths),
             "unverified": ["semantic completeness and bilingual accuracy", "documented commands and external behavior",
-                           f"anchors outside admitted root docs ({unchecked_anchors}); targets metadata-checked only"]}
+                           f"anchors outside admitted root docs ({unchecked_anchors}); targets metadata-checked only"]
+                           + ([f"software legacy release dates ({len(unverified_dates)}); chronology of undated entries unverified"]
+                              if unverified_dates else [])}
 
 
 def main(argv=None):
