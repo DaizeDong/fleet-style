@@ -107,9 +107,9 @@ pytest style/tools/
 
 两份 README 都要在安装前放置有实质正文的设计哲学，安装节需要命令或链接入口。检查会发现当前正文的已知模板占位、缺失的安装脚本，以及没有初始化必要 submodule 的 clone 步骤。草稿允许占位，接受和发布阶段拒绝。未来路线图的 `TODO` 与历史发布说明仍然合法。
 
-版本取自 `.claude-plugin/plugin.json`，其次是 `package.json`，两者同时存在时必须一致；没有这两者时，ROADMAP 必须声明唯一数字版本。完整 SemVer 包括预发布与 build 后缀。README 版本徽章、当前版本字段、ROADMAP 的当前数字和最新 CHANGELOG 发布必须一致；有明确用途的 Current 节也可跟随 manifest，不重复数字。发布日期必须是有效、非未来的 ISO 日期，版本和日期从新到旧排列。空 Unreleased 可以通过，发布阶段还要求最新数字发布有实质说明。
+版本取自 `.claude-plugin/plugin.json`，其次是 `package.json`，两者同时存在时必须一致；没有这两者时，ROADMAP 必须声明唯一数字版本。完整 SemVer 包括预发布与 build 后缀。README 版本和路线图徽章、当前版本字段、ROADMAP 的当前数字和最新 CHANGELOG 发布必须一致；有明确用途的 Current 节也可跟随 manifest，不重复数字。发布日期必须是有效、非未来的 ISO 日期，按日期从新到旧排列，原始版本字符串不能重复。维护分支历史与不同 build 版本可以保留。空 Unreleased 可以通过，发布阶段还要求最新数字发布有实质说明。占位检查只针对当前模板标记，普通待办描述和历史发布文字可以保留。
 
-检查只读取限定根文档、根设计哲学文档和已知元数据，每个输入最多 1 MiB。本地链接检查路径元数据，只有目标为限定根文档时才检查 anchor，其他 payload 不打开。链接、reparse 路径和越出根目录的路径会失败。文档命令不执行。`--json` 返回 schema 1、`ok`、具名 `checks`、`failures`、推断的 `version` 和 `unverified` 边界；通过退 0，检查失败或不完整退 1，参数无效退 2。
+检查只读取限定根文档、根设计哲学文档和已知元数据，每个输入最多 1 MiB。本地链接检查路径元数据，规范化后的根文档路径还检查 anchor，其他 payload 不打开。稀疏检出中，缺失目标只有在 Git index 明确记录为 skip-worktree 的普通文件时才可通过，路径另列在 `index_metadata_paths`。普通 tracked 文件缺失、index 内的 symlink 或 submodule、reparse 路径和越出根目录的路径都会失败。文档命令不执行，错误 URL 也返回具名失败。`--json` 返回 schema 1、`ok`、具名 `checks`、`failures`、推断的 `version` 和 `unverified` 边界；通过退 0，检查失败或不完整退 1，参数无效退 2。
 
 结构检查不能证明设计质量、双语准确性、变更记录完整、安装成功或外部效果。接受交付前，独立评审仍要根据证据核对这些内容。
 
