@@ -196,7 +196,7 @@ def displayed_versions(text):
 
 def display_version(value):
     """Legacy whitespace labels are display metadata; full SemVer stays exact."""
-    match = re.fullmatch(r"((?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*))\s+([A-Za-z][\w ]*)", value)
+    match = re.fullmatch(r"((?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*))\s+([A-Za-z0-9.]+)", value)
     return (match[1], " ".join(match[2].split())) if match else (value, "")
 
 
@@ -340,7 +340,7 @@ def check(root, profile="skill", stage="accepted"):
                 fail("changelog.releases", "CHANGELOG release needs full SemVer and ISO date")
                 continue
             if date_text is None:
-                if profile == "software" and stage != "release":
+                if profile == "software":
                     unverified_dates.append(value)
                     releases.append((value, None, offset, body))
                 else:
@@ -364,8 +364,8 @@ def check(root, profile="skill", stage="accepted"):
                 fail("changelog.releases", "CHANGELOG releases must be ordered newest first by date")
         if releases and source and not errors["version.source"] and releases[0][0] != source:
             fail("changelog.releases", f"newest CHANGELOG release differs from {source}")
-        if stage == "release" and (not releases or not substantive_notes(releases[0][3])):
-            fail("changelog.releases", "release stage requires substantive notes for latest numeric release")
+        if stage == "release" and (not releases or releases[0][1] is None or not substantive_notes(releases[0][3])):
+            fail("changelog.releases", "release stage requires dated substantive notes for latest numeric release")
 
     unchecked_anchors = 0
     index_metadata_paths = set()

@@ -14,6 +14,9 @@ CASES = json.loads((HERE.parent / "tests/fixtures/doc_cases.json").read_text(enc
 def test_document_contract(case, tmp_path):
     if case["name"].startswith("platform case") and sys.platform != "win32":
         pytest.skip("case-insensitive Windows path identity contract")
+    if case["name"] == "platform case root valid anchor passes":
+        assert "readme.md#design-philosophy" in case["files"]["README.md"]
+        assert case["files"]["readme.md"] == case["files"]["README.md"]
     # Losing any named predicate makes its single-fault case unexpectedly pass.
     for name, content in case["files"].items():
         target = tmp_path / name

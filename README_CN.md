@@ -109,7 +109,7 @@ pytest style/tools/
 
 版本取自 `.claude-plugin/plugin.json`，其次是 `package.json`，两者同时存在时必须一致；没有这两者时，ROADMAP 必须声明唯一数字版本。完整 SemVer 包括预发布与 build 后缀。README 版本和路线图徽章、当前版本字段、ROADMAP 的当前数字和最新 CHANGELOG 发布必须一致；有明确用途的 Current 节也可跟随 manifest，不重复数字。发布日期必须是有效、非未来的 ISO 日期，按日期从新到旧排列，原始版本字符串不能重复。维护分支历史与不同 build 版本可以保留。空 Unreleased 可以通过，发布阶段还要求最新数字发布有实质说明。占位检查只针对当前模板标记，普通待办描述和历史发布文字可以保留。
 
-旧徽章里的 `0.2.2 alpha` 这类空格展示标签，数字基础版本与源版本比较，展示后缀在双语 README 间核对；真正的 SemVer 预发布和 build 后缀仍完整比较。历史条目支持逗号分隔的版本、日期和标题。软件历史可以保留只有版本、带 `validated against` 注释及 `and earlier` 汇总的格式，缺日期及相关时间顺序明确标为未验证。发布阶段仍要求有日期的发布条目。根文档锚点按平台路径身份匹配，Windows 文件名大小写差异不会绕过检查。
+旧徽章里的 `0.2.2 alpha` 或 `0.2.2 rc.1` 这类空格展示标签，数字基础版本与源版本比较，展示后缀在双语 README 间核对，后缀沿用字母、数字和点号语法；真正的 SemVer 预发布和 build 后缀仍完整比较。历史条目支持逗号分隔的版本、日期和标题。软件历史可以保留只有版本、带 `validated against` 注释及 `and earlier` 汇总的格式，缺日期及相关时间顺序明确标为未验证。发布阶段要求最新发布有日期，旧软件历史缺日期仍标为未验证。根文档锚点按平台路径身份匹配，Windows 文件名大小写差异不会绕过检查。
 
 检查只读取限定根文档、根设计哲学文档和已知元数据，每个输入最多 1 MiB。本地链接检查路径元数据，规范化后的根文档路径还检查 anchor，其他 payload 不打开。稀疏检出中，缺失目标只有在 Git index 明确记录为 skip-worktree 的普通文件时才可通过，路径另列在 `index_metadata_paths`。普通 tracked 文件缺失、index 内的 symlink 或 submodule、reparse 路径和越出根目录的路径都会失败。文档命令不执行，错误 URL 也返回具名失败。`--json` 返回 schema 1、`ok`、具名 `checks`、`failures`、推断的 `version` 和 `unverified` 边界；通过退 0，检查失败或不完整退 1，参数无效退 2。
 
