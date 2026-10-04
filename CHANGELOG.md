@@ -4,6 +4,11 @@ All notable changes to this project are documented here (Keep a Changelog style)
 
 ## [Unreleased]
 
+### Added
+
+- `doc_contract.py` and `ci/doc-contract` check bounded root documentation with explicit repository profiles and trusted lifecycle stages. Generated synthetic controls cover philosophy before installation, placeholders, full SemVer provenance, release dates/order and local entry links. Linked payload contents and documented commands are never opened or executed. Semantic completeness remains an independent review responsibility.
+- The kit runs its document action against its own software docs. Both READMEs document the checker and preserve the design rationale before installation.
+
 ### Changed
 
 - **`notify-consumers.yml` pins the shared dispatch workflow by commit.** It called the fleet-guards `dispatch-consumers.yml` at `@main` while passing it both sync secrets, so any later change on that branch ran here unreviewed. The call now names a full commit SHA with a comment on how to bump it, and `tools/test_workflow_pins.py` (4 tests, run by the new `pins` job in `style.yml`) fails on any branch, tag or short SHA ref to another repository's reusable workflow; it went red against the `@main` call before the pin.

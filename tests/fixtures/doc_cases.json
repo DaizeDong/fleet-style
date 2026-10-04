@@ -1,0 +1,641 @@
+[
+  {
+    "name": "valid skill with future TODO and historical release",
+    "files": {
+      "README.md": "# Synthetic tool\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## Design Philosophy\n\nThe tool prevents unfinished guides from becoming accepted deliverables. It uses bounded deterministic checks so results stay reproducible. These checks cover structure; reviewers still assess meaning and tradeoffs.\n\n## Installation\n\nRun the declared setup entry.\n\n```sh\npython tools/install.py\n```\n\n[Roadmap](ROADMAP.md#planned)\n",
+      "README_CN.md": "# \u5408\u6210\u5de5\u5177\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## \u8bbe\u8ba1\u54f2\u5b66\n\n\u8fd9\u4e2a\u5de5\u5177\u907f\u514d\u628a\u5c1a\u672a\u5b8c\u6210\u7684\u6587\u6863\u4ea4\u4ed8\u7ed9\u4f7f\u7528\u8005\u3002\u68c0\u67e5\u8303\u56f4\u56fa\u5b9a\uff0c\u7ed3\u679c\u53ef\u4ee5\u91cd\u590d\u3002\u81ea\u52a8\u68c0\u67e5\u53ea\u5224\u65ad\u7ed3\u6784\uff0c\u8bbe\u8ba1\u53d6\u820d\u548c\u771f\u5b9e\u80fd\u529b\u4ecd\u7531\u8bc4\u5ba1\u786e\u8ba4\u3002\n\n## \u5b89\u88c5\n\n\u8fd0\u884c\u5b89\u88c5\u5165\u53e3\u3002\n\n```sh\npython tools/install.py\n```\n",
+      "ROADMAP.md": "# Roadmap\n\nCurrent: **v1.2.0-rc.1+build.7**\n\n## v1.2.0-rc.1+build.7 (current)\n\nThe bounded document checks are implemented.\n\n## Planned\n\n- TODO: evaluate broader language support after independent review.\n",
+      "CHANGELOG.md": "# Changelog\n\n## [Unreleased]\n\n### Changed\n\n- Refined the installation explanation.\n\n## [1.2.0-rc.1+build.7] - 2024-06-10\n\n- Added bounded document checking.\n\n## [1.1.0] - 2024-06-01\n\n- Added synthetic guide examples.\n",
+      ".claude-plugin/plugin.json": "{\"name\": \"synthetic\", \"version\": \"1.2.0-rc.1+build.7\"}",
+      "tools/install.py": "print('synthetic setup')\n"
+    }
+  },
+  {
+    "name": "star heading is not philosophy",
+    "files": {
+      "README.md": "# Synthetic tool\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## \u2b50 Read this first\n\nThe tool prevents unfinished guides from becoming accepted deliverables. It uses bounded deterministic checks so results stay reproducible. These checks cover structure; reviewers still assess meaning and tradeoffs.\n\n## Installation\n\nRun the declared setup entry.\n\n```sh\npython tools/install.py\n```\n\n[Roadmap](ROADMAP.md#planned)\n",
+      "README_CN.md": "# \u5408\u6210\u5de5\u5177\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## \u8bbe\u8ba1\u54f2\u5b66\n\n\u8fd9\u4e2a\u5de5\u5177\u907f\u514d\u628a\u5c1a\u672a\u5b8c\u6210\u7684\u6587\u6863\u4ea4\u4ed8\u7ed9\u4f7f\u7528\u8005\u3002\u68c0\u67e5\u8303\u56f4\u56fa\u5b9a\uff0c\u7ed3\u679c\u53ef\u4ee5\u91cd\u590d\u3002\u81ea\u52a8\u68c0\u67e5\u53ea\u5224\u65ad\u7ed3\u6784\uff0c\u8bbe\u8ba1\u53d6\u820d\u548c\u771f\u5b9e\u80fd\u529b\u4ecd\u7531\u8bc4\u5ba1\u786e\u8ba4\u3002\n\n## \u5b89\u88c5\n\n\u8fd0\u884c\u5b89\u88c5\u5165\u53e3\u3002\n\n```sh\npython tools/install.py\n```\n",
+      "ROADMAP.md": "# Roadmap\n\nCurrent: **v1.2.0-rc.1+build.7**\n\n## v1.2.0-rc.1+build.7 (current)\n\nThe bounded document checks are implemented.\n\n## Planned\n\n- TODO: evaluate broader language support after independent review.\n",
+      "CHANGELOG.md": "# Changelog\n\n## [Unreleased]\n\n### Changed\n\n- Refined the installation explanation.\n\n## [1.2.0-rc.1+build.7] - 2024-06-10\n\n- Added bounded document checking.\n\n## [1.1.0] - 2024-06-01\n\n- Added synthetic guide examples.\n",
+      ".claude-plugin/plugin.json": "{\"name\": \"synthetic\", \"version\": \"1.2.0-rc.1+build.7\"}",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "profile": "skill",
+    "stage": "accepted",
+    "failure": "readme.philosophy"
+  },
+  {
+    "name": "generic filler is not philosophy",
+    "files": {
+      "README.md": "# Synthetic tool\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## Design Philosophy\n\nExplain the design choices here.\n\n## Installation\n\nRun the declared setup entry.\n\n```sh\npython tools/install.py\n```\n\n[Roadmap](ROADMAP.md#planned)\n",
+      "README_CN.md": "# \u5408\u6210\u5de5\u5177\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## \u8bbe\u8ba1\u54f2\u5b66\n\n\u8fd9\u4e2a\u5de5\u5177\u907f\u514d\u628a\u5c1a\u672a\u5b8c\u6210\u7684\u6587\u6863\u4ea4\u4ed8\u7ed9\u4f7f\u7528\u8005\u3002\u68c0\u67e5\u8303\u56f4\u56fa\u5b9a\uff0c\u7ed3\u679c\u53ef\u4ee5\u91cd\u590d\u3002\u81ea\u52a8\u68c0\u67e5\u53ea\u5224\u65ad\u7ed3\u6784\uff0c\u8bbe\u8ba1\u53d6\u820d\u548c\u771f\u5b9e\u80fd\u529b\u4ecd\u7531\u8bc4\u5ba1\u786e\u8ba4\u3002\n\n## \u5b89\u88c5\n\n\u8fd0\u884c\u5b89\u88c5\u5165\u53e3\u3002\n\n```sh\npython tools/install.py\n```\n",
+      "ROADMAP.md": "# Roadmap\n\nCurrent: **v1.2.0-rc.1+build.7**\n\n## v1.2.0-rc.1+build.7 (current)\n\nThe bounded document checks are implemented.\n\n## Planned\n\n- TODO: evaluate broader language support after independent review.\n",
+      "CHANGELOG.md": "# Changelog\n\n## [Unreleased]\n\n### Changed\n\n- Refined the installation explanation.\n\n## [1.2.0-rc.1+build.7] - 2024-06-10\n\n- Added bounded document checking.\n\n## [1.1.0] - 2024-06-01\n\n- Added synthetic guide examples.\n",
+      ".claude-plugin/plugin.json": "{\"name\": \"synthetic\", \"version\": \"1.2.0-rc.1+build.7\"}",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "profile": "skill",
+    "stage": "accepted",
+    "failure": "readme.philosophy"
+  },
+  {
+    "name": "philosophy after install fails",
+    "files": {
+      "README.md": "# Synthetic tool\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## Installation\n\nRun the declared setup entry.\n\n```sh\npython tools/install.py\n```\n\n[Roadmap](ROADMAP.md#planned)\n\n## Design Philosophy\n\nThe tool prevents unfinished guides from becoming accepted deliverables. It uses bounded deterministic checks so results stay reproducible. These checks cover structure; reviewers still assess meaning and tradeoffs.\n",
+      "README_CN.md": "# \u5408\u6210\u5de5\u5177\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## \u8bbe\u8ba1\u54f2\u5b66\n\n\u8fd9\u4e2a\u5de5\u5177\u907f\u514d\u628a\u5c1a\u672a\u5b8c\u6210\u7684\u6587\u6863\u4ea4\u4ed8\u7ed9\u4f7f\u7528\u8005\u3002\u68c0\u67e5\u8303\u56f4\u56fa\u5b9a\uff0c\u7ed3\u679c\u53ef\u4ee5\u91cd\u590d\u3002\u81ea\u52a8\u68c0\u67e5\u53ea\u5224\u65ad\u7ed3\u6784\uff0c\u8bbe\u8ba1\u53d6\u820d\u548c\u771f\u5b9e\u80fd\u529b\u4ecd\u7531\u8bc4\u5ba1\u786e\u8ba4\u3002\n\n## \u5b89\u88c5\n\n\u8fd0\u884c\u5b89\u88c5\u5165\u53e3\u3002\n\n```sh\npython tools/install.py\n```\n",
+      "ROADMAP.md": "# Roadmap\n\nCurrent: **v1.2.0-rc.1+build.7**\n\n## v1.2.0-rc.1+build.7 (current)\n\nThe bounded document checks are implemented.\n\n## Planned\n\n- TODO: evaluate broader language support after independent review.\n",
+      "CHANGELOG.md": "# Changelog\n\n## [Unreleased]\n\n### Changed\n\n- Refined the installation explanation.\n\n## [1.2.0-rc.1+build.7] - 2024-06-10\n\n- Added bounded document checking.\n\n## [1.1.0] - 2024-06-01\n\n- Added synthetic guide examples.\n",
+      ".claude-plugin/plugin.json": "{\"name\": \"synthetic\", \"version\": \"1.2.0-rc.1+build.7\"}",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "profile": "skill",
+    "stage": "accepted",
+    "failure": "readme.philosophy"
+  },
+  {
+    "name": "Chinese philosophy missing",
+    "files": {
+      "README.md": "# Synthetic tool\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## Design Philosophy\n\nThe tool prevents unfinished guides from becoming accepted deliverables. It uses bounded deterministic checks so results stay reproducible. These checks cover structure; reviewers still assess meaning and tradeoffs.\n\n## Installation\n\nRun the declared setup entry.\n\n```sh\npython tools/install.py\n```\n\n[Roadmap](ROADMAP.md#planned)\n",
+      "README_CN.md": "# \u5408\u6210\u5de5\u5177\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## \u5148\u8bfb\u8fd9\u91cc\n\n\u8fd9\u4e2a\u5de5\u5177\u907f\u514d\u628a\u5c1a\u672a\u5b8c\u6210\u7684\u6587\u6863\u4ea4\u4ed8\u7ed9\u4f7f\u7528\u8005\u3002\u68c0\u67e5\u8303\u56f4\u56fa\u5b9a\uff0c\u7ed3\u679c\u53ef\u4ee5\u91cd\u590d\u3002\u81ea\u52a8\u68c0\u67e5\u53ea\u5224\u65ad\u7ed3\u6784\uff0c\u8bbe\u8ba1\u53d6\u820d\u548c\u771f\u5b9e\u80fd\u529b\u4ecd\u7531\u8bc4\u5ba1\u786e\u8ba4\u3002\n\n## \u5b89\u88c5\n\n\u8fd0\u884c\u5b89\u88c5\u5165\u53e3\u3002\n\n```sh\npython tools/install.py\n```\n",
+      "ROADMAP.md": "# Roadmap\n\nCurrent: **v1.2.0-rc.1+build.7**\n\n## v1.2.0-rc.1+build.7 (current)\n\nThe bounded document checks are implemented.\n\n## Planned\n\n- TODO: evaluate broader language support after independent review.\n",
+      "CHANGELOG.md": "# Changelog\n\n## [Unreleased]\n\n### Changed\n\n- Refined the installation explanation.\n\n## [1.2.0-rc.1+build.7] - 2024-06-10\n\n- Added bounded document checking.\n\n## [1.1.0] - 2024-06-01\n\n- Added synthetic guide examples.\n",
+      ".claude-plugin/plugin.json": "{\"name\": \"synthetic\", \"version\": \"1.2.0-rc.1+build.7\"}",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "profile": "skill",
+    "stage": "accepted",
+    "failure": "readme.philosophy"
+  },
+  {
+    "name": "current README TODO fails",
+    "files": {
+      "README.md": "# Synthetic tool\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## Design Philosophy\n\nThe tool prevents unfinished guides from becoming accepted deliverables. It uses bounded deterministic checks so results stay reproducible. These checks cover structure; reviewers still assess meaning and tradeoffs.\n\n## Installation\n\nTODO: write setup details.\n\n```sh\npython tools/install.py\n```\n\n[Roadmap](ROADMAP.md#planned)\n",
+      "README_CN.md": "# \u5408\u6210\u5de5\u5177\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## \u8bbe\u8ba1\u54f2\u5b66\n\n\u8fd9\u4e2a\u5de5\u5177\u907f\u514d\u628a\u5c1a\u672a\u5b8c\u6210\u7684\u6587\u6863\u4ea4\u4ed8\u7ed9\u4f7f\u7528\u8005\u3002\u68c0\u67e5\u8303\u56f4\u56fa\u5b9a\uff0c\u7ed3\u679c\u53ef\u4ee5\u91cd\u590d\u3002\u81ea\u52a8\u68c0\u67e5\u53ea\u5224\u65ad\u7ed3\u6784\uff0c\u8bbe\u8ba1\u53d6\u820d\u548c\u771f\u5b9e\u80fd\u529b\u4ecd\u7531\u8bc4\u5ba1\u786e\u8ba4\u3002\n\n## \u5b89\u88c5\n\n\u8fd0\u884c\u5b89\u88c5\u5165\u53e3\u3002\n\n```sh\npython tools/install.py\n```\n",
+      "ROADMAP.md": "# Roadmap\n\nCurrent: **v1.2.0-rc.1+build.7**\n\n## v1.2.0-rc.1+build.7 (current)\n\nThe bounded document checks are implemented.\n\n## Planned\n\n- TODO: evaluate broader language support after independent review.\n",
+      "CHANGELOG.md": "# Changelog\n\n## [Unreleased]\n\n### Changed\n\n- Refined the installation explanation.\n\n## [1.2.0-rc.1+build.7] - 2024-06-10\n\n- Added bounded document checking.\n\n## [1.1.0] - 2024-06-01\n\n- Added synthetic guide examples.\n",
+      ".claude-plugin/plugin.json": "{\"name\": \"synthetic\", \"version\": \"1.2.0-rc.1+build.7\"}",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "profile": "skill",
+    "stage": "accepted",
+    "failure": "docs.placeholders"
+  },
+  {
+    "name": "draft may carry TODO",
+    "files": {
+      "README.md": "# Synthetic tool\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## Design Philosophy\n\nThe tool prevents unfinished guides from becoming accepted deliverables. It uses bounded deterministic checks so results stay reproducible. These checks cover structure; reviewers still assess meaning and tradeoffs.\n\n## Installation\n\nTODO: write setup details.\n\n```sh\npython tools/install.py\n```\n\n[Roadmap](ROADMAP.md#planned)\n",
+      "README_CN.md": "# \u5408\u6210\u5de5\u5177\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## \u8bbe\u8ba1\u54f2\u5b66\n\n\u8fd9\u4e2a\u5de5\u5177\u907f\u514d\u628a\u5c1a\u672a\u5b8c\u6210\u7684\u6587\u6863\u4ea4\u4ed8\u7ed9\u4f7f\u7528\u8005\u3002\u68c0\u67e5\u8303\u56f4\u56fa\u5b9a\uff0c\u7ed3\u679c\u53ef\u4ee5\u91cd\u590d\u3002\u81ea\u52a8\u68c0\u67e5\u53ea\u5224\u65ad\u7ed3\u6784\uff0c\u8bbe\u8ba1\u53d6\u820d\u548c\u771f\u5b9e\u80fd\u529b\u4ecd\u7531\u8bc4\u5ba1\u786e\u8ba4\u3002\n\n## \u5b89\u88c5\n\n\u8fd0\u884c\u5b89\u88c5\u5165\u53e3\u3002\n\n```sh\npython tools/install.py\n```\n",
+      "ROADMAP.md": "# Roadmap\n\nCurrent: **v1.2.0-rc.1+build.7**\n\n## v1.2.0-rc.1+build.7 (current)\n\nThe bounded document checks are implemented.\n\n## Planned\n\n- TODO: evaluate broader language support after independent review.\n",
+      "CHANGELOG.md": "# Changelog\n\n## [Unreleased]\n\n### Changed\n\n- Refined the installation explanation.\n\n## [1.2.0-rc.1+build.7] - 2024-06-10\n\n- Added bounded document checking.\n\n## [1.1.0] - 2024-06-01\n\n- Added synthetic guide examples.\n",
+      ".claude-plugin/plugin.json": "{\"name\": \"synthetic\", \"version\": \"1.2.0-rc.1+build.7\"}",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "profile": "skill",
+    "stage": "draft"
+  },
+  {
+    "name": "draft philosophy placeholder is explicit",
+    "files": {
+      "README.md": "# Synthetic tool\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## Design Philosophy\n\nTODO: write the design philosophy.\n\n## Installation\n\nRun the declared setup entry.\n\n```sh\npython tools/install.py\n```\n\n[Roadmap](ROADMAP.md#planned)\n",
+      "README_CN.md": "# \u5408\u6210\u5de5\u5177\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## \u8bbe\u8ba1\u54f2\u5b66\n\n\u8fd9\u4e2a\u5de5\u5177\u907f\u514d\u628a\u5c1a\u672a\u5b8c\u6210\u7684\u6587\u6863\u4ea4\u4ed8\u7ed9\u4f7f\u7528\u8005\u3002\u68c0\u67e5\u8303\u56f4\u56fa\u5b9a\uff0c\u7ed3\u679c\u53ef\u4ee5\u91cd\u590d\u3002\u81ea\u52a8\u68c0\u67e5\u53ea\u5224\u65ad\u7ed3\u6784\uff0c\u8bbe\u8ba1\u53d6\u820d\u548c\u771f\u5b9e\u80fd\u529b\u4ecd\u7531\u8bc4\u5ba1\u786e\u8ba4\u3002\n\n## \u5b89\u88c5\n\n\u8fd0\u884c\u5b89\u88c5\u5165\u53e3\u3002\n\n```sh\npython tools/install.py\n```\n",
+      "ROADMAP.md": "# Roadmap\n\nCurrent: **v1.2.0-rc.1+build.7**\n\n## v1.2.0-rc.1+build.7 (current)\n\nThe bounded document checks are implemented.\n\n## Planned\n\n- TODO: evaluate broader language support after independent review.\n",
+      "CHANGELOG.md": "# Changelog\n\n## [Unreleased]\n\n### Changed\n\n- Refined the installation explanation.\n\n## [1.2.0-rc.1+build.7] - 2024-06-10\n\n- Added bounded document checking.\n\n## [1.1.0] - 2024-06-01\n\n- Added synthetic guide examples.\n",
+      ".claude-plugin/plugin.json": "{\"name\": \"synthetic\", \"version\": \"1.2.0-rc.1+build.7\"}",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "profile": "skill",
+    "stage": "draft"
+  },
+  {
+    "name": "release stage still rejects current TODO",
+    "files": {
+      "README.md": "# Synthetic tool\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## Design Philosophy\n\nThe tool prevents unfinished guides from becoming accepted deliverables. It uses bounded deterministic checks so results stay reproducible. These checks cover structure; reviewers still assess meaning and tradeoffs.\n\n## Installation\n\nTODO: write setup details.\n\n```sh\npython tools/install.py\n```\n\n[Roadmap](ROADMAP.md#planned)\n",
+      "README_CN.md": "# \u5408\u6210\u5de5\u5177\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## \u8bbe\u8ba1\u54f2\u5b66\n\n\u8fd9\u4e2a\u5de5\u5177\u907f\u514d\u628a\u5c1a\u672a\u5b8c\u6210\u7684\u6587\u6863\u4ea4\u4ed8\u7ed9\u4f7f\u7528\u8005\u3002\u68c0\u67e5\u8303\u56f4\u56fa\u5b9a\uff0c\u7ed3\u679c\u53ef\u4ee5\u91cd\u590d\u3002\u81ea\u52a8\u68c0\u67e5\u53ea\u5224\u65ad\u7ed3\u6784\uff0c\u8bbe\u8ba1\u53d6\u820d\u548c\u771f\u5b9e\u80fd\u529b\u4ecd\u7531\u8bc4\u5ba1\u786e\u8ba4\u3002\n\n## \u5b89\u88c5\n\n\u8fd0\u884c\u5b89\u88c5\u5165\u53e3\u3002\n\n```sh\npython tools/install.py\n```\n",
+      "ROADMAP.md": "# Roadmap\n\nCurrent: **v1.2.0-rc.1+build.7**\n\n## v1.2.0-rc.1+build.7 (current)\n\nThe bounded document checks are implemented.\n\n## Planned\n\n- TODO: evaluate broader language support after independent review.\n",
+      "CHANGELOG.md": "# Changelog\n\n## [Unreleased]\n\n### Changed\n\n- Refined the installation explanation.\n\n## [1.2.0-rc.1+build.7] - 2024-06-10\n\n- Added bounded document checking.\n\n## [1.1.0] - 2024-06-01\n\n- Added synthetic guide examples.\n",
+      ".claude-plugin/plugin.json": "{\"name\": \"synthetic\", \"version\": \"1.2.0-rc.1+build.7\"}",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "profile": "skill",
+    "stage": "release",
+    "failure": "docs.placeholders"
+  },
+  {
+    "name": "repository draft flag cannot bypass accepted",
+    "files": {
+      "README.md": "# Synthetic tool\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## Design Philosophy\n\nThe tool prevents unfinished guides from becoming accepted deliverables. It uses bounded deterministic checks so results stay reproducible. These checks cover structure; reviewers still assess meaning and tradeoffs.\n\n## Installation\n\nTODO: write setup details.\n\n```sh\npython tools/install.py\n```\n\n[Roadmap](ROADMAP.md#planned)\n",
+      "README_CN.md": "# \u5408\u6210\u5de5\u5177\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## \u8bbe\u8ba1\u54f2\u5b66\n\n\u8fd9\u4e2a\u5de5\u5177\u907f\u514d\u628a\u5c1a\u672a\u5b8c\u6210\u7684\u6587\u6863\u4ea4\u4ed8\u7ed9\u4f7f\u7528\u8005\u3002\u68c0\u67e5\u8303\u56f4\u56fa\u5b9a\uff0c\u7ed3\u679c\u53ef\u4ee5\u91cd\u590d\u3002\u81ea\u52a8\u68c0\u67e5\u53ea\u5224\u65ad\u7ed3\u6784\uff0c\u8bbe\u8ba1\u53d6\u820d\u548c\u771f\u5b9e\u80fd\u529b\u4ecd\u7531\u8bc4\u5ba1\u786e\u8ba4\u3002\n\n## \u5b89\u88c5\n\n\u8fd0\u884c\u5b89\u88c5\u5165\u53e3\u3002\n\n```sh\npython tools/install.py\n```\n",
+      "ROADMAP.md": "# Roadmap\n\nCurrent: **v1.2.0-rc.1+build.7**\n\n## v1.2.0-rc.1+build.7 (current)\n\nThe bounded document checks are implemented.\n\n## Planned\n\n- TODO: evaluate broader language support after independent review.\n",
+      "CHANGELOG.md": "# Changelog\n\n## [Unreleased]\n\n### Changed\n\n- Refined the installation explanation.\n\n## [1.2.0-rc.1+build.7] - 2024-06-10\n\n- Added bounded document checking.\n\n## [1.1.0] - 2024-06-01\n\n- Added synthetic guide examples.\n",
+      ".claude-plugin/plugin.json": "{\"name\": \"synthetic\", \"version\": \"1.2.0-rc.1+build.7\"}",
+      "tools/install.py": "print('synthetic setup')\n",
+      ".doc-contract.json": "{\"stage\":\"draft\"}"
+    },
+    "profile": "skill",
+    "stage": "accepted",
+    "failure": "docs.placeholders"
+  },
+  {
+    "name": "missing install heading fails",
+    "files": {
+      "README.md": "# Synthetic tool\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## Design Philosophy\n\nThe tool prevents unfinished guides from becoming accepted deliverables. It uses bounded deterministic checks so results stay reproducible. These checks cover structure; reviewers still assess meaning and tradeoffs.\n\n## Usage\n\nRun the declared setup entry.\n\n```sh\npython tools/install.py\n```\n\n[Roadmap](ROADMAP.md#planned)\n",
+      "README_CN.md": "# \u5408\u6210\u5de5\u5177\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## \u8bbe\u8ba1\u54f2\u5b66\n\n\u8fd9\u4e2a\u5de5\u5177\u907f\u514d\u628a\u5c1a\u672a\u5b8c\u6210\u7684\u6587\u6863\u4ea4\u4ed8\u7ed9\u4f7f\u7528\u8005\u3002\u68c0\u67e5\u8303\u56f4\u56fa\u5b9a\uff0c\u7ed3\u679c\u53ef\u4ee5\u91cd\u590d\u3002\u81ea\u52a8\u68c0\u67e5\u53ea\u5224\u65ad\u7ed3\u6784\uff0c\u8bbe\u8ba1\u53d6\u820d\u548c\u771f\u5b9e\u80fd\u529b\u4ecd\u7531\u8bc4\u5ba1\u786e\u8ba4\u3002\n\n## \u5b89\u88c5\n\n\u8fd0\u884c\u5b89\u88c5\u5165\u53e3\u3002\n\n```sh\npython tools/install.py\n```\n",
+      "ROADMAP.md": "# Roadmap\n\nCurrent: **v1.2.0-rc.1+build.7**\n\n## v1.2.0-rc.1+build.7 (current)\n\nThe bounded document checks are implemented.\n\n## Planned\n\n- TODO: evaluate broader language support after independent review.\n",
+      "CHANGELOG.md": "# Changelog\n\n## [Unreleased]\n\n### Changed\n\n- Refined the installation explanation.\n\n## [1.2.0-rc.1+build.7] - 2024-06-10\n\n- Added bounded document checking.\n\n## [1.1.0] - 2024-06-01\n\n- Added synthetic guide examples.\n",
+      ".claude-plugin/plugin.json": "{\"name\": \"synthetic\", \"version\": \"1.2.0-rc.1+build.7\"}",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "profile": "skill",
+    "stage": "accepted",
+    "failure": "readme.install"
+  },
+  {
+    "name": "missing declared install file fails",
+    "files": {
+      "README.md": "# Synthetic tool\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## Design Philosophy\n\nThe tool prevents unfinished guides from becoming accepted deliverables. It uses bounded deterministic checks so results stay reproducible. These checks cover structure; reviewers still assess meaning and tradeoffs.\n\n## Installation\n\nRun the declared setup entry.\n\n```sh\npython tools/missing.py\n```\n\n[Roadmap](ROADMAP.md#planned)\n",
+      "README_CN.md": "# \u5408\u6210\u5de5\u5177\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## \u8bbe\u8ba1\u54f2\u5b66\n\n\u8fd9\u4e2a\u5de5\u5177\u907f\u514d\u628a\u5c1a\u672a\u5b8c\u6210\u7684\u6587\u6863\u4ea4\u4ed8\u7ed9\u4f7f\u7528\u8005\u3002\u68c0\u67e5\u8303\u56f4\u56fa\u5b9a\uff0c\u7ed3\u679c\u53ef\u4ee5\u91cd\u590d\u3002\u81ea\u52a8\u68c0\u67e5\u53ea\u5224\u65ad\u7ed3\u6784\uff0c\u8bbe\u8ba1\u53d6\u820d\u548c\u771f\u5b9e\u80fd\u529b\u4ecd\u7531\u8bc4\u5ba1\u786e\u8ba4\u3002\n\n## \u5b89\u88c5\n\n\u8fd0\u884c\u5b89\u88c5\u5165\u53e3\u3002\n\n```sh\npython tools/install.py\n```\n",
+      "ROADMAP.md": "# Roadmap\n\nCurrent: **v1.2.0-rc.1+build.7**\n\n## v1.2.0-rc.1+build.7 (current)\n\nThe bounded document checks are implemented.\n\n## Planned\n\n- TODO: evaluate broader language support after independent review.\n",
+      "CHANGELOG.md": "# Changelog\n\n## [Unreleased]\n\n### Changed\n\n- Refined the installation explanation.\n\n## [1.2.0-rc.1+build.7] - 2024-06-10\n\n- Added bounded document checking.\n\n## [1.1.0] - 2024-06-01\n\n- Added synthetic guide examples.\n",
+      ".claude-plugin/plugin.json": "{\"name\": \"synthetic\", \"version\": \"1.2.0-rc.1+build.7\"}",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "profile": "skill",
+    "stage": "accepted",
+    "failure": "readme.install"
+  },
+  {
+    "name": "prerelease suffix mismatch fails",
+    "files": {
+      "README.md": "# Synthetic tool\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## Design Philosophy\n\nThe tool prevents unfinished guides from becoming accepted deliverables. It uses bounded deterministic checks so results stay reproducible. These checks cover structure; reviewers still assess meaning and tradeoffs.\n\n## Installation\n\nRun the declared setup entry.\n\n```sh\npython tools/install.py\n```\n\n[Roadmap](ROADMAP.md#planned)\n",
+      "README_CN.md": "# \u5408\u6210\u5de5\u5177\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.2+build.7-blue)\n\n## \u8bbe\u8ba1\u54f2\u5b66\n\n\u8fd9\u4e2a\u5de5\u5177\u907f\u514d\u628a\u5c1a\u672a\u5b8c\u6210\u7684\u6587\u6863\u4ea4\u4ed8\u7ed9\u4f7f\u7528\u8005\u3002\u68c0\u67e5\u8303\u56f4\u56fa\u5b9a\uff0c\u7ed3\u679c\u53ef\u4ee5\u91cd\u590d\u3002\u81ea\u52a8\u68c0\u67e5\u53ea\u5224\u65ad\u7ed3\u6784\uff0c\u8bbe\u8ba1\u53d6\u820d\u548c\u771f\u5b9e\u80fd\u529b\u4ecd\u7531\u8bc4\u5ba1\u786e\u8ba4\u3002\n\n## \u5b89\u88c5\n\n\u8fd0\u884c\u5b89\u88c5\u5165\u53e3\u3002\n\n```sh\npython tools/install.py\n```\n",
+      "ROADMAP.md": "# Roadmap\n\nCurrent: **v1.2.0-rc.1+build.7**\n\n## v1.2.0-rc.1+build.7 (current)\n\nThe bounded document checks are implemented.\n\n## Planned\n\n- TODO: evaluate broader language support after independent review.\n",
+      "CHANGELOG.md": "# Changelog\n\n## [Unreleased]\n\n### Changed\n\n- Refined the installation explanation.\n\n## [1.2.0-rc.1+build.7] - 2024-06-10\n\n- Added bounded document checking.\n\n## [1.1.0] - 2024-06-01\n\n- Added synthetic guide examples.\n",
+      ".claude-plugin/plugin.json": "{\"name\": \"synthetic\", \"version\": \"1.2.0-rc.1+build.7\"}",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "profile": "skill",
+    "stage": "accepted",
+    "failure": "version.current"
+  },
+  {
+    "name": "package manifest conflict fails",
+    "files": {
+      "README.md": "# Synthetic tool\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## Design Philosophy\n\nThe tool prevents unfinished guides from becoming accepted deliverables. It uses bounded deterministic checks so results stay reproducible. These checks cover structure; reviewers still assess meaning and tradeoffs.\n\n## Installation\n\nRun the declared setup entry.\n\n```sh\npython tools/install.py\n```\n\n[Roadmap](ROADMAP.md#planned)\n",
+      "README_CN.md": "# \u5408\u6210\u5de5\u5177\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## \u8bbe\u8ba1\u54f2\u5b66\n\n\u8fd9\u4e2a\u5de5\u5177\u907f\u514d\u628a\u5c1a\u672a\u5b8c\u6210\u7684\u6587\u6863\u4ea4\u4ed8\u7ed9\u4f7f\u7528\u8005\u3002\u68c0\u67e5\u8303\u56f4\u56fa\u5b9a\uff0c\u7ed3\u679c\u53ef\u4ee5\u91cd\u590d\u3002\u81ea\u52a8\u68c0\u67e5\u53ea\u5224\u65ad\u7ed3\u6784\uff0c\u8bbe\u8ba1\u53d6\u820d\u548c\u771f\u5b9e\u80fd\u529b\u4ecd\u7531\u8bc4\u5ba1\u786e\u8ba4\u3002\n\n## \u5b89\u88c5\n\n\u8fd0\u884c\u5b89\u88c5\u5165\u53e3\u3002\n\n```sh\npython tools/install.py\n```\n",
+      "ROADMAP.md": "# Roadmap\n\nCurrent: **v1.2.0-rc.1+build.7**\n\n## v1.2.0-rc.1+build.7 (current)\n\nThe bounded document checks are implemented.\n\n## Planned\n\n- TODO: evaluate broader language support after independent review.\n",
+      "CHANGELOG.md": "# Changelog\n\n## [Unreleased]\n\n### Changed\n\n- Refined the installation explanation.\n\n## [1.2.0-rc.1+build.7] - 2024-06-10\n\n- Added bounded document checking.\n\n## [1.1.0] - 2024-06-01\n\n- Added synthetic guide examples.\n",
+      ".claude-plugin/plugin.json": "{\"name\": \"synthetic\", \"version\": \"1.2.0-rc.1+build.7\"}",
+      "tools/install.py": "print('synthetic setup')\n",
+      "package.json": "{\"version\":\"1.2.0-rc.2+build.7\"}"
+    },
+    "profile": "skill",
+    "stage": "accepted",
+    "failure": "version.source"
+  },
+  {
+    "name": "duplicate manifest field fails",
+    "files": {
+      "README.md": "# Synthetic tool\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## Design Philosophy\n\nThe tool prevents unfinished guides from becoming accepted deliverables. It uses bounded deterministic checks so results stay reproducible. These checks cover structure; reviewers still assess meaning and tradeoffs.\n\n## Installation\n\nRun the declared setup entry.\n\n```sh\npython tools/install.py\n```\n\n[Roadmap](ROADMAP.md#planned)\n",
+      "README_CN.md": "# \u5408\u6210\u5de5\u5177\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## \u8bbe\u8ba1\u54f2\u5b66\n\n\u8fd9\u4e2a\u5de5\u5177\u907f\u514d\u628a\u5c1a\u672a\u5b8c\u6210\u7684\u6587\u6863\u4ea4\u4ed8\u7ed9\u4f7f\u7528\u8005\u3002\u68c0\u67e5\u8303\u56f4\u56fa\u5b9a\uff0c\u7ed3\u679c\u53ef\u4ee5\u91cd\u590d\u3002\u81ea\u52a8\u68c0\u67e5\u53ea\u5224\u65ad\u7ed3\u6784\uff0c\u8bbe\u8ba1\u53d6\u820d\u548c\u771f\u5b9e\u80fd\u529b\u4ecd\u7531\u8bc4\u5ba1\u786e\u8ba4\u3002\n\n## \u5b89\u88c5\n\n\u8fd0\u884c\u5b89\u88c5\u5165\u53e3\u3002\n\n```sh\npython tools/install.py\n```\n",
+      "ROADMAP.md": "# Roadmap\n\nCurrent: **v1.2.0-rc.1+build.7**\n\n## v1.2.0-rc.1+build.7 (current)\n\nThe bounded document checks are implemented.\n\n## Planned\n\n- TODO: evaluate broader language support after independent review.\n",
+      "CHANGELOG.md": "# Changelog\n\n## [Unreleased]\n\n### Changed\n\n- Refined the installation explanation.\n\n## [1.2.0-rc.1+build.7] - 2024-06-10\n\n- Added bounded document checking.\n\n## [1.1.0] - 2024-06-01\n\n- Added synthetic guide examples.\n",
+      ".claude-plugin/plugin.json": "{\"version\":\"1.2.0\",\"version\":\"1.3.0\"}",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "profile": "skill",
+    "stage": "accepted",
+    "failure": "version.source"
+  },
+  {
+    "name": "invalid semver fails",
+    "files": {
+      "README.md": "# Synthetic tool\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## Design Philosophy\n\nThe tool prevents unfinished guides from becoming accepted deliverables. It uses bounded deterministic checks so results stay reproducible. These checks cover structure; reviewers still assess meaning and tradeoffs.\n\n## Installation\n\nRun the declared setup entry.\n\n```sh\npython tools/install.py\n```\n\n[Roadmap](ROADMAP.md#planned)\n",
+      "README_CN.md": "# \u5408\u6210\u5de5\u5177\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## \u8bbe\u8ba1\u54f2\u5b66\n\n\u8fd9\u4e2a\u5de5\u5177\u907f\u514d\u628a\u5c1a\u672a\u5b8c\u6210\u7684\u6587\u6863\u4ea4\u4ed8\u7ed9\u4f7f\u7528\u8005\u3002\u68c0\u67e5\u8303\u56f4\u56fa\u5b9a\uff0c\u7ed3\u679c\u53ef\u4ee5\u91cd\u590d\u3002\u81ea\u52a8\u68c0\u67e5\u53ea\u5224\u65ad\u7ed3\u6784\uff0c\u8bbe\u8ba1\u53d6\u820d\u548c\u771f\u5b9e\u80fd\u529b\u4ecd\u7531\u8bc4\u5ba1\u786e\u8ba4\u3002\n\n## \u5b89\u88c5\n\n\u8fd0\u884c\u5b89\u88c5\u5165\u53e3\u3002\n\n```sh\npython tools/install.py\n```\n",
+      "ROADMAP.md": "# Roadmap\n\nCurrent: **v1.2.0-rc.1+build.7**\n\n## v1.2.0-rc.1+build.7 (current)\n\nThe bounded document checks are implemented.\n\n## Planned\n\n- TODO: evaluate broader language support after independent review.\n",
+      "CHANGELOG.md": "# Changelog\n\n## [Unreleased]\n\n### Changed\n\n- Refined the installation explanation.\n\n## [1.2.0-rc.1+build.7] - 2024-06-10\n\n- Added bounded document checking.\n\n## [1.1.0] - 2024-06-01\n\n- Added synthetic guide examples.\n",
+      ".claude-plugin/plugin.json": "{\"name\": \"synthetic\", \"version\": \"01.2.0\"}",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "profile": "skill",
+    "stage": "accepted",
+    "failure": "version.source"
+  },
+  {
+    "name": "malformed release date fails",
+    "files": {
+      "README.md": "# Synthetic tool\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## Design Philosophy\n\nThe tool prevents unfinished guides from becoming accepted deliverables. It uses bounded deterministic checks so results stay reproducible. These checks cover structure; reviewers still assess meaning and tradeoffs.\n\n## Installation\n\nRun the declared setup entry.\n\n```sh\npython tools/install.py\n```\n\n[Roadmap](ROADMAP.md#planned)\n",
+      "README_CN.md": "# \u5408\u6210\u5de5\u5177\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## \u8bbe\u8ba1\u54f2\u5b66\n\n\u8fd9\u4e2a\u5de5\u5177\u907f\u514d\u628a\u5c1a\u672a\u5b8c\u6210\u7684\u6587\u6863\u4ea4\u4ed8\u7ed9\u4f7f\u7528\u8005\u3002\u68c0\u67e5\u8303\u56f4\u56fa\u5b9a\uff0c\u7ed3\u679c\u53ef\u4ee5\u91cd\u590d\u3002\u81ea\u52a8\u68c0\u67e5\u53ea\u5224\u65ad\u7ed3\u6784\uff0c\u8bbe\u8ba1\u53d6\u820d\u548c\u771f\u5b9e\u80fd\u529b\u4ecd\u7531\u8bc4\u5ba1\u786e\u8ba4\u3002\n\n## \u5b89\u88c5\n\n\u8fd0\u884c\u5b89\u88c5\u5165\u53e3\u3002\n\n```sh\npython tools/install.py\n```\n",
+      "ROADMAP.md": "# Roadmap\n\nCurrent: **v1.2.0-rc.1+build.7**\n\n## v1.2.0-rc.1+build.7 (current)\n\nThe bounded document checks are implemented.\n\n## Planned\n\n- TODO: evaluate broader language support after independent review.\n",
+      "CHANGELOG.md": "# Changelog\n\n## [Unreleased]\n\n### Changed\n\n- Refined the installation explanation.\n\n## [1.2.0-rc.1+build.7] - 2024-02-30\n\n- Added bounded document checking.\n\n## [1.1.0] - 2024-06-01\n\n- Added synthetic guide examples.\n",
+      ".claude-plugin/plugin.json": "{\"name\": \"synthetic\", \"version\": \"1.2.0-rc.1+build.7\"}",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "profile": "skill",
+    "stage": "accepted",
+    "failure": "changelog.releases"
+  },
+  {
+    "name": "unparseable release date fails",
+    "files": {
+      "README.md": "# Synthetic tool\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## Design Philosophy\n\nThe tool prevents unfinished guides from becoming accepted deliverables. It uses bounded deterministic checks so results stay reproducible. These checks cover structure; reviewers still assess meaning and tradeoffs.\n\n## Installation\n\nRun the declared setup entry.\n\n```sh\npython tools/install.py\n```\n\n[Roadmap](ROADMAP.md#planned)\n",
+      "README_CN.md": "# \u5408\u6210\u5de5\u5177\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## \u8bbe\u8ba1\u54f2\u5b66\n\n\u8fd9\u4e2a\u5de5\u5177\u907f\u514d\u628a\u5c1a\u672a\u5b8c\u6210\u7684\u6587\u6863\u4ea4\u4ed8\u7ed9\u4f7f\u7528\u8005\u3002\u68c0\u67e5\u8303\u56f4\u56fa\u5b9a\uff0c\u7ed3\u679c\u53ef\u4ee5\u91cd\u590d\u3002\u81ea\u52a8\u68c0\u67e5\u53ea\u5224\u65ad\u7ed3\u6784\uff0c\u8bbe\u8ba1\u53d6\u820d\u548c\u771f\u5b9e\u80fd\u529b\u4ecd\u7531\u8bc4\u5ba1\u786e\u8ba4\u3002\n\n## \u5b89\u88c5\n\n\u8fd0\u884c\u5b89\u88c5\u5165\u53e3\u3002\n\n```sh\npython tools/install.py\n```\n",
+      "ROADMAP.md": "# Roadmap\n\nCurrent: **v1.2.0-rc.1+build.7**\n\n## v1.2.0-rc.1+build.7 (current)\n\nThe bounded document checks are implemented.\n\n## Planned\n\n- TODO: evaluate broader language support after independent review.\n",
+      "CHANGELOG.md": "# Changelog\n\n## [Unreleased]\n\n### Changed\n\n- Refined the installation explanation.\n\n## [1.2.0-rc.1+build.7] - tomorrow\n\n- Added bounded document checking.\n\n## [1.1.0] - 2024-06-01\n\n- Added synthetic guide examples.\n",
+      ".claude-plugin/plugin.json": "{\"name\": \"synthetic\", \"version\": \"1.2.0-rc.1+build.7\"}",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "profile": "skill",
+    "stage": "accepted",
+    "failure": "changelog.releases"
+  },
+  {
+    "name": "future release date fails",
+    "files": {
+      "README.md": "# Synthetic tool\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## Design Philosophy\n\nThe tool prevents unfinished guides from becoming accepted deliverables. It uses bounded deterministic checks so results stay reproducible. These checks cover structure; reviewers still assess meaning and tradeoffs.\n\n## Installation\n\nRun the declared setup entry.\n\n```sh\npython tools/install.py\n```\n\n[Roadmap](ROADMAP.md#planned)\n",
+      "README_CN.md": "# \u5408\u6210\u5de5\u5177\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## \u8bbe\u8ba1\u54f2\u5b66\n\n\u8fd9\u4e2a\u5de5\u5177\u907f\u514d\u628a\u5c1a\u672a\u5b8c\u6210\u7684\u6587\u6863\u4ea4\u4ed8\u7ed9\u4f7f\u7528\u8005\u3002\u68c0\u67e5\u8303\u56f4\u56fa\u5b9a\uff0c\u7ed3\u679c\u53ef\u4ee5\u91cd\u590d\u3002\u81ea\u52a8\u68c0\u67e5\u53ea\u5224\u65ad\u7ed3\u6784\uff0c\u8bbe\u8ba1\u53d6\u820d\u548c\u771f\u5b9e\u80fd\u529b\u4ecd\u7531\u8bc4\u5ba1\u786e\u8ba4\u3002\n\n## \u5b89\u88c5\n\n\u8fd0\u884c\u5b89\u88c5\u5165\u53e3\u3002\n\n```sh\npython tools/install.py\n```\n",
+      "ROADMAP.md": "# Roadmap\n\nCurrent: **v1.2.0-rc.1+build.7**\n\n## v1.2.0-rc.1+build.7 (current)\n\nThe bounded document checks are implemented.\n\n## Planned\n\n- TODO: evaluate broader language support after independent review.\n",
+      "CHANGELOG.md": "# Changelog\n\n## [Unreleased]\n\n### Changed\n\n- Refined the installation explanation.\n\n## [1.2.0-rc.1+build.7] - 9999-06-10\n\n- Added bounded document checking.\n\n## [1.1.0] - 2024-06-01\n\n- Added synthetic guide examples.\n",
+      ".claude-plugin/plugin.json": "{\"name\": \"synthetic\", \"version\": \"1.2.0-rc.1+build.7\"}",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "profile": "skill",
+    "stage": "accepted",
+    "failure": "changelog.releases"
+  },
+  {
+    "name": "hidden newer release fails",
+    "files": {
+      "README.md": "# Synthetic tool\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## Design Philosophy\n\nThe tool prevents unfinished guides from becoming accepted deliverables. It uses bounded deterministic checks so results stay reproducible. These checks cover structure; reviewers still assess meaning and tradeoffs.\n\n## Installation\n\nRun the declared setup entry.\n\n```sh\npython tools/install.py\n```\n\n[Roadmap](ROADMAP.md#planned)\n",
+      "README_CN.md": "# \u5408\u6210\u5de5\u5177\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## \u8bbe\u8ba1\u54f2\u5b66\n\n\u8fd9\u4e2a\u5de5\u5177\u907f\u514d\u628a\u5c1a\u672a\u5b8c\u6210\u7684\u6587\u6863\u4ea4\u4ed8\u7ed9\u4f7f\u7528\u8005\u3002\u68c0\u67e5\u8303\u56f4\u56fa\u5b9a\uff0c\u7ed3\u679c\u53ef\u4ee5\u91cd\u590d\u3002\u81ea\u52a8\u68c0\u67e5\u53ea\u5224\u65ad\u7ed3\u6784\uff0c\u8bbe\u8ba1\u53d6\u820d\u548c\u771f\u5b9e\u80fd\u529b\u4ecd\u7531\u8bc4\u5ba1\u786e\u8ba4\u3002\n\n## \u5b89\u88c5\n\n\u8fd0\u884c\u5b89\u88c5\u5165\u53e3\u3002\n\n```sh\npython tools/install.py\n```\n",
+      "ROADMAP.md": "# Roadmap\n\nCurrent: **v1.2.0-rc.1+build.7**\n\n## v1.2.0-rc.1+build.7 (current)\n\nThe bounded document checks are implemented.\n\n## Planned\n\n- TODO: evaluate broader language support after independent review.\n",
+      "CHANGELOG.md": "# Changelog\n\n## [Unreleased]\n\n### Changed\n\n- Refined the installation explanation.\n\n## [1.2.0-rc.1+build.7] - 2024-06-10\n\n- Added bounded document checking.\n\n## [2.0.0] - 2024-06-01\n\n- Added synthetic guide examples.\n",
+      ".claude-plugin/plugin.json": "{\"name\": \"synthetic\", \"version\": \"1.2.0-rc.1+build.7\"}",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "profile": "skill",
+    "stage": "accepted",
+    "failure": "changelog.releases"
+  },
+  {
+    "name": "release date order fails",
+    "files": {
+      "README.md": "# Synthetic tool\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## Design Philosophy\n\nThe tool prevents unfinished guides from becoming accepted deliverables. It uses bounded deterministic checks so results stay reproducible. These checks cover structure; reviewers still assess meaning and tradeoffs.\n\n## Installation\n\nRun the declared setup entry.\n\n```sh\npython tools/install.py\n```\n\n[Roadmap](ROADMAP.md#planned)\n",
+      "README_CN.md": "# \u5408\u6210\u5de5\u5177\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## \u8bbe\u8ba1\u54f2\u5b66\n\n\u8fd9\u4e2a\u5de5\u5177\u907f\u514d\u628a\u5c1a\u672a\u5b8c\u6210\u7684\u6587\u6863\u4ea4\u4ed8\u7ed9\u4f7f\u7528\u8005\u3002\u68c0\u67e5\u8303\u56f4\u56fa\u5b9a\uff0c\u7ed3\u679c\u53ef\u4ee5\u91cd\u590d\u3002\u81ea\u52a8\u68c0\u67e5\u53ea\u5224\u65ad\u7ed3\u6784\uff0c\u8bbe\u8ba1\u53d6\u820d\u548c\u771f\u5b9e\u80fd\u529b\u4ecd\u7531\u8bc4\u5ba1\u786e\u8ba4\u3002\n\n## \u5b89\u88c5\n\n\u8fd0\u884c\u5b89\u88c5\u5165\u53e3\u3002\n\n```sh\npython tools/install.py\n```\n",
+      "ROADMAP.md": "# Roadmap\n\nCurrent: **v1.2.0-rc.1+build.7**\n\n## v1.2.0-rc.1+build.7 (current)\n\nThe bounded document checks are implemented.\n\n## Planned\n\n- TODO: evaluate broader language support after independent review.\n",
+      "CHANGELOG.md": "# Changelog\n\n## [Unreleased]\n\n### Changed\n\n- Refined the installation explanation.\n\n## [1.2.0-rc.1+build.7] - 2024-06-10\n\n- Added bounded document checking.\n\n## [1.1.0] - 2024-07-01\n\n- Added synthetic guide examples.\n",
+      ".claude-plugin/plugin.json": "{\"name\": \"synthetic\", \"version\": \"1.2.0-rc.1+build.7\"}",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "profile": "skill",
+    "stage": "accepted",
+    "failure": "changelog.releases"
+  },
+  {
+    "name": "release scaffold TODO fails",
+    "files": {
+      "README.md": "# Synthetic tool\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## Design Philosophy\n\nThe tool prevents unfinished guides from becoming accepted deliverables. It uses bounded deterministic checks so results stay reproducible. These checks cover structure; reviewers still assess meaning and tradeoffs.\n\n## Installation\n\nRun the declared setup entry.\n\n```sh\npython tools/install.py\n```\n\n[Roadmap](ROADMAP.md#planned)\n",
+      "README_CN.md": "# \u5408\u6210\u5de5\u5177\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## \u8bbe\u8ba1\u54f2\u5b66\n\n\u8fd9\u4e2a\u5de5\u5177\u907f\u514d\u628a\u5c1a\u672a\u5b8c\u6210\u7684\u6587\u6863\u4ea4\u4ed8\u7ed9\u4f7f\u7528\u8005\u3002\u68c0\u67e5\u8303\u56f4\u56fa\u5b9a\uff0c\u7ed3\u679c\u53ef\u4ee5\u91cd\u590d\u3002\u81ea\u52a8\u68c0\u67e5\u53ea\u5224\u65ad\u7ed3\u6784\uff0c\u8bbe\u8ba1\u53d6\u820d\u548c\u771f\u5b9e\u80fd\u529b\u4ecd\u7531\u8bc4\u5ba1\u786e\u8ba4\u3002\n\n## \u5b89\u88c5\n\n\u8fd0\u884c\u5b89\u88c5\u5165\u53e3\u3002\n\n```sh\npython tools/install.py\n```\n",
+      "ROADMAP.md": "# Roadmap\n\nCurrent: **v1.2.0-rc.1+build.7**\n\n## v1.2.0-rc.1+build.7 (current)\n\nThe bounded document checks are implemented.\n\n## Planned\n\n- TODO: evaluate broader language support after independent review.\n",
+      "CHANGELOG.md": "# Changelog\n\n## [Unreleased]\n\n### Changed\n\n- Refined the installation explanation.\n\n## [1.2.0-rc.1+build.7] - 2024-06-10\n\n- TODO: write release notes.\n\n## [1.1.0] - 2024-06-01\n\n- Added synthetic guide examples.\n",
+      ".claude-plugin/plugin.json": "{\"name\": \"synthetic\", \"version\": \"1.2.0-rc.1+build.7\"}",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "profile": "skill",
+    "stage": "accepted",
+    "failure": "docs.placeholders"
+  },
+  {
+    "name": "empty Unreleased remains valid",
+    "files": {
+      "README.md": "# Synthetic tool\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## Design Philosophy\n\nThe tool prevents unfinished guides from becoming accepted deliverables. It uses bounded deterministic checks so results stay reproducible. These checks cover structure; reviewers still assess meaning and tradeoffs.\n\n## Installation\n\nRun the declared setup entry.\n\n```sh\npython tools/install.py\n```\n\n[Roadmap](ROADMAP.md#planned)\n",
+      "README_CN.md": "# \u5408\u6210\u5de5\u5177\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## \u8bbe\u8ba1\u54f2\u5b66\n\n\u8fd9\u4e2a\u5de5\u5177\u907f\u514d\u628a\u5c1a\u672a\u5b8c\u6210\u7684\u6587\u6863\u4ea4\u4ed8\u7ed9\u4f7f\u7528\u8005\u3002\u68c0\u67e5\u8303\u56f4\u56fa\u5b9a\uff0c\u7ed3\u679c\u53ef\u4ee5\u91cd\u590d\u3002\u81ea\u52a8\u68c0\u67e5\u53ea\u5224\u65ad\u7ed3\u6784\uff0c\u8bbe\u8ba1\u53d6\u820d\u548c\u771f\u5b9e\u80fd\u529b\u4ecd\u7531\u8bc4\u5ba1\u786e\u8ba4\u3002\n\n## \u5b89\u88c5\n\n\u8fd0\u884c\u5b89\u88c5\u5165\u53e3\u3002\n\n```sh\npython tools/install.py\n```\n",
+      "ROADMAP.md": "# Roadmap\n\nCurrent: **v1.2.0-rc.1+build.7**\n\n## v1.2.0-rc.1+build.7 (current)\n\nThe bounded document checks are implemented.\n\n## Planned\n\n- TODO: evaluate broader language support after independent review.\n",
+      "CHANGELOG.md": "# Changelog\n\n## [Unreleased]\n\n## [1.2.0-rc.1+build.7] - 2024-06-10\n\n- Added bounded document checking.\n\n## [1.1.0] - 2024-06-01\n\n- Added synthetic guide examples.\n",
+      ".claude-plugin/plugin.json": "{\"name\": \"synthetic\", \"version\": \"1.2.0-rc.1+build.7\"}",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "profile": "skill",
+    "stage": "accepted"
+  },
+  {
+    "name": "release requires substantive latest notes",
+    "files": {
+      "README.md": "# Synthetic tool\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## Design Philosophy\n\nThe tool prevents unfinished guides from becoming accepted deliverables. It uses bounded deterministic checks so results stay reproducible. These checks cover structure; reviewers still assess meaning and tradeoffs.\n\n## Installation\n\nRun the declared setup entry.\n\n```sh\npython tools/install.py\n```\n\n[Roadmap](ROADMAP.md#planned)\n",
+      "README_CN.md": "# \u5408\u6210\u5de5\u5177\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## \u8bbe\u8ba1\u54f2\u5b66\n\n\u8fd9\u4e2a\u5de5\u5177\u907f\u514d\u628a\u5c1a\u672a\u5b8c\u6210\u7684\u6587\u6863\u4ea4\u4ed8\u7ed9\u4f7f\u7528\u8005\u3002\u68c0\u67e5\u8303\u56f4\u56fa\u5b9a\uff0c\u7ed3\u679c\u53ef\u4ee5\u91cd\u590d\u3002\u81ea\u52a8\u68c0\u67e5\u53ea\u5224\u65ad\u7ed3\u6784\uff0c\u8bbe\u8ba1\u53d6\u820d\u548c\u771f\u5b9e\u80fd\u529b\u4ecd\u7531\u8bc4\u5ba1\u786e\u8ba4\u3002\n\n## \u5b89\u88c5\n\n\u8fd0\u884c\u5b89\u88c5\u5165\u53e3\u3002\n\n```sh\npython tools/install.py\n```\n",
+      "ROADMAP.md": "# Roadmap\n\nCurrent: **v1.2.0-rc.1+build.7**\n\n## v1.2.0-rc.1+build.7 (current)\n\nThe bounded document checks are implemented.\n\n## Planned\n\n- TODO: evaluate broader language support after independent review.\n",
+      "CHANGELOG.md": "# Changelog\n\n## [Unreleased]\n\n### Changed\n\n- Refined the installation explanation.\n\n## [1.2.0-rc.1+build.7] - 2024-06-10\n\n\n\n## [1.1.0] - 2024-06-01\n\n- Added synthetic guide examples.\n",
+      ".claude-plugin/plugin.json": "{\"name\": \"synthetic\", \"version\": \"1.2.0-rc.1+build.7\"}",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "profile": "skill",
+    "stage": "release",
+    "failure": "changelog.releases"
+  },
+  {
+    "name": "conflicting roadmap current fails",
+    "files": {
+      "README.md": "# Synthetic tool\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## Design Philosophy\n\nThe tool prevents unfinished guides from becoming accepted deliverables. It uses bounded deterministic checks so results stay reproducible. These checks cover structure; reviewers still assess meaning and tradeoffs.\n\n## Installation\n\nRun the declared setup entry.\n\n```sh\npython tools/install.py\n```\n\n[Roadmap](ROADMAP.md#planned)\n",
+      "README_CN.md": "# \u5408\u6210\u5de5\u5177\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## \u8bbe\u8ba1\u54f2\u5b66\n\n\u8fd9\u4e2a\u5de5\u5177\u907f\u514d\u628a\u5c1a\u672a\u5b8c\u6210\u7684\u6587\u6863\u4ea4\u4ed8\u7ed9\u4f7f\u7528\u8005\u3002\u68c0\u67e5\u8303\u56f4\u56fa\u5b9a\uff0c\u7ed3\u679c\u53ef\u4ee5\u91cd\u590d\u3002\u81ea\u52a8\u68c0\u67e5\u53ea\u5224\u65ad\u7ed3\u6784\uff0c\u8bbe\u8ba1\u53d6\u820d\u548c\u771f\u5b9e\u80fd\u529b\u4ecd\u7531\u8bc4\u5ba1\u786e\u8ba4\u3002\n\n## \u5b89\u88c5\n\n\u8fd0\u884c\u5b89\u88c5\u5165\u53e3\u3002\n\n```sh\npython tools/install.py\n```\n",
+      "ROADMAP.md": "# Roadmap\n\nCurrent: **v1.2.0-rc.1+build.7**\n\n## v1.2.0-rc.1+build.7 (current)\n\nThe bounded document checks are implemented.\n\nCurrent: v2.0.0\n\n## Planned\n\n- TODO: evaluate broader language support after independent review.\n",
+      "CHANGELOG.md": "# Changelog\n\n## [Unreleased]\n\n### Changed\n\n- Refined the installation explanation.\n\n## [1.2.0-rc.1+build.7] - 2024-06-10\n\n- Added bounded document checking.\n\n## [1.1.0] - 2024-06-01\n\n- Added synthetic guide examples.\n",
+      ".claude-plugin/plugin.json": "{\"name\": \"synthetic\", \"version\": \"1.2.0-rc.1+build.7\"}",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "profile": "skill",
+    "stage": "accepted",
+    "failure": "roadmap.current"
+  },
+  {
+    "name": "current placeholder after planned fails",
+    "files": {
+      "README.md": "# Synthetic tool\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## Design Philosophy\n\nThe tool prevents unfinished guides from becoming accepted deliverables. It uses bounded deterministic checks so results stay reproducible. These checks cover structure; reviewers still assess meaning and tradeoffs.\n\n## Installation\n\nRun the declared setup entry.\n\n```sh\npython tools/install.py\n```\n\n[Roadmap](ROADMAP.md#planned)\n",
+      "README_CN.md": "# \u5408\u6210\u5de5\u5177\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## \u8bbe\u8ba1\u54f2\u5b66\n\n\u8fd9\u4e2a\u5de5\u5177\u907f\u514d\u628a\u5c1a\u672a\u5b8c\u6210\u7684\u6587\u6863\u4ea4\u4ed8\u7ed9\u4f7f\u7528\u8005\u3002\u68c0\u67e5\u8303\u56f4\u56fa\u5b9a\uff0c\u7ed3\u679c\u53ef\u4ee5\u91cd\u590d\u3002\u81ea\u52a8\u68c0\u67e5\u53ea\u5224\u65ad\u7ed3\u6784\uff0c\u8bbe\u8ba1\u53d6\u820d\u548c\u771f\u5b9e\u80fd\u529b\u4ecd\u7531\u8bc4\u5ba1\u786e\u8ba4\u3002\n\n## \u5b89\u88c5\n\n\u8fd0\u884c\u5b89\u88c5\u5165\u53e3\u3002\n\n```sh\npython tools/install.py\n```\n",
+      "ROADMAP.md": "# Roadmap\n\nCurrent: v1.2.0-rc.1+build.7\n\n## Planned\n\n- TODO: evaluate another language.\n\n## Current behavior\n\nTODO: explain the accepted behavior.\n",
+      "CHANGELOG.md": "# Changelog\n\n## [Unreleased]\n\n### Changed\n\n- Refined the installation explanation.\n\n## [1.2.0-rc.1+build.7] - 2024-06-10\n\n- Added bounded document checking.\n\n## [1.1.0] - 2024-06-01\n\n- Added synthetic guide examples.\n",
+      ".claude-plugin/plugin.json": "{\"name\": \"synthetic\", \"version\": \"1.2.0-rc.1+build.7\"}",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "profile": "skill",
+    "stage": "accepted",
+    "failure": "docs.placeholders"
+  },
+  {
+    "name": "numeric prerelease with leading zero fails",
+    "files": {
+      "README.md": "# Synthetic tool\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## Design Philosophy\n\nThe tool prevents unfinished guides from becoming accepted deliverables. It uses bounded deterministic checks so results stay reproducible. These checks cover structure; reviewers still assess meaning and tradeoffs.\n\n## Installation\n\nRun the declared setup entry.\n\n```sh\npython tools/install.py\n```\n\n[Roadmap](ROADMAP.md#planned)\n",
+      "README_CN.md": "# \u5408\u6210\u5de5\u5177\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## \u8bbe\u8ba1\u54f2\u5b66\n\n\u8fd9\u4e2a\u5de5\u5177\u907f\u514d\u628a\u5c1a\u672a\u5b8c\u6210\u7684\u6587\u6863\u4ea4\u4ed8\u7ed9\u4f7f\u7528\u8005\u3002\u68c0\u67e5\u8303\u56f4\u56fa\u5b9a\uff0c\u7ed3\u679c\u53ef\u4ee5\u91cd\u590d\u3002\u81ea\u52a8\u68c0\u67e5\u53ea\u5224\u65ad\u7ed3\u6784\uff0c\u8bbe\u8ba1\u53d6\u820d\u548c\u771f\u5b9e\u80fd\u529b\u4ecd\u7531\u8bc4\u5ba1\u786e\u8ba4\u3002\n\n## \u5b89\u88c5\n\n\u8fd0\u884c\u5b89\u88c5\u5165\u53e3\u3002\n\n```sh\npython tools/install.py\n```\n",
+      "ROADMAP.md": "# Roadmap\n\nCurrent: **v1.2.0-rc.1+build.7**\n\n## v1.2.0-rc.1+build.7 (current)\n\nThe bounded document checks are implemented.\n\n## Planned\n\n- TODO: evaluate broader language support after independent review.\n",
+      "CHANGELOG.md": "# Changelog\n\n## [Unreleased]\n\n### Changed\n\n- Refined the installation explanation.\n\n## [1.2.0-rc.1+build.7] - 2024-06-10\n\n- Added bounded document checking.\n\n## [1.1.0] - 2024-06-01\n\n- Added synthetic guide examples.\n",
+      ".claude-plugin/plugin.json": "{\"name\": \"synthetic\", \"version\": \"1.2.0-01\"}",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "profile": "skill",
+    "stage": "accepted",
+    "failure": "version.source"
+  },
+  {
+    "name": "current roadmap invalid semver fails",
+    "files": {
+      "README.md": "# Synthetic tool\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## Design Philosophy\n\nThe tool prevents unfinished guides from becoming accepted deliverables. It uses bounded deterministic checks so results stay reproducible. These checks cover structure; reviewers still assess meaning and tradeoffs.\n\n## Installation\n\nRun the declared setup entry.\n\n```sh\npython tools/install.py\n```\n\n[Roadmap](ROADMAP.md#planned)\n",
+      "README_CN.md": "# \u5408\u6210\u5de5\u5177\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## \u8bbe\u8ba1\u54f2\u5b66\n\n\u8fd9\u4e2a\u5de5\u5177\u907f\u514d\u628a\u5c1a\u672a\u5b8c\u6210\u7684\u6587\u6863\u4ea4\u4ed8\u7ed9\u4f7f\u7528\u8005\u3002\u68c0\u67e5\u8303\u56f4\u56fa\u5b9a\uff0c\u7ed3\u679c\u53ef\u4ee5\u91cd\u590d\u3002\u81ea\u52a8\u68c0\u67e5\u53ea\u5224\u65ad\u7ed3\u6784\uff0c\u8bbe\u8ba1\u53d6\u820d\u548c\u771f\u5b9e\u80fd\u529b\u4ecd\u7531\u8bc4\u5ba1\u786e\u8ba4\u3002\n\n## \u5b89\u88c5\n\n\u8fd0\u884c\u5b89\u88c5\u5165\u53e3\u3002\n\n```sh\npython tools/install.py\n```\n",
+      "ROADMAP.md": "# Roadmap\n\nCurrent: **v01.2.0**\n\n## v01.2.0 (current)\n\nThe bounded document checks are implemented.\n\n## Planned\n\n- TODO: evaluate broader language support after independent review.\n",
+      "CHANGELOG.md": "# Changelog\n\n## [Unreleased]\n\n### Changed\n\n- Refined the installation explanation.\n\n## [1.2.0-rc.1+build.7] - 2024-06-10\n\n- Added bounded document checking.\n\n## [1.1.0] - 2024-06-01\n\n- Added synthetic guide examples.\n",
+      ".claude-plugin/plugin.json": "{\"name\": \"synthetic\", \"version\": \"1.2.0-rc.1+build.7\"}",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "profile": "skill",
+    "stage": "accepted",
+    "failure": "roadmap.current"
+  },
+  {
+    "name": "current version field mismatch fails",
+    "files": {
+      "README.md": "# Synthetic tool\n\nVersion: **v1.3.0**\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## Design Philosophy\n\nThe tool prevents unfinished guides from becoming accepted deliverables. It uses bounded deterministic checks so results stay reproducible. These checks cover structure; reviewers still assess meaning and tradeoffs.\n\n## Installation\n\nRun the declared setup entry.\n\n```sh\npython tools/install.py\n```\n\n[Roadmap](ROADMAP.md#planned)\n",
+      "README_CN.md": "# \u5408\u6210\u5de5\u5177\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## \u8bbe\u8ba1\u54f2\u5b66\n\n\u8fd9\u4e2a\u5de5\u5177\u907f\u514d\u628a\u5c1a\u672a\u5b8c\u6210\u7684\u6587\u6863\u4ea4\u4ed8\u7ed9\u4f7f\u7528\u8005\u3002\u68c0\u67e5\u8303\u56f4\u56fa\u5b9a\uff0c\u7ed3\u679c\u53ef\u4ee5\u91cd\u590d\u3002\u81ea\u52a8\u68c0\u67e5\u53ea\u5224\u65ad\u7ed3\u6784\uff0c\u8bbe\u8ba1\u53d6\u820d\u548c\u771f\u5b9e\u80fd\u529b\u4ecd\u7531\u8bc4\u5ba1\u786e\u8ba4\u3002\n\n## \u5b89\u88c5\n\n\u8fd0\u884c\u5b89\u88c5\u5165\u53e3\u3002\n\n```sh\npython tools/install.py\n```\n",
+      "ROADMAP.md": "# Roadmap\n\nCurrent: **v1.2.0-rc.1+build.7**\n\n## v1.2.0-rc.1+build.7 (current)\n\nThe bounded document checks are implemented.\n\n## Planned\n\n- TODO: evaluate broader language support after independent review.\n",
+      "CHANGELOG.md": "# Changelog\n\n## [Unreleased]\n\n### Changed\n\n- Refined the installation explanation.\n\n## [1.2.0-rc.1+build.7] - 2024-06-10\n\n- Added bounded document checking.\n\n## [1.1.0] - 2024-06-01\n\n- Added synthetic guide examples.\n",
+      ".claude-plugin/plugin.json": "{\"name\": \"synthetic\", \"version\": \"1.2.0-rc.1+build.7\"}",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "profile": "skill",
+    "stage": "accepted",
+    "failure": "version.current"
+  },
+  {
+    "name": "malformed current version field fails",
+    "files": {
+      "README.md": "# Synthetic tool\n\nVersion: **v01.3.0**\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## Design Philosophy\n\nThe tool prevents unfinished guides from becoming accepted deliverables. It uses bounded deterministic checks so results stay reproducible. These checks cover structure; reviewers still assess meaning and tradeoffs.\n\n## Installation\n\nRun the declared setup entry.\n\n```sh\npython tools/install.py\n```\n\n[Roadmap](ROADMAP.md#planned)\n",
+      "README_CN.md": "# \u5408\u6210\u5de5\u5177\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## \u8bbe\u8ba1\u54f2\u5b66\n\n\u8fd9\u4e2a\u5de5\u5177\u907f\u514d\u628a\u5c1a\u672a\u5b8c\u6210\u7684\u6587\u6863\u4ea4\u4ed8\u7ed9\u4f7f\u7528\u8005\u3002\u68c0\u67e5\u8303\u56f4\u56fa\u5b9a\uff0c\u7ed3\u679c\u53ef\u4ee5\u91cd\u590d\u3002\u81ea\u52a8\u68c0\u67e5\u53ea\u5224\u65ad\u7ed3\u6784\uff0c\u8bbe\u8ba1\u53d6\u820d\u548c\u771f\u5b9e\u80fd\u529b\u4ecd\u7531\u8bc4\u5ba1\u786e\u8ba4\u3002\n\n## \u5b89\u88c5\n\n\u8fd0\u884c\u5b89\u88c5\u5165\u53e3\u3002\n\n```sh\npython tools/install.py\n```\n",
+      "ROADMAP.md": "# Roadmap\n\nCurrent: **v1.2.0-rc.1+build.7**\n\n## v1.2.0-rc.1+build.7 (current)\n\nThe bounded document checks are implemented.\n\n## Planned\n\n- TODO: evaluate broader language support after independent review.\n",
+      "CHANGELOG.md": "# Changelog\n\n## [Unreleased]\n\n### Changed\n\n- Refined the installation explanation.\n\n## [1.2.0-rc.1+build.7] - 2024-06-10\n\n- Added bounded document checking.\n\n## [1.1.0] - 2024-06-01\n\n- Added synthetic guide examples.\n",
+      ".claude-plugin/plugin.json": "{\"name\": \"synthetic\", \"version\": \"1.2.0-rc.1+build.7\"}",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "profile": "skill",
+    "stage": "accepted",
+    "failure": "version.current"
+  },
+  {
+    "name": "escaped literal link is not destination",
+    "files": {
+      "README.md": "# Synthetic tool\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## Design Philosophy\n\nThe tool prevents unfinished guides from becoming accepted deliverables. It uses bounded deterministic checks so results stay reproducible. These checks cover structure; reviewers still assess meaning and tradeoffs.\n\n## Installation\n\nRun the declared setup entry.\n\n```sh\npython tools/install.py\n```\n\n[Roadmap](ROADMAP.md#planned)\n\\[literal](missing.md)\n",
+      "README_CN.md": "# \u5408\u6210\u5de5\u5177\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## \u8bbe\u8ba1\u54f2\u5b66\n\n\u8fd9\u4e2a\u5de5\u5177\u907f\u514d\u628a\u5c1a\u672a\u5b8c\u6210\u7684\u6587\u6863\u4ea4\u4ed8\u7ed9\u4f7f\u7528\u8005\u3002\u68c0\u67e5\u8303\u56f4\u56fa\u5b9a\uff0c\u7ed3\u679c\u53ef\u4ee5\u91cd\u590d\u3002\u81ea\u52a8\u68c0\u67e5\u53ea\u5224\u65ad\u7ed3\u6784\uff0c\u8bbe\u8ba1\u53d6\u820d\u548c\u771f\u5b9e\u80fd\u529b\u4ecd\u7531\u8bc4\u5ba1\u786e\u8ba4\u3002\n\n## \u5b89\u88c5\n\n\u8fd0\u884c\u5b89\u88c5\u5165\u53e3\u3002\n\n```sh\npython tools/install.py\n```\n",
+      "ROADMAP.md": "# Roadmap\n\nCurrent: **v1.2.0-rc.1+build.7**\n\n## v1.2.0-rc.1+build.7 (current)\n\nThe bounded document checks are implemented.\n\n## Planned\n\n- TODO: evaluate broader language support after independent review.\n",
+      "CHANGELOG.md": "# Changelog\n\n## [Unreleased]\n\n### Changed\n\n- Refined the installation explanation.\n\n## [1.2.0-rc.1+build.7] - 2024-06-10\n\n- Added bounded document checking.\n\n## [1.1.0] - 2024-06-01\n\n- Added synthetic guide examples.\n",
+      ".claude-plugin/plugin.json": "{\"name\": \"synthetic\", \"version\": \"1.2.0-rc.1+build.7\"}",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "profile": "skill",
+    "stage": "accepted"
+  },
+  {
+    "name": "ancestor traversal link fails",
+    "files": {
+      "README.md": "# Synthetic tool\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## Design Philosophy\n\nThe tool prevents unfinished guides from becoming accepted deliverables. It uses bounded deterministic checks so results stay reproducible. These checks cover structure; reviewers still assess meaning and tradeoffs.\n\n## Installation\n\nRun the declared setup entry.\n\n```sh\npython tools/install.py\n```\n\n[Roadmap](../missing.md)\n",
+      "README_CN.md": "# \u5408\u6210\u5de5\u5177\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## \u8bbe\u8ba1\u54f2\u5b66\n\n\u8fd9\u4e2a\u5de5\u5177\u907f\u514d\u628a\u5c1a\u672a\u5b8c\u6210\u7684\u6587\u6863\u4ea4\u4ed8\u7ed9\u4f7f\u7528\u8005\u3002\u68c0\u67e5\u8303\u56f4\u56fa\u5b9a\uff0c\u7ed3\u679c\u53ef\u4ee5\u91cd\u590d\u3002\u81ea\u52a8\u68c0\u67e5\u53ea\u5224\u65ad\u7ed3\u6784\uff0c\u8bbe\u8ba1\u53d6\u820d\u548c\u771f\u5b9e\u80fd\u529b\u4ecd\u7531\u8bc4\u5ba1\u786e\u8ba4\u3002\n\n## \u5b89\u88c5\n\n\u8fd0\u884c\u5b89\u88c5\u5165\u53e3\u3002\n\n```sh\npython tools/install.py\n```\n",
+      "ROADMAP.md": "# Roadmap\n\nCurrent: **v1.2.0-rc.1+build.7**\n\n## v1.2.0-rc.1+build.7 (current)\n\nThe bounded document checks are implemented.\n\n## Planned\n\n- TODO: evaluate broader language support after independent review.\n",
+      "CHANGELOG.md": "# Changelog\n\n## [Unreleased]\n\n### Changed\n\n- Refined the installation explanation.\n\n## [1.2.0-rc.1+build.7] - 2024-06-10\n\n- Added bounded document checking.\n\n## [1.1.0] - 2024-06-01\n\n- Added synthetic guide examples.\n",
+      ".claude-plugin/plugin.json": "{\"name\": \"synthetic\", \"version\": \"1.2.0-rc.1+build.7\"}",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "profile": "skill",
+    "stage": "accepted",
+    "failure": "links.local"
+  },
+  {
+    "name": "missing root README fails",
+    "files": {
+      "README.md": "# Synthetic tool\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## Design Philosophy\n\nThe tool prevents unfinished guides from becoming accepted deliverables. It uses bounded deterministic checks so results stay reproducible. These checks cover structure; reviewers still assess meaning and tradeoffs.\n\n## Installation\n\nRun the declared setup entry.\n\n```sh\npython tools/install.py\n```\n\n[Roadmap](ROADMAP.md#planned)\n",
+      "ROADMAP.md": "# Roadmap\n\nCurrent: **v1.2.0-rc.1+build.7**\n\n## v1.2.0-rc.1+build.7 (current)\n\nThe bounded document checks are implemented.\n\n## Planned\n\n- TODO: evaluate broader language support after independent review.\n",
+      "CHANGELOG.md": "# Changelog\n\n## [Unreleased]\n\n### Changed\n\n- Refined the installation explanation.\n\n## [1.2.0-rc.1+build.7] - 2024-06-10\n\n- Added bounded document checking.\n\n## [1.1.0] - 2024-06-01\n\n- Added synthetic guide examples.\n",
+      ".claude-plugin/plugin.json": "{\"name\": \"synthetic\", \"version\": \"1.2.0-rc.1+build.7\"}",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "profile": "skill",
+    "stage": "accepted",
+    "failure": "docs.required"
+  },
+  {
+    "name": "submodule install missing initialization fails",
+    "files": {
+      "README.md": "# Synthetic tool\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## Design Philosophy\n\nThe tool prevents unfinished guides from becoming accepted deliverables. It uses bounded deterministic checks so results stay reproducible. These checks cover structure; reviewers still assess meaning and tradeoffs.\n\n## Installation\n\nRun the declared setup entry.\n\n```sh\ngit clone https://example.com/synthetic.git\n```\n\n[Roadmap](ROADMAP.md#planned)\n",
+      "README_CN.md": "# \u5408\u6210\u5de5\u5177\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## \u8bbe\u8ba1\u54f2\u5b66\n\n\u8fd9\u4e2a\u5de5\u5177\u907f\u514d\u628a\u5c1a\u672a\u5b8c\u6210\u7684\u6587\u6863\u4ea4\u4ed8\u7ed9\u4f7f\u7528\u8005\u3002\u68c0\u67e5\u8303\u56f4\u56fa\u5b9a\uff0c\u7ed3\u679c\u53ef\u4ee5\u91cd\u590d\u3002\u81ea\u52a8\u68c0\u67e5\u53ea\u5224\u65ad\u7ed3\u6784\uff0c\u8bbe\u8ba1\u53d6\u820d\u548c\u771f\u5b9e\u80fd\u529b\u4ecd\u7531\u8bc4\u5ba1\u786e\u8ba4\u3002\n\n## \u5b89\u88c5\n\n\u8fd0\u884c\u5b89\u88c5\u5165\u53e3\u3002\n\n```sh\ngit clone --recurse-submodules https://example.com/synthetic.git\n```\n",
+      "ROADMAP.md": "# Roadmap\n\nCurrent: **v1.2.0-rc.1+build.7**\n\n## v1.2.0-rc.1+build.7 (current)\n\nThe bounded document checks are implemented.\n\n## Planned\n\n- TODO: evaluate broader language support after independent review.\n",
+      "CHANGELOG.md": "# Changelog\n\n## [Unreleased]\n\n### Changed\n\n- Refined the installation explanation.\n\n## [1.2.0-rc.1+build.7] - 2024-06-10\n\n- Added bounded document checking.\n\n## [1.1.0] - 2024-06-01\n\n- Added synthetic guide examples.\n",
+      ".claude-plugin/plugin.json": "{\"name\": \"synthetic\", \"version\": \"1.2.0-rc.1+build.7\"}",
+      "tools/install.py": "print('synthetic setup')\n",
+      ".gitmodules": "[submodule \"kit\"]\n path = kit\n url = https://example.com/kit.git\n"
+    },
+    "profile": "skill",
+    "stage": "accepted",
+    "failure": "readme.install"
+  },
+  {
+    "name": "submodule install recursive initialization valid",
+    "files": {
+      "README.md": "# Synthetic tool\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## Design Philosophy\n\nThe tool prevents unfinished guides from becoming accepted deliverables. It uses bounded deterministic checks so results stay reproducible. These checks cover structure; reviewers still assess meaning and tradeoffs.\n\n## Installation\n\nRun the declared setup entry.\n\n```sh\ngit clone https://example.com/synthetic.git\ngit submodule update --init --recursive\n```\n\n[Roadmap](ROADMAP.md#planned)\n",
+      "README_CN.md": "# \u5408\u6210\u5de5\u5177\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## \u8bbe\u8ba1\u54f2\u5b66\n\n\u8fd9\u4e2a\u5de5\u5177\u907f\u514d\u628a\u5c1a\u672a\u5b8c\u6210\u7684\u6587\u6863\u4ea4\u4ed8\u7ed9\u4f7f\u7528\u8005\u3002\u68c0\u67e5\u8303\u56f4\u56fa\u5b9a\uff0c\u7ed3\u679c\u53ef\u4ee5\u91cd\u590d\u3002\u81ea\u52a8\u68c0\u67e5\u53ea\u5224\u65ad\u7ed3\u6784\uff0c\u8bbe\u8ba1\u53d6\u820d\u548c\u771f\u5b9e\u80fd\u529b\u4ecd\u7531\u8bc4\u5ba1\u786e\u8ba4\u3002\n\n## \u5b89\u88c5\n\n\u8fd0\u884c\u5b89\u88c5\u5165\u53e3\u3002\n\n```sh\ngit clone https://example.com/synthetic.git\ngit submodule update --init --recursive\n```\n",
+      "ROADMAP.md": "# Roadmap\n\nCurrent: **v1.2.0-rc.1+build.7**\n\n## v1.2.0-rc.1+build.7 (current)\n\nThe bounded document checks are implemented.\n\n## Planned\n\n- TODO: evaluate broader language support after independent review.\n",
+      "CHANGELOG.md": "# Changelog\n\n## [Unreleased]\n\n### Changed\n\n- Refined the installation explanation.\n\n## [1.2.0-rc.1+build.7] - 2024-06-10\n\n- Added bounded document checking.\n\n## [1.1.0] - 2024-06-01\n\n- Added synthetic guide examples.\n",
+      ".claude-plugin/plugin.json": "{\"name\": \"synthetic\", \"version\": \"1.2.0-rc.1+build.7\"}",
+      "tools/install.py": "print('synthetic setup')\n",
+      ".gitmodules": "[submodule \"kit\"]\n path = kit\n url = https://example.com/kit.git\n"
+    },
+    "profile": "skill",
+    "stage": "accepted"
+  },
+  {
+    "name": "missing roadmap current fails",
+    "files": {
+      "README.md": "# Synthetic tool\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## Design Philosophy\n\nThe tool prevents unfinished guides from becoming accepted deliverables. It uses bounded deterministic checks so results stay reproducible. These checks cover structure; reviewers still assess meaning and tradeoffs.\n\n## Installation\n\nRun the declared setup entry.\n\n```sh\npython tools/install.py\n```\n\n[Roadmap](ROADMAP.md#planned)\n",
+      "README_CN.md": "# \u5408\u6210\u5de5\u5177\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## \u8bbe\u8ba1\u54f2\u5b66\n\n\u8fd9\u4e2a\u5de5\u5177\u907f\u514d\u628a\u5c1a\u672a\u5b8c\u6210\u7684\u6587\u6863\u4ea4\u4ed8\u7ed9\u4f7f\u7528\u8005\u3002\u68c0\u67e5\u8303\u56f4\u56fa\u5b9a\uff0c\u7ed3\u679c\u53ef\u4ee5\u91cd\u590d\u3002\u81ea\u52a8\u68c0\u67e5\u53ea\u5224\u65ad\u7ed3\u6784\uff0c\u8bbe\u8ba1\u53d6\u820d\u548c\u771f\u5b9e\u80fd\u529b\u4ecd\u7531\u8bc4\u5ba1\u786e\u8ba4\u3002\n\n## \u5b89\u88c5\n\n\u8fd0\u884c\u5b89\u88c5\u5165\u53e3\u3002\n\n```sh\npython tools/install.py\n```\n",
+      "ROADMAP.md": "# Roadmap\n\n## Planned\n\nFuture work remains under review.\n",
+      "CHANGELOG.md": "# Changelog\n\n## [Unreleased]\n\n### Changed\n\n- Refined the installation explanation.\n\n## [1.2.0-rc.1+build.7] - 2024-06-10\n\n- Added bounded document checking.\n\n## [1.1.0] - 2024-06-01\n\n- Added synthetic guide examples.\n",
+      ".claude-plugin/plugin.json": "{\"name\": \"synthetic\", \"version\": \"1.2.0-rc.1+build.7\"}",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "profile": "skill",
+    "stage": "accepted",
+    "failure": "roadmap.current"
+  },
+  {
+    "name": "manifest-linked current roadmap valid",
+    "files": {
+      "README.md": "# Synthetic tool\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## Design Philosophy\n\nThe tool prevents unfinished guides from becoming accepted deliverables. It uses bounded deterministic checks so results stay reproducible. These checks cover structure; reviewers still assess meaning and tradeoffs.\n\n## Installation\n\nRun the declared setup entry.\n\n```sh\npython tools/install.py\n```\n\n[Roadmap](ROADMAP.md#planned)\n",
+      "README_CN.md": "# \u5408\u6210\u5de5\u5177\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## \u8bbe\u8ba1\u54f2\u5b66\n\n\u8fd9\u4e2a\u5de5\u5177\u907f\u514d\u628a\u5c1a\u672a\u5b8c\u6210\u7684\u6587\u6863\u4ea4\u4ed8\u7ed9\u4f7f\u7528\u8005\u3002\u68c0\u67e5\u8303\u56f4\u56fa\u5b9a\uff0c\u7ed3\u679c\u53ef\u4ee5\u91cd\u590d\u3002\u81ea\u52a8\u68c0\u67e5\u53ea\u5224\u65ad\u7ed3\u6784\uff0c\u8bbe\u8ba1\u53d6\u820d\u548c\u771f\u5b9e\u80fd\u529b\u4ecd\u7531\u8bc4\u5ba1\u786e\u8ba4\u3002\n\n## \u5b89\u88c5\n\n\u8fd0\u884c\u5b89\u88c5\u5165\u53e3\u3002\n\n```sh\npython tools/install.py\n```\n",
+      "ROADMAP.md": "# Roadmap\n\n## Current\n\nVersion follows [plugin manifest](.claude-plugin/plugin.json).\n\nBounded checks are implemented.\n\n## Planned\n\n- TODO: review another language.\n",
+      "CHANGELOG.md": "# Changelog\n\n## [Unreleased]\n\n### Changed\n\n- Refined the installation explanation.\n\n## [1.2.0-rc.1+build.7] - 2024-06-10\n\n- Added bounded document checking.\n\n## [1.1.0] - 2024-06-01\n\n- Added synthetic guide examples.\n",
+      ".claude-plugin/plugin.json": "{\"name\": \"synthetic\", \"version\": \"1.2.0-rc.1+build.7\"}",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "profile": "skill",
+    "stage": "accepted"
+  },
+  {
+    "name": "bare purposeful current with manifest valid",
+    "files": {
+      "README.md": "# Synthetic tool\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## Design Philosophy\n\nThe tool prevents unfinished guides from becoming accepted deliverables. It uses bounded deterministic checks so results stay reproducible. These checks cover structure; reviewers still assess meaning and tradeoffs.\n\n## Installation\n\nRun the declared setup entry.\n\n```sh\npython tools/install.py\n```\n\n[Roadmap](ROADMAP.md#current)\n",
+      "README_CN.md": "# \u5408\u6210\u5de5\u5177\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## \u8bbe\u8ba1\u54f2\u5b66\n\n\u8fd9\u4e2a\u5de5\u5177\u907f\u514d\u628a\u5c1a\u672a\u5b8c\u6210\u7684\u6587\u6863\u4ea4\u4ed8\u7ed9\u4f7f\u7528\u8005\u3002\u68c0\u67e5\u8303\u56f4\u56fa\u5b9a\uff0c\u7ed3\u679c\u53ef\u4ee5\u91cd\u590d\u3002\u81ea\u52a8\u68c0\u67e5\u53ea\u5224\u65ad\u7ed3\u6784\uff0c\u8bbe\u8ba1\u53d6\u820d\u548c\u771f\u5b9e\u80fd\u529b\u4ecd\u7531\u8bc4\u5ba1\u786e\u8ba4\u3002\n\n## \u5b89\u88c5\n\n\u8fd0\u884c\u5b89\u88c5\u5165\u53e3\u3002\n\n```sh\npython tools/install.py\n```\n",
+      "ROADMAP.md": "# Roadmap\n\n## Current\n\nThe current implementation checks root documentation.\n",
+      "CHANGELOG.md": "# Changelog\n\n## [Unreleased]\n\n### Changed\n\n- Refined the installation explanation.\n\n## [1.2.0-rc.1+build.7] - 2024-06-10\n\n- Added bounded document checking.\n\n## [1.1.0] - 2024-06-01\n\n- Added synthetic guide examples.\n",
+      ".claude-plugin/plugin.json": "{\"name\": \"synthetic\", \"version\": \"1.2.0-rc.1+build.7\"}",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "profile": "skill",
+    "stage": "accepted"
+  },
+  {
+    "name": "missing local root link fails",
+    "files": {
+      "README.md": "# Synthetic tool\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## Design Philosophy\n\nThe tool prevents unfinished guides from becoming accepted deliverables. It uses bounded deterministic checks so results stay reproducible. These checks cover structure; reviewers still assess meaning and tradeoffs.\n\n## Installation\n\nRun the declared setup entry.\n\n```sh\npython tools/install.py\n```\n\n[Roadmap](MISSING.md)\n",
+      "README_CN.md": "# \u5408\u6210\u5de5\u5177\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## \u8bbe\u8ba1\u54f2\u5b66\n\n\u8fd9\u4e2a\u5de5\u5177\u907f\u514d\u628a\u5c1a\u672a\u5b8c\u6210\u7684\u6587\u6863\u4ea4\u4ed8\u7ed9\u4f7f\u7528\u8005\u3002\u68c0\u67e5\u8303\u56f4\u56fa\u5b9a\uff0c\u7ed3\u679c\u53ef\u4ee5\u91cd\u590d\u3002\u81ea\u52a8\u68c0\u67e5\u53ea\u5224\u65ad\u7ed3\u6784\uff0c\u8bbe\u8ba1\u53d6\u820d\u548c\u771f\u5b9e\u80fd\u529b\u4ecd\u7531\u8bc4\u5ba1\u786e\u8ba4\u3002\n\n## \u5b89\u88c5\n\n\u8fd0\u884c\u5b89\u88c5\u5165\u53e3\u3002\n\n```sh\npython tools/install.py\n```\n",
+      "ROADMAP.md": "# Roadmap\n\nCurrent: **v1.2.0-rc.1+build.7**\n\n## v1.2.0-rc.1+build.7 (current)\n\nThe bounded document checks are implemented.\n\n## Planned\n\n- TODO: evaluate broader language support after independent review.\n",
+      "CHANGELOG.md": "# Changelog\n\n## [Unreleased]\n\n### Changed\n\n- Refined the installation explanation.\n\n## [1.2.0-rc.1+build.7] - 2024-06-10\n\n- Added bounded document checking.\n\n## [1.1.0] - 2024-06-01\n\n- Added synthetic guide examples.\n",
+      ".claude-plugin/plugin.json": "{\"name\": \"synthetic\", \"version\": \"1.2.0-rc.1+build.7\"}",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "profile": "skill",
+    "stage": "accepted",
+    "failure": "links.local"
+  },
+  {
+    "name": "missing root anchor fails",
+    "files": {
+      "README.md": "# Synthetic tool\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## Design Philosophy\n\nThe tool prevents unfinished guides from becoming accepted deliverables. It uses bounded deterministic checks so results stay reproducible. These checks cover structure; reviewers still assess meaning and tradeoffs.\n\n## Installation\n\nRun the declared setup entry.\n\n```sh\npython tools/install.py\n```\n\n[Roadmap](ROADMAP.md#missing)\n",
+      "README_CN.md": "# \u5408\u6210\u5de5\u5177\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## \u8bbe\u8ba1\u54f2\u5b66\n\n\u8fd9\u4e2a\u5de5\u5177\u907f\u514d\u628a\u5c1a\u672a\u5b8c\u6210\u7684\u6587\u6863\u4ea4\u4ed8\u7ed9\u4f7f\u7528\u8005\u3002\u68c0\u67e5\u8303\u56f4\u56fa\u5b9a\uff0c\u7ed3\u679c\u53ef\u4ee5\u91cd\u590d\u3002\u81ea\u52a8\u68c0\u67e5\u53ea\u5224\u65ad\u7ed3\u6784\uff0c\u8bbe\u8ba1\u53d6\u820d\u548c\u771f\u5b9e\u80fd\u529b\u4ecd\u7531\u8bc4\u5ba1\u786e\u8ba4\u3002\n\n## \u5b89\u88c5\n\n\u8fd0\u884c\u5b89\u88c5\u5165\u53e3\u3002\n\n```sh\npython tools/install.py\n```\n",
+      "ROADMAP.md": "# Roadmap\n\nCurrent: **v1.2.0-rc.1+build.7**\n\n## v1.2.0-rc.1+build.7 (current)\n\nThe bounded document checks are implemented.\n\n## Planned\n\n- TODO: evaluate broader language support after independent review.\n",
+      "CHANGELOG.md": "# Changelog\n\n## [Unreleased]\n\n### Changed\n\n- Refined the installation explanation.\n\n## [1.2.0-rc.1+build.7] - 2024-06-10\n\n- Added bounded document checking.\n\n## [1.1.0] - 2024-06-01\n\n- Added synthetic guide examples.\n",
+      ".claude-plugin/plugin.json": "{\"name\": \"synthetic\", \"version\": \"1.2.0-rc.1+build.7\"}",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "profile": "skill",
+    "stage": "accepted",
+    "failure": "links.local"
+  },
+  {
+    "name": "reference link missing destination fails",
+    "files": {
+      "README.md": "# Synthetic tool\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## Design Philosophy\n\nThe tool prevents unfinished guides from becoming accepted deliverables. It uses bounded deterministic checks so results stay reproducible. These checks cover structure; reviewers still assess meaning and tradeoffs.\n\n## Installation\n\nRun the declared setup entry.\n\n```sh\npython tools/install.py\n```\n\n[Roadmap][plan]\n\n[plan]: MISSING.md\n",
+      "README_CN.md": "# \u5408\u6210\u5de5\u5177\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## \u8bbe\u8ba1\u54f2\u5b66\n\n\u8fd9\u4e2a\u5de5\u5177\u907f\u514d\u628a\u5c1a\u672a\u5b8c\u6210\u7684\u6587\u6863\u4ea4\u4ed8\u7ed9\u4f7f\u7528\u8005\u3002\u68c0\u67e5\u8303\u56f4\u56fa\u5b9a\uff0c\u7ed3\u679c\u53ef\u4ee5\u91cd\u590d\u3002\u81ea\u52a8\u68c0\u67e5\u53ea\u5224\u65ad\u7ed3\u6784\uff0c\u8bbe\u8ba1\u53d6\u820d\u548c\u771f\u5b9e\u80fd\u529b\u4ecd\u7531\u8bc4\u5ba1\u786e\u8ba4\u3002\n\n## \u5b89\u88c5\n\n\u8fd0\u884c\u5b89\u88c5\u5165\u53e3\u3002\n\n```sh\npython tools/install.py\n```\n",
+      "ROADMAP.md": "# Roadmap\n\nCurrent: **v1.2.0-rc.1+build.7**\n\n## v1.2.0-rc.1+build.7 (current)\n\nThe bounded document checks are implemented.\n\n## Planned\n\n- TODO: evaluate broader language support after independent review.\n",
+      "CHANGELOG.md": "# Changelog\n\n## [Unreleased]\n\n### Changed\n\n- Refined the installation explanation.\n\n## [1.2.0-rc.1+build.7] - 2024-06-10\n\n- Added bounded document checking.\n\n## [1.1.0] - 2024-06-01\n\n- Added synthetic guide examples.\n",
+      ".claude-plugin/plugin.json": "{\"name\": \"synthetic\", \"version\": \"1.2.0-rc.1+build.7\"}",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "profile": "skill",
+    "stage": "accepted",
+    "failure": "links.local"
+  },
+  {
+    "name": "literal links in inline code are not destinations",
+    "files": {
+      "README.md": "# Synthetic tool\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## Design Philosophy\n\nThe tool prevents unfinished guides from becoming accepted deliverables. It uses bounded deterministic checks so results stay reproducible. These checks cover structure; reviewers still assess meaning and tradeoffs.\n\n## Installation\n\nRun the declared setup entry.\n\n```sh\npython tools/install.py\n```\n\n[Roadmap](ROADMAP.md#planned)\n\nLiteral syntax `[sample](missing.md)` and `TODO` are code examples.\n",
+      "README_CN.md": "# \u5408\u6210\u5de5\u5177\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## \u8bbe\u8ba1\u54f2\u5b66\n\n\u8fd9\u4e2a\u5de5\u5177\u907f\u514d\u628a\u5c1a\u672a\u5b8c\u6210\u7684\u6587\u6863\u4ea4\u4ed8\u7ed9\u4f7f\u7528\u8005\u3002\u68c0\u67e5\u8303\u56f4\u56fa\u5b9a\uff0c\u7ed3\u679c\u53ef\u4ee5\u91cd\u590d\u3002\u81ea\u52a8\u68c0\u67e5\u53ea\u5224\u65ad\u7ed3\u6784\uff0c\u8bbe\u8ba1\u53d6\u820d\u548c\u771f\u5b9e\u80fd\u529b\u4ecd\u7531\u8bc4\u5ba1\u786e\u8ba4\u3002\n\n## \u5b89\u88c5\n\n\u8fd0\u884c\u5b89\u88c5\u5165\u53e3\u3002\n\n```sh\npython tools/install.py\n```\n",
+      "ROADMAP.md": "# Roadmap\n\nCurrent: **v1.2.0-rc.1+build.7**\n\n## v1.2.0-rc.1+build.7 (current)\n\nThe bounded document checks are implemented.\n\n## Planned\n\n- TODO: evaluate broader language support after independent review.\n",
+      "CHANGELOG.md": "# Changelog\n\n## [Unreleased]\n\n### Changed\n\n- Refined the installation explanation.\n\n## [1.2.0-rc.1+build.7] - 2024-06-10\n\n- Added bounded document checking.\n\n## [1.1.0] - 2024-06-01\n\n- Added synthetic guide examples.\n",
+      ".claude-plugin/plugin.json": "{\"name\": \"synthetic\", \"version\": \"1.2.0-rc.1+build.7\"}",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "profile": "skill",
+    "stage": "accepted"
+  },
+  {
+    "name": "protected payload link is metadata only",
+    "files": {
+      "README.md": "# Synthetic tool\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## Design Philosophy\n\nThe tool prevents unfinished guides from becoming accepted deliverables. It uses bounded deterministic checks so results stay reproducible. These checks cover structure; reviewers still assess meaning and tradeoffs.\n\n## Installation\n\nRun the declared setup entry.\n\n```sh\npython tools/install.py\n```\n\n[Roadmap](ROADMAP.md#planned)\n\n[Payload](eval/poison.json#never-open)\n",
+      "README_CN.md": "# \u5408\u6210\u5de5\u5177\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## \u8bbe\u8ba1\u54f2\u5b66\n\n\u8fd9\u4e2a\u5de5\u5177\u907f\u514d\u628a\u5c1a\u672a\u5b8c\u6210\u7684\u6587\u6863\u4ea4\u4ed8\u7ed9\u4f7f\u7528\u8005\u3002\u68c0\u67e5\u8303\u56f4\u56fa\u5b9a\uff0c\u7ed3\u679c\u53ef\u4ee5\u91cd\u590d\u3002\u81ea\u52a8\u68c0\u67e5\u53ea\u5224\u65ad\u7ed3\u6784\uff0c\u8bbe\u8ba1\u53d6\u820d\u548c\u771f\u5b9e\u80fd\u529b\u4ecd\u7531\u8bc4\u5ba1\u786e\u8ba4\u3002\n\n## \u5b89\u88c5\n\n\u8fd0\u884c\u5b89\u88c5\u5165\u53e3\u3002\n\n```sh\npython tools/install.py\n```\n",
+      "ROADMAP.md": "# Roadmap\n\nCurrent: **v1.2.0-rc.1+build.7**\n\n## v1.2.0-rc.1+build.7 (current)\n\nThe bounded document checks are implemented.\n\n## Planned\n\n- TODO: evaluate broader language support after independent review.\n",
+      "CHANGELOG.md": "# Changelog\n\n## [Unreleased]\n\n### Changed\n\n- Refined the installation explanation.\n\n## [1.2.0-rc.1+build.7] - 2024-06-10\n\n- Added bounded document checking.\n\n## [1.1.0] - 2024-06-01\n\n- Added synthetic guide examples.\n",
+      ".claude-plugin/plugin.json": "{\"name\": \"synthetic\", \"version\": \"1.2.0-rc.1+build.7\"}",
+      "tools/install.py": "print('synthetic setup')\n",
+      "eval/poison.json": "This synthetic payload is not documentation."
+    },
+    "profile": "skill",
+    "stage": "accepted"
+  },
+  {
+    "name": "software requires no plugin",
+    "files": {
+      "README.md": "# Synthetic tool\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## Design Philosophy\n\nThe tool prevents unfinished guides from becoming accepted deliverables. It uses bounded deterministic checks so results stay reproducible. These checks cover structure; reviewers still assess meaning and tradeoffs.\n\n## Installation\n\nRun the declared setup entry.\n\n```sh\npython tools/install.py\n```\n\n[Roadmap](ROADMAP.md#planned)\n",
+      "README_CN.md": "# \u5408\u6210\u5de5\u5177\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## \u8bbe\u8ba1\u54f2\u5b66\n\n\u8fd9\u4e2a\u5de5\u5177\u907f\u514d\u628a\u5c1a\u672a\u5b8c\u6210\u7684\u6587\u6863\u4ea4\u4ed8\u7ed9\u4f7f\u7528\u8005\u3002\u68c0\u67e5\u8303\u56f4\u56fa\u5b9a\uff0c\u7ed3\u679c\u53ef\u4ee5\u91cd\u590d\u3002\u81ea\u52a8\u68c0\u67e5\u53ea\u5224\u65ad\u7ed3\u6784\uff0c\u8bbe\u8ba1\u53d6\u820d\u548c\u771f\u5b9e\u80fd\u529b\u4ecd\u7531\u8bc4\u5ba1\u786e\u8ba4\u3002\n\n## \u5b89\u88c5\n\n\u8fd0\u884c\u5b89\u88c5\u5165\u53e3\u3002\n\n```sh\npython tools/install.py\n```\n",
+      "ROADMAP.md": "# Roadmap\n\nCurrent: **v1.2.0-rc.1+build.7**\n\n## v1.2.0-rc.1+build.7 (current)\n\nThe bounded document checks are implemented.\n\n## Planned\n\n- TODO: evaluate broader language support after independent review.\n",
+      "CHANGELOG.md": "# Changelog\n\n## [Unreleased]\n\n### Changed\n\n- Refined the installation explanation.\n\n## [1.2.0-rc.1+build.7] - 2024-06-10\n\n- Added bounded document checking.\n\n## [1.1.0] - 2024-06-01\n\n- Added synthetic guide examples.\n",
+      "tools/install.py": "print('synthetic setup')\n",
+      "package.json": "{\"version\": \"1.2.0-rc.1+build.7\"}"
+    },
+    "profile": "software",
+    "stage": "accepted"
+  },
+  {
+    "name": "manifest-free current roadmap is version source",
+    "files": {
+      "README.md": "# Synthetic tool\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## Design Philosophy\n\nThe tool prevents unfinished guides from becoming accepted deliverables. It uses bounded deterministic checks so results stay reproducible. These checks cover structure; reviewers still assess meaning and tradeoffs.\n\n## Installation\n\nRun the declared setup entry.\n\n```sh\npython tools/install.py\n```\n\n[Roadmap](ROADMAP.md#planned)\n",
+      "README_CN.md": "# \u5408\u6210\u5de5\u5177\n\n![Version](https://img.shields.io/badge/version-1.2.0-rc.1+build.7-blue)\n\n## \u8bbe\u8ba1\u54f2\u5b66\n\n\u8fd9\u4e2a\u5de5\u5177\u907f\u514d\u628a\u5c1a\u672a\u5b8c\u6210\u7684\u6587\u6863\u4ea4\u4ed8\u7ed9\u4f7f\u7528\u8005\u3002\u68c0\u67e5\u8303\u56f4\u56fa\u5b9a\uff0c\u7ed3\u679c\u53ef\u4ee5\u91cd\u590d\u3002\u81ea\u52a8\u68c0\u67e5\u53ea\u5224\u65ad\u7ed3\u6784\uff0c\u8bbe\u8ba1\u53d6\u820d\u548c\u771f\u5b9e\u80fd\u529b\u4ecd\u7531\u8bc4\u5ba1\u786e\u8ba4\u3002\n\n## \u5b89\u88c5\n\n\u8fd0\u884c\u5b89\u88c5\u5165\u53e3\u3002\n\n```sh\npython tools/install.py\n```\n",
+      "ROADMAP.md": "# Roadmap\n\nCurrent: **v1.2.0-rc.1+build.7**\n\n## v1.2.0-rc.1+build.7 (current)\n\nThe bounded document checks are implemented.\n\n## Planned\n\n- TODO: evaluate broader language support after independent review.\n",
+      "CHANGELOG.md": "# Changelog\n\n## [Unreleased]\n\n### Changed\n\n- Refined the installation explanation.\n\n## [1.2.0-rc.1+build.7] - 2024-06-10\n\n- Added bounded document checking.\n\n## [1.1.0] - 2024-06-01\n\n- Added synthetic guide examples.\n",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "profile": "skill",
+    "stage": "accepted"
+  },
+  {
+    "name": "valid companion only maintenance entry",
+    "profile": "companion",
+    "files": {
+      "README.md": "# Synthetic companion\n\nConfiguration and real DATA stay private and versioned.\n\nRestore by cloning this private repository. Retain historical records during maintenance.\n"
+    }
+  },
+  {
+    "name": "valid companion DATA maintenance entry",
+    "profile": "companion",
+    "files": {
+      "DATA.md": "# Private DATA\n\nRestore and retain the versioned configuration in this private companion.\n"
+    }
+  },
+  {
+    "name": "missing companion entry fails",
+    "profile": "companion",
+    "files": {},
+    "failure": "docs.required"
+  }
+]
