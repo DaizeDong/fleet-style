@@ -488,7 +488,11 @@ def doc_fixture_bytes():
     case("encoded Chinese roadmap badge is valid", None, "README_CN.md", f"version-{version}", f"%E8%B7%AF%E7%BA%BF%E5%9B%BE-v{version}")
     for name, english, chinese, failure in (("legacy badge suffix valid", "1.2.0 alpha", "1.2.0 alpha", None),
                                            ("legacy badge base mismatch fails", "1.3.0 alpha", "1.2.0 alpha", "version.current"),
-                                           ("legacy badge bilingual suffix mismatch fails", "1.2.0 alpha", "1.2.0 beta", "version.current")):
+                                           ("legacy badge bilingual suffix mismatch fails", "1.2.0 alpha", "1.2.0 beta", "version.current"),
+                                           ("legacy dotted suffix valid", "1.2.0 rc.1", "1.2.0 rc.1", None),
+                                           ("legacy numeric dotted suffix valid", "1.2.0 1.2", "1.2.0 1.2", None),
+                                           ("legacy dotted suffix base mismatch fails", "1.3.0 rc.1", "1.2.0 rc.1", "version.current"),
+                                           ("legacy dotted suffix bilingual mismatch fails", "1.2.0 rc.1", "1.2.0 rc.2", "version.current")):
         data = case(name, failure)
         for path in ("README.md", "README_CN.md", "ROADMAP.md", "CHANGELOG.md", ".claude-plugin/plugin.json"):
             data[path] = data[path].replace(version, "1.2.0")
@@ -521,6 +525,9 @@ def doc_fixture_bytes():
         if not failure:
             cases[-1]["unverified_contains"] = "software legacy release dates"
     case("undated skill release still fails", "changelog.releases", "CHANGELOG.md", f"[{version}] - 2024-06-10", f"v{version}")
+    data = case("dated software new release with undated history valid", None, "CHANGELOG.md", "[1.1.0] - 2024-06-01", "v1.1.0", profile="software", stage="release")
+    cases[-1]["unverified_contains"] = "software legacy release dates"
+    data = case("undated software latest fails despite dated history", "changelog.releases", "CHANGELOG.md", f"[{version}] - 2024-06-10", f"v{version}", profile="software", stage="release")
     data = case("software undated annotated history valid", None, profile="software")
     data["CHANGELOG.md"] = (f"# Changelog\n\n## v{version}\n\n- Added bounded document checking.\n\n"
                             "## v1.1.0, validated against Synthetic Tool 1.1.0\n\n- Added guide examples.\n\n"
@@ -573,7 +580,8 @@ def doc_fixture_bytes():
     case("dot-relative valid root anchor passes", None, "README.md", "ROADMAP.md#planned", "./ROADMAP.md#planned")
     data = case("platform case root missing anchor fails", "links.local", "README.md", "ROADMAP.md#planned", "readme.md#never-existed")
     data["readme.md"] = data["README.md"]
-    case("platform case root valid anchor passes", None, "README.md", "ROADMAP.md#planned", "readme.md#design-philosophy")["readme.md"] = files["README.md"]
+    data = case("platform case root valid anchor passes", None, "README.md", "ROADMAP.md#planned", "readme.md#design-philosophy")
+    data["readme.md"] = data["README.md"]
     case("malformed URL gives named failure", "links.local", "README.md", "[Roadmap](ROADMAP.md#planned)", "[Malformed](http://[)")
     case("empty accepted changelog fails", "docs.required", "CHANGELOG.md", None, "")
     case("heading-only accepted changelog fails", "docs.required", "CHANGELOG.md", None, "# Changelog\n")
