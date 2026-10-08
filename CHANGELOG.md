@@ -6,6 +6,7 @@ All notable changes to this project are documented here (Keep a Changelog style)
 
 ### Added
 
+- Explicit `combined` documentation profile for PRIVATE source and backup maintenance repositories. It requires rationale, setup, current state, recovery and storage links, a current/future roadmap and a dedicated maintenance changelog. The checker leaves the curation DATA changelog and version metadata unopened; synthetic controls cover missing obligations, date errors, local links and the content-read boundary.
 - `doc_contract.py` and `ci/doc-contract` check bounded root documentation with explicit repository profiles and trusted lifecycle stages. Generated synthetic controls cover philosophy before installation, placeholders, full SemVer provenance, release dates/order and local entry links. Linked payload contents and documented commands are never opened or executed. Semantic completeness remains an independent review responsibility.
 - The kit runs its document action against its own software docs. Both READMEs document the checker and preserve the design rationale before installation.
 - Review controls also cover roadmap badges, normalized anchors, malformed URLs, nonempty maintenance/changelog entries, historical placeholder descriptions, nested future sections and maintenance/build release histories. Sparse linked files can use exact skip-worktree regular-file index metadata, reported separately without reading payload contents.

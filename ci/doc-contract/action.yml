@@ -2,7 +2,7 @@ name: document-contract
 description: Bounded structural documentation checks for the calling repository.
 inputs:
   profile:
-    description: Repository kind, skill, software or companion.
+    description: Repository kind, skill, software, companion or combined.
     default: skill
   stage:
     description: Trusted lifecycle stage, draft, accepted or release.

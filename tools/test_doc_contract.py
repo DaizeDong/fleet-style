@@ -40,6 +40,11 @@ def test_document_contract(case, tmp_path):
         assert result["index_metadata_paths"] == ([case["index_case"]["path"]] if not case.get("failure") else [])
     if case.get("unverified_contains"):
         assert any(case["unverified_contains"] in detail for detail in result["unverified"])
+    if case.get("profile") == "combined":
+        assert result["version"] is None
+        statuses = {row["name"]: row["status"] for row in result["checks"]}
+        assert all(statuses[name] == "NOT_APPLICABLE" for name in
+                   ("version.source", "version.current", "changelog.releases"))
 
 
 def setup_index_case(root, setup):
@@ -99,6 +104,29 @@ def test_linked_payload_is_never_opened(tmp_path, monkeypatch):
     result = load_checker().check(tmp_path)
     assert result["ok"]
     assert any("(1)" in detail for detail in result["unverified"])
+
+
+def test_combined_curation_and_linked_payloads_are_never_opened(tmp_path, monkeypatch):
+    case = next(case for case in CASES if case["name"] == "combined non-document payloads stay unopened")
+    write_case(tmp_path, case)
+    original = Path.open
+    payloads = {tmp_path / name for name in ("CHANGELOG.md", "README_CN.md", "package.json",
+                                            "storage.contract.json", "docs/RECOVERY.md")}
+
+    def admitted_open(path, *args, **kwargs):
+        assert path not in payloads, "non-admitted combined payload content was opened"
+        return original(path, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "open", admitted_open)
+    assert load_checker().check(tmp_path, profile="combined")["ok"]
+
+
+def test_combined_profile_is_not_inferred_from_missing_release_docs(tmp_path):
+    case = next(case for case in CASES if case["name"] == "combined maintenance without public release metadata valid")
+    write_case(tmp_path, case)
+    result = load_checker().check(tmp_path, profile="software")
+    assert not result["ok"]
+    assert {row["name"] for row in result["failures"]} >= {"docs.required", "version.source"}
 
 
 def test_sparse_payload_is_never_opened(tmp_path, monkeypatch):

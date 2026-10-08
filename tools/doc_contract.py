@@ -34,10 +34,13 @@ _PLACEHOLDER = re.compile(r"(?m)^\s*(?:[-*+]\s+|#+\s+)?(?:TODO|TBD|FIXME)(?:\s*[
                           r"fill\s+(?:this|in|out)|write\s+(?:the|your)\s+(?:description|philosophy)")
 _FILLER = re.compile(r"explain\s+(?:the\s+)?design\s+choices\s+here|initial release\.?$|设计哲学写在这里", re.I)
 _ROOT_DOCS = ("README.md", "README_CN.md", "CHANGELOG.md", "ROADMAP.md", "PHILOSOPHY.md", "PHILOSOPHY_CN.md")
+_MAINTENANCE_LOG = "docs/MAINTENANCE_CHANGELOG.md"
+_COMBINED_DOCS = ("README.md", "ROADMAP.md", _MAINTENANCE_LOG)
+_MAINTENANCE_DATE = re.compile(r"\[?(\d{4}-\d{2}-\d{2})\]?(?:\s+.*)?\Z")
 _METADATA = (".claude-plugin/plugin.json", "package.json", ".gitmodules")
 _HEADING = re.compile(r"(?m)^ {0,3}(#{1,6})[ \t]+(.+?)[ \t]*#*[ \t]*$")
-CHECK_NAMES = ("docs.required", "readme.philosophy", "readme.install", "docs.placeholders",
-               "version.source", "version.current", "changelog.releases", "roadmap.current", "links.local")
+CHECK_NAMES = ("docs.required", "readme.philosophy", "readme.install", "readme.maintenance", "docs.placeholders",
+               "version.source", "version.current", "changelog.releases", "changelog.maintenance", "roadmap.current", "links.local")
 
 
 def visible(text):
@@ -200,6 +203,69 @@ def display_version(value):
     return (match[1], " ".join(match[2].split())) if match else (value, "")
 
 
+def combined_maintenance(docs, stage, fail):
+    """Check source/backup maintenance docs; never open linked storage payloads."""
+    roles = (("current state", _CURRENT, None),
+             ("recovery", re.compile(r"recovery|restore|恢复|恢復|还原|還原", re.I), None),
+             ("storage contract", re.compile(r"storage|data\s+contract|存储|儲存|存儲|数据契约|資料契約", re.I),
+              "storage.contract.json"))
+    if "README.md" in docs:
+        entries = sections(docs["README.md"])
+        for role, pattern, required_path in roles:
+            matched = False
+            for heading, body, _ in entries:
+                if not pattern.search(heading) or stage != "draft" and not meaningful(body):
+                    continue
+                for target in local_links(body):
+                    try:
+                        url = urlsplit(target)
+                    except ValueError:
+                        continue  # links.local reports malformed destinations.
+                    path = unquote(url.path)
+                    if not url.scheme and not url.netloc and path and (
+                            required_path is None or Path(path) == Path(required_path)):
+                        matched = True
+            if not matched:
+                target = f" to {required_path}" if required_path else ""
+                fail("readme.maintenance", f"README.md: needs substantive {role} section with a local link{target}")
+
+    if "ROADMAP.md" in docs:
+        entries = sections(docs["ROADMAP.md"])
+        for label, pattern in (("current", _CURRENT), ("planned/future", _FUTURE)):
+            if not any(pattern.search(heading) and (stage == "draft" or meaningful(body))
+                       for heading, body, _ in entries):
+                fail("roadmap.current", f"ROADMAP.md: combined maintenance needs substantive {label} section")
+
+    if _MAINTENANCE_LOG not in docs:
+        return
+    dated, unreleased = [], []
+    for heading, body, offset in sections(docs[_MAINTENANCE_LOG]):
+        if re.fullmatch(r"\[?Unreleased\]?", heading, re.I):
+            unreleased.append((offset, body))
+            continue
+        match = _MAINTENANCE_DATE.fullmatch(heading)
+        if not match:
+            if re.match(r"\[?\d", heading):
+                fail("changelog.maintenance", f"{_MAINTENANCE_LOG}: maintenance headings need an ISO date")
+            continue
+        try:
+            recorded = date.fromisoformat(match[1])
+            if recorded > date.today():
+                raise ValueError("future maintenance date")
+        except ValueError:
+            fail("changelog.maintenance", f"{_MAINTENANCE_LOG}: invalid or future maintenance date")
+            continue
+        dated.append((recorded, offset, body))
+    if len(unreleased) > 1 or unreleased and dated and unreleased[0][0] > dated[0][1]:
+        fail("changelog.maintenance", f"{_MAINTENANCE_LOG}: Unreleased must occur once before dated entries")
+    if len({entry[0] for entry in dated}) != len(dated) or any(
+            earlier[0] < later[0] for earlier, later in zip(dated, dated[1:])):
+        fail("changelog.maintenance", f"{_MAINTENANCE_LOG}: dated entries must be unique and newest first")
+    current_bodies = [body for _, body in unreleased] + [body for _, _, body in dated[:1]]
+    if not current_bodies or stage != "draft" and not any(substantive_notes(body) for body in current_bodies):
+        fail("changelog.maintenance", f"{_MAINTENANCE_LOG}: needs substantive Unreleased or latest dated maintenance notes")
+
+
 def check(root, profile="skill", stage="accepted"):
     root = Path(os.path.abspath(root))
     errors = {name: [] for name in CHECK_NAMES}
@@ -209,7 +275,14 @@ def check(root, profile="skill", stage="accepted"):
         if detail not in errors[name]:
             errors[name].append(detail)
 
-    inputs = ("README.md", "DATA.md") if profile == "companion" else _ROOT_DOCS + _METADATA
+    if profile == "companion":
+        inputs = ("README.md", "DATA.md")
+    elif profile == "combined":
+        inputs = _COMBINED_DOCS + (".gitmodules",)
+    else:
+        inputs = _ROOT_DOCS + _METADATA
+    if profile != "combined":
+        not_applicable.update(("readme.maintenance", "changelog.maintenance"))
     for name in inputs:
         try:
             value = read_input(root, name)
@@ -227,12 +300,15 @@ def check(root, profile="skill", stage="accepted"):
             fail("docs.required", "companion maintenance entry needs substantive body")
         not_applicable.update(set(CHECK_NAMES) - {"docs.required", "docs.placeholders", "links.local"})
     else:
+        if profile == "combined":
+            required = _COMBINED_DOCS
+            not_applicable.update(("version.source", "version.current", "changelog.releases"))
         for name in required:
             if name not in docs:
                 fail("docs.required", f"missing {name}")
             elif stage != "draft" and name == "CHANGELOG.md" and not substantive_notes(docs[name]):
                 fail("docs.required", "CHANGELOG.md needs substantive body")
-        for name in ("README.md", "README_CN.md"):
+        for name in (("README.md",) if profile == "combined" else ("README.md", "README_CN.md")):
             if name not in docs:
                 continue
             entries = sections(docs[name])
@@ -247,6 +323,8 @@ def check(root, profile="skill", stage="accepted"):
                 fail("readme.install", f"{name}: missing installation entry")
                 continue
             body = installs[0][1]
+            if profile == "combined" and stage != "draft" and not meaningful(body):
+                fail("readme.install", f"{name}: combined setup needs substantive prerequisites or instructions")
             if not (re.search(r"(?m)^\s*(?:```|~~~| {4}\S)|`[^`]*(?:install|setup|add)[^`]*`", body)
                     or list(local_links(body))):
                 fail("readme.install", f"{name}: installation needs a command or linked entry")
@@ -259,6 +337,8 @@ def check(root, profile="skill", stage="accepted"):
                 if not (re.search(r"git clone[^\n]*(?:--recursive|--recurse-submodules)", body)
                         or re.search(r"git submodule update[^\n]*--init[^\n]*--recursive", body)):
                     fail("readme.install", f"{name}: clone entry must initialize required submodules")
+        if profile == "combined":
+            combined_maintenance(docs, stage, fail)
 
     if stage != "draft":
         for name, text in docs.items():
@@ -270,11 +350,12 @@ def check(root, profile="skill", stage="accepted"):
                 for start, end in ranges:
                     chars[start:end] = " " * (end - start)
                 text = "".join(chars)
-            elif name == "CHANGELOG.md":
+            elif name in ("CHANGELOG.md", _MAINTENANCE_LOG):
                 # Only preamble, Unreleased and newest release describe the
                 # current contract. Older releases retain historical truth.
                 releases = [start for heading, start, _, _ in section_ranges(text)
-                            if re.match(r"\[?v?\d", heading)]
+                            if (_MAINTENANCE_DATE.fullmatch(heading) if name == _MAINTENANCE_LOG
+                                else re.match(r"\[?v?\d", heading))]
                 if len(releases) > 1:
                     text = text[:releases[1]]
             if _PLACEHOLDER.search(_MD.without_code(text)):
@@ -282,7 +363,7 @@ def check(root, profile="skill", stage="accepted"):
 
     source = None
     unverified_dates = []
-    if profile != "companion":
+    if profile in ("skill", "software"):
         versions = []
         for name in _METADATA[:2]:
             if name not in metadata:
@@ -378,7 +459,7 @@ def check(root, profile="skill", stage="accepted"):
                 continue
             if url.scheme or url.netloc:
                 continue
-            relative = unquote(url.path) or name
+            relative = (Path(name).parent / unquote(url.path)).as_posix() if url.path else name
             try:
                 destination = path_metadata(root, relative)
             except FileNotFoundError:
@@ -402,7 +483,7 @@ def check(root, profile="skill", stage="accepted"):
                     unchecked_anchors += 1
     checks = [{"name": name, "status": "FAIL" if errors[name] else
                "NOT_APPLICABLE" if name in not_applicable else "PASS",
-               "detail": "; ".join(errors[name]) or ("not required for companion" if name in not_applicable else "checked")}
+               "detail": "; ".join(errors[name]) or (f"not required for {profile}" if name in not_applicable else "checked")}
               for name in CHECK_NAMES]
     failures = [{"name": row["name"], "detail": row["detail"]} for row in checks if row["status"] == "FAIL"]
     return {"schema_version": 1, "profile": profile, "stage": stage, "ok": not failures,
@@ -411,13 +492,15 @@ def check(root, profile="skill", stage="accepted"):
             "unverified": ["semantic completeness and bilingual accuracy", "documented commands and external behavior",
                            f"anchors outside admitted root docs ({unchecked_anchors}); targets metadata-checked only"]
                            + ([f"software legacy release dates ({len(unverified_dates)}); chronology of undated entries unverified"]
-                              if unverified_dates else [])}
+                              if unverified_dates else [])
+                           + (["combined profile eligibility: PRIVATE visibility and storage safety require their own gates; "
+                               "release stage checks maintenance, not publication"] if profile == "combined" else [])}
 
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, default=Path("."))
-    parser.add_argument("--profile", choices=("skill", "software", "companion"), default="skill")
+    parser.add_argument("--profile", choices=("skill", "software", "companion", "combined"), default="skill")
     parser.add_argument("--stage", choices=("draft", "accepted", "release"), default="accepted")
     parser.add_argument("--json", action="store_true")
     args = parser.parse_args(argv)

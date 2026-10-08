@@ -612,6 +612,92 @@ def doc_fixture_bytes():
                   "files": {"DATA.md": "# Private DATA\n\nRestore and retain the versioned configuration in this private companion.\n"}})
     cases.append({"name": "missing companion entry fails", "profile": "companion", "files": {}, "failure": "docs.required"})
     cases.append({"name": "empty companion entry fails", "profile": "companion", "files": {"README.md": ""}, "failure": "docs.required"})
+    combined = {
+        "README.md": "# Synthetic maintenance repository\n\n## Design Philosophy\n\n"
+                     "Source and versioned backups share a private repository so reviewed tooling and recovery records stay together.\n\n"
+                     "## Setup\n\nRun the synthetic setup entry after reviewing the recovery instructions.\n\n"
+                     "```sh\npython tools/install.py\n```\n\n"
+                     "## Current state\n\nThe maintenance tools have local regression coverage; live restoration remains unverified. "
+                     "See the [current capabilities](ROADMAP.md#current).\n\n"
+                     "## Recovery\n\nReview the [recovery guide](docs/RECOVERY.md) before restoring a saved configuration.\n\n"
+                     "## Storage contract\n\nThe [storage contract](storage.contract.json) defines private versioned data and retention boundaries.\n\n"
+                     "[Maintenance changes](docs/MAINTENANCE_CHANGELOG.md#unreleased)\n",
+        "ROADMAP.md": "# Maintenance roadmap\n\n## Current\n\n"
+                      "Synthetic maintenance tools pass local checks; no live restore has been performed.\n\n"
+                      "## Planned\n\n- TODO: verify the documented recovery path in an isolated environment.\n",
+        "docs/MAINTENANCE_CHANGELOG.md": "# Maintenance changelog\n\n## Unreleased\n\n"
+                                         "- Clarified the setup prerequisites and recovery verification boundary.\n\n"
+                                         "## 2024-06-10\n\n- Added a deterministic maintenance document check.\n",
+        "docs/RECOVERY.md": "# Synthetic recovery guide\n",
+        "storage.contract.json": "Synthetic protected metadata; documentation checker must not open this file.\n",
+        "tools/install.py": "print('synthetic setup')\n",
+    }
+
+    def combined_case(name, failure=None, path=None, old=None, new=None, stage="accepted"):
+        data = deepcopy(combined)
+        if path is not None:
+            data[path] = new if old is None else data[path].replace(old, new)
+        result = {"name": "combined " + name, "profile": "combined", "stage": stage, "files": data}
+        if failure:
+            result["failure"] = failure
+        cases.append(result)
+        return data
+
+    combined_case("maintenance without public release metadata valid")
+    data = combined_case("non-document payloads stay unopened")
+    data.update({"CHANGELOG.md": "TODO: synthetic curation DATA, not maintenance documentation.\n",
+                 "README_CN.md": "TODO: synthetic backed-up document, outside admitted inputs.\n",
+                 "package.json": "synthetic non-document payload, not a version source"})
+    data = combined_case("Chinese maintenance headings valid")
+    for english, translated in (("Design Philosophy", "设计理念"), ("Setup", "安装"),
+                                 ("Current state", "当前状态"), ("Recovery", "恢复"), ("Storage contract", "存储契约")):
+        data["README.md"] = data["README.md"].replace("## " + english, "## " + translated)
+    combined_case("missing README fails", "docs.required").pop("README.md")
+    data = combined_case("missing roadmap fails", "docs.required")
+    data.pop("ROADMAP.md")
+    data["README.md"] = data["README.md"].replace("ROADMAP.md#current", "docs/RECOVERY.md")
+    data = combined_case("missing maintenance changelog fails", "docs.required")
+    data.pop("docs/MAINTENANCE_CHANGELOG.md")
+    data["README.md"] = data["README.md"].replace("[Maintenance changes](docs/MAINTENANCE_CHANGELOG.md#unreleased)\n", "")
+    combined_case("empty rationale fails", "readme.philosophy", "README.md", "Source and versioned backups share a private repository so reviewed tooling and recovery records stay together.", "Brief.")
+    combined_case("missing setup fails", "readme.install", "README.md", "## Setup", "## Commands")
+    combined_case("empty setup explanation fails", "readme.install", "README.md", "Run the synthetic setup entry after reviewing the recovery instructions.", "")
+    for role in ("Current state", "Recovery", "Storage contract"):
+        combined_case("missing " + role.lower() + " fails", "readme.maintenance", "README.md", "## " + role, "## Other information")
+    combined_case("external recovery link fails", "readme.maintenance", "README.md", "docs/RECOVERY.md", "https://example.com/recovery")
+    combined_case("wrong storage link fails", "readme.maintenance", "README.md", "storage.contract.json", "docs/RECOVERY.md")
+    combined_case("missing linked recovery fails", "links.local").pop("docs/RECOVERY.md")
+    combined_case("missing storage contract file fails", "links.local").pop("storage.contract.json")
+    combined_case("current placeholder fails", "docs.placeholders", "README.md", "live restoration remains unverified.", "live restoration remains unverified. {{CURRENT_STATUS}}")
+    combined_case("roadmap missing current fails", "roadmap.current", "ROADMAP.md", "## Current", "## Observed")
+    # Avoid an unrelated missing-anchor failure in the current-section control.
+    cases[-1]["files"]["README.md"] = cases[-1]["files"]["README.md"].replace("ROADMAP.md#current", "ROADMAP.md")
+    combined_case("roadmap empty current fails", "roadmap.current", "ROADMAP.md", "Synthetic maintenance tools pass local checks; no live restore has been performed.", "")
+    data = combined_case("roadmap missing future fails", "roadmap.current", "ROADMAP.md", "## Planned", "## Followups")
+    data["ROADMAP.md"] = data["ROADMAP.md"].replace("- TODO: verify", "- Verify")
+    combined_case("roadmap empty future fails", "roadmap.current", "ROADMAP.md", "- TODO: verify the documented recovery path in an isolated environment.", "")
+    combined_case("empty maintenance notes fail", "changelog.maintenance", "docs/MAINTENANCE_CHANGELOG.md", None, "# Maintenance changelog\n\n## Unreleased\n")
+    combined_case("undated maintenance prose fails", "changelog.maintenance", "docs/MAINTENANCE_CHANGELOG.md", None, "# Maintenance changelog\n\n## Unreleased\n\n## Notes\n\nA synthetic setup command was added and verified locally.\n")
+    combined_case("invalid maintenance date fails", "changelog.maintenance", "docs/MAINTENANCE_CHANGELOG.md", "2024-06-10", "2024-02-30")
+    combined_case("future maintenance date fails", "changelog.maintenance", "docs/MAINTENANCE_CHANGELOG.md", "2024-06-10", "9999-06-10")
+    combined_case("maintenance placeholder fails", "docs.placeholders", "docs/MAINTENANCE_CHANGELOG.md", "Clarified the setup prerequisites", "TODO: explain setup prerequisites")
+    data = combined_case("dated maintenance notes allow empty Unreleased", None, "docs/MAINTENANCE_CHANGELOG.md", "- Clarified the setup prerequisites and recovery verification boundary.\n\n", "")
+    data["docs/MAINTENANCE_CHANGELOG.md"] += "\n## 2024-06-01\n\nTODO: this historical limitation remains recorded.\n"
+    combined_case("release stage retains maintenance duties", stage="release")
+    data = combined_case("maintenance log relative links valid")
+    data["docs/MAINTENANCE_CHANGELOG.md"] += "\n[Current capabilities](../ROADMAP.md#current) and [guide](RECOVERY.md#details).\n"
+    data = combined_case("maintenance log missing root anchor fails", "links.local")
+    data["docs/MAINTENANCE_CHANGELOG.md"] += "\n[Current capabilities](../ROADMAP.md#missing).\n"
+    combined_case("maintenance malformed date fails", "changelog.maintenance", "docs/MAINTENANCE_CHANGELOG.md", "2024-06-10", "2024-6-10")
+    data = combined_case("duplicate maintenance dates fail", "changelog.maintenance")
+    data["docs/MAINTENANCE_CHANGELOG.md"] += "\n## 2024-06-10\n\n- Clarified the synthetic recovery guide.\n"
+    data = combined_case("maintenance date ordering fails", "changelog.maintenance")
+    data["docs/MAINTENANCE_CHANGELOG.md"] += "\n## 2024-07-01\n\n- Clarified the synthetic recovery guide.\n"
+    data = combined_case("duplicate Unreleased fails", "changelog.maintenance")
+    data["docs/MAINTENANCE_CHANGELOG.md"] += "\n## Unreleased\n\n- Clarified the synthetic recovery guide.\n"
+    combined_case("late Unreleased fails", "changelog.maintenance", "docs/MAINTENANCE_CHANGELOG.md", None,
+                  "# Maintenance changelog\n\n## 2024-06-10\n\n- Added a deterministic maintenance document check.\n\n"
+                  "## Unreleased\n\n- Clarified the synthetic setup prerequisites.\n")
     return (json.dumps(cases, ensure_ascii=True, indent=2) + "\n").encode("utf-8")
 
 

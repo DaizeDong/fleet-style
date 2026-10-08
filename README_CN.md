@@ -103,15 +103,17 @@ pytest style/tools/
 
 ## 文档完成契约
 
-`doc_contract.py` 的 `--profile` 接受 `skill`、`software`、`companion`，`--stage` 接受 `draft`、`accepted`、`release`。调用方 CLI 或 CI 提供阶段，仓内声明不能自行降为草稿。Skill 和软件需要双语 README、ROADMAP、CHANGELOG；伴生仓只需要根 README 或 DATA 维护入口，其他安全和类型义务由相应闸门负责。
+`doc_contract.py` 的 `--profile` 接受 `skill`、`software`、`companion`、`combined`，`--stage` 接受 `draft`、`accepted`、`release`。调用方 CLI 或 CI 提供阶段，仓内声明不能自行降为草稿。Skill 和软件需要双语 README、ROADMAP、CHANGELOG；伴生仓只需要根 README 或 DATA 维护入口，其他安全和类型义务由相应闸门负责。
 
 两份 README 都要在安装前放置有实质正文的设计哲学，安装节需要命令或链接入口。检查会发现当前正文的已知模板占位、缺失的安装脚本，以及没有初始化必要 submodule 的 clone 步骤。草稿允许占位，接受和发布阶段拒绝。未来路线图的 `TODO` 与历史发布说明仍然合法。
 
-版本取自 `.claude-plugin/plugin.json`，其次是 `package.json`，两者同时存在时必须一致；没有这两者时，ROADMAP 必须声明唯一数字版本。完整 SemVer 包括预发布与 build 后缀。README 版本和路线图徽章、当前版本字段、ROADMAP 的当前数字和最新 CHANGELOG 发布必须一致；有明确用途的 Current 节也可跟随 manifest，不重复数字。发布日期必须是有效、非未来的 ISO 日期，按日期从新到旧排列，原始版本字符串不能重复。维护分支历史与不同 build 版本可以保留。空 Unreleased 可以通过，发布阶段还要求最新数字发布有实质说明。占位检查只针对当前模板标记，普通待办描述和历史发布文字可以保留。
+`combined` 用于源码与版本化备份放在一起的 PRIVATE 仓库，必须显式选择。README 要说明设计理由和安装方法，并在当前状态、恢复、存储说明中提供本地链接；ROADMAP 要写清现状和后续工作；维护变更记录放在 `docs/MAINTENANCE_CHANGELOG.md`。检查不会打开根目录的整理日志 CHANGELOG 或 package 元数据，也不要求补一份翻译 README 或数字发布版本。PRIVATE 可见性和存储安全仍由各自的闸门验证。[合并仓文档契约](docs/COMBINED_DOCUMENTATION.md) 列出了读取范围、维护检查和验证边界。
+
+Skill 和软件的版本取自 `.claude-plugin/plugin.json`，其次是 `package.json`，两者同时存在时必须一致；没有这两者时，ROADMAP 必须声明唯一数字版本。完整 SemVer 包括预发布与 build 后缀。README 版本和路线图徽章、当前版本字段、ROADMAP 的当前数字和最新 CHANGELOG 发布必须一致；有明确用途的 Current 节也可跟随 manifest，不重复数字。发布日期必须是有效、非未来的 ISO 日期，按日期从新到旧排列，原始版本字符串不能重复。维护分支历史与不同 build 版本可以保留。空 Unreleased 可以通过，发布阶段还要求最新数字发布有实质说明。占位检查只针对当前模板标记，普通待办描述和历史发布文字可以保留。
 
 旧徽章里的 `0.2.2 alpha` 或 `0.2.2 rc.1` 这类空格展示标签，数字基础版本与源版本比较，展示后缀在双语 README 间核对，后缀沿用字母、数字和点号语法；真正的 SemVer 预发布和 build 后缀仍完整比较。历史条目支持逗号分隔的版本、日期和标题。软件历史可以保留只有版本、带 `validated against` 注释及 `and earlier` 汇总的格式，缺日期及相关时间顺序明确标为未验证。发布阶段要求最新发布有日期，旧软件历史缺日期仍标为未验证。根文档锚点按平台路径身份匹配，Windows 文件名大小写差异不会绕过检查。
 
-检查只读取限定根文档、根设计哲学文档和已知元数据，每个输入最多 1 MiB。本地链接检查路径元数据，规范化后的根文档路径还检查 anchor，其他 payload 不打开。稀疏检出中，缺失目标只有在 Git index 明确记录为 skip-worktree 的普通文件时才可通过，路径另列在 `index_metadata_paths`。普通 tracked 文件缺失、index 内的 symlink 或 submodule、reparse 路径和越出根目录的路径都会失败。文档命令不执行，错误 URL 也返回具名失败。`--json` 返回 schema 1、`ok`、具名 `checks`、`failures`、推断的 `version` 和 `unverified` 边界；通过退 0，检查失败或不完整退 1，参数无效退 2。
+检查只读取所选 profile 允许的文档和已知元数据，每个输入最多 1 MiB。本地链接按来源文档的位置解析，再检查路径元数据；允许读取的文档还检查 anchor，其他 payload 不打开。稀疏检出中，缺失目标只有在 Git index 明确记录为 skip-worktree 的普通文件时才可通过，路径另列在 `index_metadata_paths`。普通 tracked 文件缺失、index 内的 symlink 或 submodule、reparse 路径和越出根目录的路径都会失败。文档命令不执行，错误 URL 也返回具名失败。`--json` 返回 schema 1、`ok`、具名 `checks`、`failures`、推断的 `version` 和 `unverified` 边界；通过退 0，检查失败或不完整退 1，参数无效退 2。
 
 结构检查不能证明设计质量、双语准确性、变更记录完整、安装成功或外部效果。接受交付前，独立评审仍要根据证据核对这些内容。
 
