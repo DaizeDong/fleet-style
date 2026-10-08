@@ -203,7 +203,18 @@ def display_version(value):
     return (match[1], " ".join(match[2].split())) if match else (value, "")
 
 
-def combined_maintenance(docs, stage, fail):
+def local_regular_file(root, relative):
+    """Check ordinary or sparse regular-file metadata without opening the payload."""
+    try:
+        try:
+            return stat.S_ISREG(path_metadata(root, relative).lstat().st_mode)
+        except FileNotFoundError:
+            return sparse_index_file(root, relative)
+    except (OSError, ValueError):
+        return False
+
+
+def combined_maintenance(root, docs, stage, fail):
     """Check source/backup maintenance docs; never open linked storage payloads."""
     roles = (("current state", _CURRENT, None),
              ("recovery", re.compile(r"recovery|restore|恢复|恢復|还原|還原", re.I), None),
@@ -223,11 +234,11 @@ def combined_maintenance(docs, stage, fail):
                         continue  # links.local reports malformed destinations.
                     path = unquote(url.path)
                     if not url.scheme and not url.netloc and path and (
-                            required_path is None or Path(path) == Path(required_path)):
+                            required_path is None or Path(path) == Path(required_path)) and local_regular_file(root, path):
                         matched = True
             if not matched:
                 target = f" to {required_path}" if required_path else ""
-                fail("readme.maintenance", f"README.md: needs substantive {role} section with a local link{target}")
+                fail("readme.maintenance", f"README.md: needs substantive {role} section with a local file link{target}")
 
     if "ROADMAP.md" in docs:
         entries = sections(docs["ROADMAP.md"])
@@ -338,7 +349,7 @@ def check(root, profile="skill", stage="accepted"):
                         or re.search(r"git submodule update[^\n]*--init[^\n]*--recursive", body)):
                     fail("readme.install", f"{name}: clone entry must initialize required submodules")
         if profile == "combined":
-            combined_maintenance(docs, stage, fail)
+            combined_maintenance(root, docs, stage, fail)
 
     if stage != "draft":
         for name, text in docs.items():

@@ -8,6 +8,8 @@ The checker reads only `README.md`, `ROADMAP.md`, `docs/MAINTENANCE_CHANGELOG.md
 
 Local links resolve relative to their source document. Their targets receive path metadata checks, and anchors are checked only when the target is another admitted document. Sparse files retain the existing exact skip-worktree regular-file check. No documented command is executed.
 
+The required current-state, recovery and storage links must name ordinary files, or exact skip-worktree index entries with regular-file mode. A directory such as `.` or `docs/` cannot satisfy a file-link obligation. This check reads only filesystem and index metadata; recovery and storage payloads remain unopened.
+
 ## Maintenance duties
 
 | Document | Structural obligation |

@@ -644,6 +644,18 @@ def doc_fixture_bytes():
         return data
 
     combined_case("maintenance without public release metadata valid")
+    combined_case("current directory link fails", "readme.maintenance", "README.md", "ROADMAP.md#current", ".")
+    combined_case("recovery directory link fails", "readme.maintenance", "README.md", "docs/RECOVERY.md", "docs")
+    data = combined_case("storage directory link fails", "readme.maintenance")
+    data.pop("storage.contract.json")
+    data["storage.contract.json/marker.txt"] = "Synthetic directory marker.\n"
+    for mode in ("100644", "100755"):
+        combined_case("sparse regular recovery valid " + mode)
+        cases[-1]["index_case"] = {"path": "docs/RECOVERY.md", "mode": mode, "skip": True}
+    for mode, skip in (("120000", True), ("160000", True), ("100644", False)):
+        combined_case("unsupported sparse recovery fails " + mode,
+                      ["readme.maintenance", "links.local"])
+        cases[-1]["index_case"] = {"path": "docs/RECOVERY.md", "mode": mode, "skip": skip}
     data = combined_case("non-document payloads stay unopened")
     data.update({"CHANGELOG.md": "TODO: synthetic curation DATA, not maintenance documentation.\n",
                  "README_CN.md": "TODO: synthetic backed-up document, outside admitted inputs.\n",
@@ -666,8 +678,8 @@ def doc_fixture_bytes():
         combined_case("missing " + role.lower() + " fails", "readme.maintenance", "README.md", "## " + role, "## Other information")
     combined_case("external recovery link fails", "readme.maintenance", "README.md", "docs/RECOVERY.md", "https://example.com/recovery")
     combined_case("wrong storage link fails", "readme.maintenance", "README.md", "storage.contract.json", "docs/RECOVERY.md")
-    combined_case("missing linked recovery fails", "links.local").pop("docs/RECOVERY.md")
-    combined_case("missing storage contract file fails", "links.local").pop("storage.contract.json")
+    combined_case("missing linked recovery fails", ["readme.maintenance", "links.local"]).pop("docs/RECOVERY.md")
+    combined_case("missing storage contract file fails", ["readme.maintenance", "links.local"]).pop("storage.contract.json")
     combined_case("current placeholder fails", "docs.placeholders", "README.md", "live restoration remains unverified.", "live restoration remains unverified. {{CURRENT_STATUS}}")
     combined_case("roadmap missing current fails", "roadmap.current", "ROADMAP.md", "## Current", "## Observed")
     # Avoid an unrelated missing-anchor failure in the current-section control.
