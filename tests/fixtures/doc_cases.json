@@ -1234,5 +1234,487 @@
       "README.md": ""
     },
     "failure": "docs.required"
+  },
+  {
+    "name": "combined maintenance without public release metadata valid",
+    "profile": "combined",
+    "stage": "accepted",
+    "files": {
+      "README.md": "# Synthetic maintenance repository\n\n## Design Philosophy\n\nSource and versioned backups share a private repository so reviewed tooling and recovery records stay together.\n\n## Setup\n\nRun the synthetic setup entry after reviewing the recovery instructions.\n\n```sh\npython tools/install.py\n```\n\n## Current state\n\nThe maintenance tools have local regression coverage; live restoration remains unverified. See the [current capabilities](ROADMAP.md#current).\n\n## Recovery\n\nReview the [recovery guide](docs/RECOVERY.md) before restoring a saved configuration.\n\n## Storage contract\n\nThe [storage contract](storage.contract.json) defines private versioned data and retention boundaries.\n\n[Maintenance changes](docs/MAINTENANCE_CHANGELOG.md#unreleased)\n",
+      "ROADMAP.md": "# Maintenance roadmap\n\n## Current\n\nSynthetic maintenance tools pass local checks; no live restore has been performed.\n\n## Planned\n\n- TODO: verify the documented recovery path in an isolated environment.\n",
+      "docs/MAINTENANCE_CHANGELOG.md": "# Maintenance changelog\n\n## Unreleased\n\n- Clarified the setup prerequisites and recovery verification boundary.\n\n## 2024-06-10\n\n- Added a deterministic maintenance document check.\n",
+      "docs/RECOVERY.md": "# Synthetic recovery guide\n",
+      "storage.contract.json": "Synthetic protected metadata; documentation checker must not open this file.\n",
+      "tools/install.py": "print('synthetic setup')\n"
+    }
+  },
+  {
+    "name": "combined non-document payloads stay unopened",
+    "profile": "combined",
+    "stage": "accepted",
+    "files": {
+      "README.md": "# Synthetic maintenance repository\n\n## Design Philosophy\n\nSource and versioned backups share a private repository so reviewed tooling and recovery records stay together.\n\n## Setup\n\nRun the synthetic setup entry after reviewing the recovery instructions.\n\n```sh\npython tools/install.py\n```\n\n## Current state\n\nThe maintenance tools have local regression coverage; live restoration remains unverified. See the [current capabilities](ROADMAP.md#current).\n\n## Recovery\n\nReview the [recovery guide](docs/RECOVERY.md) before restoring a saved configuration.\n\n## Storage contract\n\nThe [storage contract](storage.contract.json) defines private versioned data and retention boundaries.\n\n[Maintenance changes](docs/MAINTENANCE_CHANGELOG.md#unreleased)\n",
+      "ROADMAP.md": "# Maintenance roadmap\n\n## Current\n\nSynthetic maintenance tools pass local checks; no live restore has been performed.\n\n## Planned\n\n- TODO: verify the documented recovery path in an isolated environment.\n",
+      "docs/MAINTENANCE_CHANGELOG.md": "# Maintenance changelog\n\n## Unreleased\n\n- Clarified the setup prerequisites and recovery verification boundary.\n\n## 2024-06-10\n\n- Added a deterministic maintenance document check.\n",
+      "docs/RECOVERY.md": "# Synthetic recovery guide\n",
+      "storage.contract.json": "Synthetic protected metadata; documentation checker must not open this file.\n",
+      "tools/install.py": "print('synthetic setup')\n",
+      "CHANGELOG.md": "TODO: synthetic curation DATA, not maintenance documentation.\n",
+      "README_CN.md": "TODO: synthetic backed-up document, outside admitted inputs.\n",
+      "package.json": "synthetic non-document payload, not a version source"
+    }
+  },
+  {
+    "name": "combined Chinese maintenance headings valid",
+    "profile": "combined",
+    "stage": "accepted",
+    "files": {
+      "README.md": "# Synthetic maintenance repository\n\n## \u8bbe\u8ba1\u7406\u5ff5\n\nSource and versioned backups share a private repository so reviewed tooling and recovery records stay together.\n\n## \u5b89\u88c5\n\nRun the synthetic setup entry after reviewing the recovery instructions.\n\n```sh\npython tools/install.py\n```\n\n## \u5f53\u524d\u72b6\u6001\n\nThe maintenance tools have local regression coverage; live restoration remains unverified. See the [current capabilities](ROADMAP.md#current).\n\n## \u6062\u590d\n\nReview the [recovery guide](docs/RECOVERY.md) before restoring a saved configuration.\n\n## \u5b58\u50a8\u5951\u7ea6\n\nThe [storage contract](storage.contract.json) defines private versioned data and retention boundaries.\n\n[Maintenance changes](docs/MAINTENANCE_CHANGELOG.md#unreleased)\n",
+      "ROADMAP.md": "# Maintenance roadmap\n\n## Current\n\nSynthetic maintenance tools pass local checks; no live restore has been performed.\n\n## Planned\n\n- TODO: verify the documented recovery path in an isolated environment.\n",
+      "docs/MAINTENANCE_CHANGELOG.md": "# Maintenance changelog\n\n## Unreleased\n\n- Clarified the setup prerequisites and recovery verification boundary.\n\n## 2024-06-10\n\n- Added a deterministic maintenance document check.\n",
+      "docs/RECOVERY.md": "# Synthetic recovery guide\n",
+      "storage.contract.json": "Synthetic protected metadata; documentation checker must not open this file.\n",
+      "tools/install.py": "print('synthetic setup')\n"
+    }
+  },
+  {
+    "name": "combined missing README fails",
+    "profile": "combined",
+    "stage": "accepted",
+    "files": {
+      "ROADMAP.md": "# Maintenance roadmap\n\n## Current\n\nSynthetic maintenance tools pass local checks; no live restore has been performed.\n\n## Planned\n\n- TODO: verify the documented recovery path in an isolated environment.\n",
+      "docs/MAINTENANCE_CHANGELOG.md": "# Maintenance changelog\n\n## Unreleased\n\n- Clarified the setup prerequisites and recovery verification boundary.\n\n## 2024-06-10\n\n- Added a deterministic maintenance document check.\n",
+      "docs/RECOVERY.md": "# Synthetic recovery guide\n",
+      "storage.contract.json": "Synthetic protected metadata; documentation checker must not open this file.\n",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "failure": "docs.required"
+  },
+  {
+    "name": "combined missing roadmap fails",
+    "profile": "combined",
+    "stage": "accepted",
+    "files": {
+      "README.md": "# Synthetic maintenance repository\n\n## Design Philosophy\n\nSource and versioned backups share a private repository so reviewed tooling and recovery records stay together.\n\n## Setup\n\nRun the synthetic setup entry after reviewing the recovery instructions.\n\n```sh\npython tools/install.py\n```\n\n## Current state\n\nThe maintenance tools have local regression coverage; live restoration remains unverified. See the [current capabilities](docs/RECOVERY.md).\n\n## Recovery\n\nReview the [recovery guide](docs/RECOVERY.md) before restoring a saved configuration.\n\n## Storage contract\n\nThe [storage contract](storage.contract.json) defines private versioned data and retention boundaries.\n\n[Maintenance changes](docs/MAINTENANCE_CHANGELOG.md#unreleased)\n",
+      "docs/MAINTENANCE_CHANGELOG.md": "# Maintenance changelog\n\n## Unreleased\n\n- Clarified the setup prerequisites and recovery verification boundary.\n\n## 2024-06-10\n\n- Added a deterministic maintenance document check.\n",
+      "docs/RECOVERY.md": "# Synthetic recovery guide\n",
+      "storage.contract.json": "Synthetic protected metadata; documentation checker must not open this file.\n",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "failure": "docs.required"
+  },
+  {
+    "name": "combined missing maintenance changelog fails",
+    "profile": "combined",
+    "stage": "accepted",
+    "files": {
+      "README.md": "# Synthetic maintenance repository\n\n## Design Philosophy\n\nSource and versioned backups share a private repository so reviewed tooling and recovery records stay together.\n\n## Setup\n\nRun the synthetic setup entry after reviewing the recovery instructions.\n\n```sh\npython tools/install.py\n```\n\n## Current state\n\nThe maintenance tools have local regression coverage; live restoration remains unverified. See the [current capabilities](ROADMAP.md#current).\n\n## Recovery\n\nReview the [recovery guide](docs/RECOVERY.md) before restoring a saved configuration.\n\n## Storage contract\n\nThe [storage contract](storage.contract.json) defines private versioned data and retention boundaries.\n\n",
+      "ROADMAP.md": "# Maintenance roadmap\n\n## Current\n\nSynthetic maintenance tools pass local checks; no live restore has been performed.\n\n## Planned\n\n- TODO: verify the documented recovery path in an isolated environment.\n",
+      "docs/RECOVERY.md": "# Synthetic recovery guide\n",
+      "storage.contract.json": "Synthetic protected metadata; documentation checker must not open this file.\n",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "failure": "docs.required"
+  },
+  {
+    "name": "combined empty rationale fails",
+    "profile": "combined",
+    "stage": "accepted",
+    "files": {
+      "README.md": "# Synthetic maintenance repository\n\n## Design Philosophy\n\nBrief.\n\n## Setup\n\nRun the synthetic setup entry after reviewing the recovery instructions.\n\n```sh\npython tools/install.py\n```\n\n## Current state\n\nThe maintenance tools have local regression coverage; live restoration remains unverified. See the [current capabilities](ROADMAP.md#current).\n\n## Recovery\n\nReview the [recovery guide](docs/RECOVERY.md) before restoring a saved configuration.\n\n## Storage contract\n\nThe [storage contract](storage.contract.json) defines private versioned data and retention boundaries.\n\n[Maintenance changes](docs/MAINTENANCE_CHANGELOG.md#unreleased)\n",
+      "ROADMAP.md": "# Maintenance roadmap\n\n## Current\n\nSynthetic maintenance tools pass local checks; no live restore has been performed.\n\n## Planned\n\n- TODO: verify the documented recovery path in an isolated environment.\n",
+      "docs/MAINTENANCE_CHANGELOG.md": "# Maintenance changelog\n\n## Unreleased\n\n- Clarified the setup prerequisites and recovery verification boundary.\n\n## 2024-06-10\n\n- Added a deterministic maintenance document check.\n",
+      "docs/RECOVERY.md": "# Synthetic recovery guide\n",
+      "storage.contract.json": "Synthetic protected metadata; documentation checker must not open this file.\n",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "failure": "readme.philosophy"
+  },
+  {
+    "name": "combined missing setup fails",
+    "profile": "combined",
+    "stage": "accepted",
+    "files": {
+      "README.md": "# Synthetic maintenance repository\n\n## Design Philosophy\n\nSource and versioned backups share a private repository so reviewed tooling and recovery records stay together.\n\n## Commands\n\nRun the synthetic setup entry after reviewing the recovery instructions.\n\n```sh\npython tools/install.py\n```\n\n## Current state\n\nThe maintenance tools have local regression coverage; live restoration remains unverified. See the [current capabilities](ROADMAP.md#current).\n\n## Recovery\n\nReview the [recovery guide](docs/RECOVERY.md) before restoring a saved configuration.\n\n## Storage contract\n\nThe [storage contract](storage.contract.json) defines private versioned data and retention boundaries.\n\n[Maintenance changes](docs/MAINTENANCE_CHANGELOG.md#unreleased)\n",
+      "ROADMAP.md": "# Maintenance roadmap\n\n## Current\n\nSynthetic maintenance tools pass local checks; no live restore has been performed.\n\n## Planned\n\n- TODO: verify the documented recovery path in an isolated environment.\n",
+      "docs/MAINTENANCE_CHANGELOG.md": "# Maintenance changelog\n\n## Unreleased\n\n- Clarified the setup prerequisites and recovery verification boundary.\n\n## 2024-06-10\n\n- Added a deterministic maintenance document check.\n",
+      "docs/RECOVERY.md": "# Synthetic recovery guide\n",
+      "storage.contract.json": "Synthetic protected metadata; documentation checker must not open this file.\n",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "failure": "readme.install"
+  },
+  {
+    "name": "combined empty setup explanation fails",
+    "profile": "combined",
+    "stage": "accepted",
+    "files": {
+      "README.md": "# Synthetic maintenance repository\n\n## Design Philosophy\n\nSource and versioned backups share a private repository so reviewed tooling and recovery records stay together.\n\n## Setup\n\n\n\n```sh\npython tools/install.py\n```\n\n## Current state\n\nThe maintenance tools have local regression coverage; live restoration remains unverified. See the [current capabilities](ROADMAP.md#current).\n\n## Recovery\n\nReview the [recovery guide](docs/RECOVERY.md) before restoring a saved configuration.\n\n## Storage contract\n\nThe [storage contract](storage.contract.json) defines private versioned data and retention boundaries.\n\n[Maintenance changes](docs/MAINTENANCE_CHANGELOG.md#unreleased)\n",
+      "ROADMAP.md": "# Maintenance roadmap\n\n## Current\n\nSynthetic maintenance tools pass local checks; no live restore has been performed.\n\n## Planned\n\n- TODO: verify the documented recovery path in an isolated environment.\n",
+      "docs/MAINTENANCE_CHANGELOG.md": "# Maintenance changelog\n\n## Unreleased\n\n- Clarified the setup prerequisites and recovery verification boundary.\n\n## 2024-06-10\n\n- Added a deterministic maintenance document check.\n",
+      "docs/RECOVERY.md": "# Synthetic recovery guide\n",
+      "storage.contract.json": "Synthetic protected metadata; documentation checker must not open this file.\n",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "failure": "readme.install"
+  },
+  {
+    "name": "combined missing current state fails",
+    "profile": "combined",
+    "stage": "accepted",
+    "files": {
+      "README.md": "# Synthetic maintenance repository\n\n## Design Philosophy\n\nSource and versioned backups share a private repository so reviewed tooling and recovery records stay together.\n\n## Setup\n\nRun the synthetic setup entry after reviewing the recovery instructions.\n\n```sh\npython tools/install.py\n```\n\n## Other information\n\nThe maintenance tools have local regression coverage; live restoration remains unverified. See the [current capabilities](ROADMAP.md#current).\n\n## Recovery\n\nReview the [recovery guide](docs/RECOVERY.md) before restoring a saved configuration.\n\n## Storage contract\n\nThe [storage contract](storage.contract.json) defines private versioned data and retention boundaries.\n\n[Maintenance changes](docs/MAINTENANCE_CHANGELOG.md#unreleased)\n",
+      "ROADMAP.md": "# Maintenance roadmap\n\n## Current\n\nSynthetic maintenance tools pass local checks; no live restore has been performed.\n\n## Planned\n\n- TODO: verify the documented recovery path in an isolated environment.\n",
+      "docs/MAINTENANCE_CHANGELOG.md": "# Maintenance changelog\n\n## Unreleased\n\n- Clarified the setup prerequisites and recovery verification boundary.\n\n## 2024-06-10\n\n- Added a deterministic maintenance document check.\n",
+      "docs/RECOVERY.md": "# Synthetic recovery guide\n",
+      "storage.contract.json": "Synthetic protected metadata; documentation checker must not open this file.\n",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "failure": "readme.maintenance"
+  },
+  {
+    "name": "combined missing recovery fails",
+    "profile": "combined",
+    "stage": "accepted",
+    "files": {
+      "README.md": "# Synthetic maintenance repository\n\n## Design Philosophy\n\nSource and versioned backups share a private repository so reviewed tooling and recovery records stay together.\n\n## Setup\n\nRun the synthetic setup entry after reviewing the recovery instructions.\n\n```sh\npython tools/install.py\n```\n\n## Current state\n\nThe maintenance tools have local regression coverage; live restoration remains unverified. See the [current capabilities](ROADMAP.md#current).\n\n## Other information\n\nReview the [recovery guide](docs/RECOVERY.md) before restoring a saved configuration.\n\n## Storage contract\n\nThe [storage contract](storage.contract.json) defines private versioned data and retention boundaries.\n\n[Maintenance changes](docs/MAINTENANCE_CHANGELOG.md#unreleased)\n",
+      "ROADMAP.md": "# Maintenance roadmap\n\n## Current\n\nSynthetic maintenance tools pass local checks; no live restore has been performed.\n\n## Planned\n\n- TODO: verify the documented recovery path in an isolated environment.\n",
+      "docs/MAINTENANCE_CHANGELOG.md": "# Maintenance changelog\n\n## Unreleased\n\n- Clarified the setup prerequisites and recovery verification boundary.\n\n## 2024-06-10\n\n- Added a deterministic maintenance document check.\n",
+      "docs/RECOVERY.md": "# Synthetic recovery guide\n",
+      "storage.contract.json": "Synthetic protected metadata; documentation checker must not open this file.\n",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "failure": "readme.maintenance"
+  },
+  {
+    "name": "combined missing storage contract fails",
+    "profile": "combined",
+    "stage": "accepted",
+    "files": {
+      "README.md": "# Synthetic maintenance repository\n\n## Design Philosophy\n\nSource and versioned backups share a private repository so reviewed tooling and recovery records stay together.\n\n## Setup\n\nRun the synthetic setup entry after reviewing the recovery instructions.\n\n```sh\npython tools/install.py\n```\n\n## Current state\n\nThe maintenance tools have local regression coverage; live restoration remains unverified. See the [current capabilities](ROADMAP.md#current).\n\n## Recovery\n\nReview the [recovery guide](docs/RECOVERY.md) before restoring a saved configuration.\n\n## Other information\n\nThe [storage contract](storage.contract.json) defines private versioned data and retention boundaries.\n\n[Maintenance changes](docs/MAINTENANCE_CHANGELOG.md#unreleased)\n",
+      "ROADMAP.md": "# Maintenance roadmap\n\n## Current\n\nSynthetic maintenance tools pass local checks; no live restore has been performed.\n\n## Planned\n\n- TODO: verify the documented recovery path in an isolated environment.\n",
+      "docs/MAINTENANCE_CHANGELOG.md": "# Maintenance changelog\n\n## Unreleased\n\n- Clarified the setup prerequisites and recovery verification boundary.\n\n## 2024-06-10\n\n- Added a deterministic maintenance document check.\n",
+      "docs/RECOVERY.md": "# Synthetic recovery guide\n",
+      "storage.contract.json": "Synthetic protected metadata; documentation checker must not open this file.\n",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "failure": "readme.maintenance"
+  },
+  {
+    "name": "combined external recovery link fails",
+    "profile": "combined",
+    "stage": "accepted",
+    "files": {
+      "README.md": "# Synthetic maintenance repository\n\n## Design Philosophy\n\nSource and versioned backups share a private repository so reviewed tooling and recovery records stay together.\n\n## Setup\n\nRun the synthetic setup entry after reviewing the recovery instructions.\n\n```sh\npython tools/install.py\n```\n\n## Current state\n\nThe maintenance tools have local regression coverage; live restoration remains unverified. See the [current capabilities](ROADMAP.md#current).\n\n## Recovery\n\nReview the [recovery guide](https://example.com/recovery) before restoring a saved configuration.\n\n## Storage contract\n\nThe [storage contract](storage.contract.json) defines private versioned data and retention boundaries.\n\n[Maintenance changes](docs/MAINTENANCE_CHANGELOG.md#unreleased)\n",
+      "ROADMAP.md": "# Maintenance roadmap\n\n## Current\n\nSynthetic maintenance tools pass local checks; no live restore has been performed.\n\n## Planned\n\n- TODO: verify the documented recovery path in an isolated environment.\n",
+      "docs/MAINTENANCE_CHANGELOG.md": "# Maintenance changelog\n\n## Unreleased\n\n- Clarified the setup prerequisites and recovery verification boundary.\n\n## 2024-06-10\n\n- Added a deterministic maintenance document check.\n",
+      "docs/RECOVERY.md": "# Synthetic recovery guide\n",
+      "storage.contract.json": "Synthetic protected metadata; documentation checker must not open this file.\n",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "failure": "readme.maintenance"
+  },
+  {
+    "name": "combined wrong storage link fails",
+    "profile": "combined",
+    "stage": "accepted",
+    "files": {
+      "README.md": "# Synthetic maintenance repository\n\n## Design Philosophy\n\nSource and versioned backups share a private repository so reviewed tooling and recovery records stay together.\n\n## Setup\n\nRun the synthetic setup entry after reviewing the recovery instructions.\n\n```sh\npython tools/install.py\n```\n\n## Current state\n\nThe maintenance tools have local regression coverage; live restoration remains unverified. See the [current capabilities](ROADMAP.md#current).\n\n## Recovery\n\nReview the [recovery guide](docs/RECOVERY.md) before restoring a saved configuration.\n\n## Storage contract\n\nThe [storage contract](docs/RECOVERY.md) defines private versioned data and retention boundaries.\n\n[Maintenance changes](docs/MAINTENANCE_CHANGELOG.md#unreleased)\n",
+      "ROADMAP.md": "# Maintenance roadmap\n\n## Current\n\nSynthetic maintenance tools pass local checks; no live restore has been performed.\n\n## Planned\n\n- TODO: verify the documented recovery path in an isolated environment.\n",
+      "docs/MAINTENANCE_CHANGELOG.md": "# Maintenance changelog\n\n## Unreleased\n\n- Clarified the setup prerequisites and recovery verification boundary.\n\n## 2024-06-10\n\n- Added a deterministic maintenance document check.\n",
+      "docs/RECOVERY.md": "# Synthetic recovery guide\n",
+      "storage.contract.json": "Synthetic protected metadata; documentation checker must not open this file.\n",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "failure": "readme.maintenance"
+  },
+  {
+    "name": "combined missing linked recovery fails",
+    "profile": "combined",
+    "stage": "accepted",
+    "files": {
+      "README.md": "# Synthetic maintenance repository\n\n## Design Philosophy\n\nSource and versioned backups share a private repository so reviewed tooling and recovery records stay together.\n\n## Setup\n\nRun the synthetic setup entry after reviewing the recovery instructions.\n\n```sh\npython tools/install.py\n```\n\n## Current state\n\nThe maintenance tools have local regression coverage; live restoration remains unverified. See the [current capabilities](ROADMAP.md#current).\n\n## Recovery\n\nReview the [recovery guide](docs/RECOVERY.md) before restoring a saved configuration.\n\n## Storage contract\n\nThe [storage contract](storage.contract.json) defines private versioned data and retention boundaries.\n\n[Maintenance changes](docs/MAINTENANCE_CHANGELOG.md#unreleased)\n",
+      "ROADMAP.md": "# Maintenance roadmap\n\n## Current\n\nSynthetic maintenance tools pass local checks; no live restore has been performed.\n\n## Planned\n\n- TODO: verify the documented recovery path in an isolated environment.\n",
+      "docs/MAINTENANCE_CHANGELOG.md": "# Maintenance changelog\n\n## Unreleased\n\n- Clarified the setup prerequisites and recovery verification boundary.\n\n## 2024-06-10\n\n- Added a deterministic maintenance document check.\n",
+      "storage.contract.json": "Synthetic protected metadata; documentation checker must not open this file.\n",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "failure": "links.local"
+  },
+  {
+    "name": "combined missing storage contract file fails",
+    "profile": "combined",
+    "stage": "accepted",
+    "files": {
+      "README.md": "# Synthetic maintenance repository\n\n## Design Philosophy\n\nSource and versioned backups share a private repository so reviewed tooling and recovery records stay together.\n\n## Setup\n\nRun the synthetic setup entry after reviewing the recovery instructions.\n\n```sh\npython tools/install.py\n```\n\n## Current state\n\nThe maintenance tools have local regression coverage; live restoration remains unverified. See the [current capabilities](ROADMAP.md#current).\n\n## Recovery\n\nReview the [recovery guide](docs/RECOVERY.md) before restoring a saved configuration.\n\n## Storage contract\n\nThe [storage contract](storage.contract.json) defines private versioned data and retention boundaries.\n\n[Maintenance changes](docs/MAINTENANCE_CHANGELOG.md#unreleased)\n",
+      "ROADMAP.md": "# Maintenance roadmap\n\n## Current\n\nSynthetic maintenance tools pass local checks; no live restore has been performed.\n\n## Planned\n\n- TODO: verify the documented recovery path in an isolated environment.\n",
+      "docs/MAINTENANCE_CHANGELOG.md": "# Maintenance changelog\n\n## Unreleased\n\n- Clarified the setup prerequisites and recovery verification boundary.\n\n## 2024-06-10\n\n- Added a deterministic maintenance document check.\n",
+      "docs/RECOVERY.md": "# Synthetic recovery guide\n",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "failure": "links.local"
+  },
+  {
+    "name": "combined current placeholder fails",
+    "profile": "combined",
+    "stage": "accepted",
+    "files": {
+      "README.md": "# Synthetic maintenance repository\n\n## Design Philosophy\n\nSource and versioned backups share a private repository so reviewed tooling and recovery records stay together.\n\n## Setup\n\nRun the synthetic setup entry after reviewing the recovery instructions.\n\n```sh\npython tools/install.py\n```\n\n## Current state\n\nThe maintenance tools have local regression coverage; live restoration remains unverified. {{CURRENT_STATUS}} See the [current capabilities](ROADMAP.md#current).\n\n## Recovery\n\nReview the [recovery guide](docs/RECOVERY.md) before restoring a saved configuration.\n\n## Storage contract\n\nThe [storage contract](storage.contract.json) defines private versioned data and retention boundaries.\n\n[Maintenance changes](docs/MAINTENANCE_CHANGELOG.md#unreleased)\n",
+      "ROADMAP.md": "# Maintenance roadmap\n\n## Current\n\nSynthetic maintenance tools pass local checks; no live restore has been performed.\n\n## Planned\n\n- TODO: verify the documented recovery path in an isolated environment.\n",
+      "docs/MAINTENANCE_CHANGELOG.md": "# Maintenance changelog\n\n## Unreleased\n\n- Clarified the setup prerequisites and recovery verification boundary.\n\n## 2024-06-10\n\n- Added a deterministic maintenance document check.\n",
+      "docs/RECOVERY.md": "# Synthetic recovery guide\n",
+      "storage.contract.json": "Synthetic protected metadata; documentation checker must not open this file.\n",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "failure": "docs.placeholders"
+  },
+  {
+    "name": "combined roadmap missing current fails",
+    "profile": "combined",
+    "stage": "accepted",
+    "files": {
+      "README.md": "# Synthetic maintenance repository\n\n## Design Philosophy\n\nSource and versioned backups share a private repository so reviewed tooling and recovery records stay together.\n\n## Setup\n\nRun the synthetic setup entry after reviewing the recovery instructions.\n\n```sh\npython tools/install.py\n```\n\n## Current state\n\nThe maintenance tools have local regression coverage; live restoration remains unverified. See the [current capabilities](ROADMAP.md).\n\n## Recovery\n\nReview the [recovery guide](docs/RECOVERY.md) before restoring a saved configuration.\n\n## Storage contract\n\nThe [storage contract](storage.contract.json) defines private versioned data and retention boundaries.\n\n[Maintenance changes](docs/MAINTENANCE_CHANGELOG.md#unreleased)\n",
+      "ROADMAP.md": "# Maintenance roadmap\n\n## Observed\n\nSynthetic maintenance tools pass local checks; no live restore has been performed.\n\n## Planned\n\n- TODO: verify the documented recovery path in an isolated environment.\n",
+      "docs/MAINTENANCE_CHANGELOG.md": "# Maintenance changelog\n\n## Unreleased\n\n- Clarified the setup prerequisites and recovery verification boundary.\n\n## 2024-06-10\n\n- Added a deterministic maintenance document check.\n",
+      "docs/RECOVERY.md": "# Synthetic recovery guide\n",
+      "storage.contract.json": "Synthetic protected metadata; documentation checker must not open this file.\n",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "failure": "roadmap.current"
+  },
+  {
+    "name": "combined roadmap empty current fails",
+    "profile": "combined",
+    "stage": "accepted",
+    "files": {
+      "README.md": "# Synthetic maintenance repository\n\n## Design Philosophy\n\nSource and versioned backups share a private repository so reviewed tooling and recovery records stay together.\n\n## Setup\n\nRun the synthetic setup entry after reviewing the recovery instructions.\n\n```sh\npython tools/install.py\n```\n\n## Current state\n\nThe maintenance tools have local regression coverage; live restoration remains unverified. See the [current capabilities](ROADMAP.md#current).\n\n## Recovery\n\nReview the [recovery guide](docs/RECOVERY.md) before restoring a saved configuration.\n\n## Storage contract\n\nThe [storage contract](storage.contract.json) defines private versioned data and retention boundaries.\n\n[Maintenance changes](docs/MAINTENANCE_CHANGELOG.md#unreleased)\n",
+      "ROADMAP.md": "# Maintenance roadmap\n\n## Current\n\n\n\n## Planned\n\n- TODO: verify the documented recovery path in an isolated environment.\n",
+      "docs/MAINTENANCE_CHANGELOG.md": "# Maintenance changelog\n\n## Unreleased\n\n- Clarified the setup prerequisites and recovery verification boundary.\n\n## 2024-06-10\n\n- Added a deterministic maintenance document check.\n",
+      "docs/RECOVERY.md": "# Synthetic recovery guide\n",
+      "storage.contract.json": "Synthetic protected metadata; documentation checker must not open this file.\n",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "failure": "roadmap.current"
+  },
+  {
+    "name": "combined roadmap missing future fails",
+    "profile": "combined",
+    "stage": "accepted",
+    "files": {
+      "README.md": "# Synthetic maintenance repository\n\n## Design Philosophy\n\nSource and versioned backups share a private repository so reviewed tooling and recovery records stay together.\n\n## Setup\n\nRun the synthetic setup entry after reviewing the recovery instructions.\n\n```sh\npython tools/install.py\n```\n\n## Current state\n\nThe maintenance tools have local regression coverage; live restoration remains unverified. See the [current capabilities](ROADMAP.md#current).\n\n## Recovery\n\nReview the [recovery guide](docs/RECOVERY.md) before restoring a saved configuration.\n\n## Storage contract\n\nThe [storage contract](storage.contract.json) defines private versioned data and retention boundaries.\n\n[Maintenance changes](docs/MAINTENANCE_CHANGELOG.md#unreleased)\n",
+      "ROADMAP.md": "# Maintenance roadmap\n\n## Current\n\nSynthetic maintenance tools pass local checks; no live restore has been performed.\n\n## Followups\n\n- Verify the documented recovery path in an isolated environment.\n",
+      "docs/MAINTENANCE_CHANGELOG.md": "# Maintenance changelog\n\n## Unreleased\n\n- Clarified the setup prerequisites and recovery verification boundary.\n\n## 2024-06-10\n\n- Added a deterministic maintenance document check.\n",
+      "docs/RECOVERY.md": "# Synthetic recovery guide\n",
+      "storage.contract.json": "Synthetic protected metadata; documentation checker must not open this file.\n",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "failure": "roadmap.current"
+  },
+  {
+    "name": "combined roadmap empty future fails",
+    "profile": "combined",
+    "stage": "accepted",
+    "files": {
+      "README.md": "# Synthetic maintenance repository\n\n## Design Philosophy\n\nSource and versioned backups share a private repository so reviewed tooling and recovery records stay together.\n\n## Setup\n\nRun the synthetic setup entry after reviewing the recovery instructions.\n\n```sh\npython tools/install.py\n```\n\n## Current state\n\nThe maintenance tools have local regression coverage; live restoration remains unverified. See the [current capabilities](ROADMAP.md#current).\n\n## Recovery\n\nReview the [recovery guide](docs/RECOVERY.md) before restoring a saved configuration.\n\n## Storage contract\n\nThe [storage contract](storage.contract.json) defines private versioned data and retention boundaries.\n\n[Maintenance changes](docs/MAINTENANCE_CHANGELOG.md#unreleased)\n",
+      "ROADMAP.md": "# Maintenance roadmap\n\n## Current\n\nSynthetic maintenance tools pass local checks; no live restore has been performed.\n\n## Planned\n\n\n",
+      "docs/MAINTENANCE_CHANGELOG.md": "# Maintenance changelog\n\n## Unreleased\n\n- Clarified the setup prerequisites and recovery verification boundary.\n\n## 2024-06-10\n\n- Added a deterministic maintenance document check.\n",
+      "docs/RECOVERY.md": "# Synthetic recovery guide\n",
+      "storage.contract.json": "Synthetic protected metadata; documentation checker must not open this file.\n",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "failure": "roadmap.current"
+  },
+  {
+    "name": "combined empty maintenance notes fail",
+    "profile": "combined",
+    "stage": "accepted",
+    "files": {
+      "README.md": "# Synthetic maintenance repository\n\n## Design Philosophy\n\nSource and versioned backups share a private repository so reviewed tooling and recovery records stay together.\n\n## Setup\n\nRun the synthetic setup entry after reviewing the recovery instructions.\n\n```sh\npython tools/install.py\n```\n\n## Current state\n\nThe maintenance tools have local regression coverage; live restoration remains unverified. See the [current capabilities](ROADMAP.md#current).\n\n## Recovery\n\nReview the [recovery guide](docs/RECOVERY.md) before restoring a saved configuration.\n\n## Storage contract\n\nThe [storage contract](storage.contract.json) defines private versioned data and retention boundaries.\n\n[Maintenance changes](docs/MAINTENANCE_CHANGELOG.md#unreleased)\n",
+      "ROADMAP.md": "# Maintenance roadmap\n\n## Current\n\nSynthetic maintenance tools pass local checks; no live restore has been performed.\n\n## Planned\n\n- TODO: verify the documented recovery path in an isolated environment.\n",
+      "docs/MAINTENANCE_CHANGELOG.md": "# Maintenance changelog\n\n## Unreleased\n",
+      "docs/RECOVERY.md": "# Synthetic recovery guide\n",
+      "storage.contract.json": "Synthetic protected metadata; documentation checker must not open this file.\n",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "failure": "changelog.maintenance"
+  },
+  {
+    "name": "combined undated maintenance prose fails",
+    "profile": "combined",
+    "stage": "accepted",
+    "files": {
+      "README.md": "# Synthetic maintenance repository\n\n## Design Philosophy\n\nSource and versioned backups share a private repository so reviewed tooling and recovery records stay together.\n\n## Setup\n\nRun the synthetic setup entry after reviewing the recovery instructions.\n\n```sh\npython tools/install.py\n```\n\n## Current state\n\nThe maintenance tools have local regression coverage; live restoration remains unverified. See the [current capabilities](ROADMAP.md#current).\n\n## Recovery\n\nReview the [recovery guide](docs/RECOVERY.md) before restoring a saved configuration.\n\n## Storage contract\n\nThe [storage contract](storage.contract.json) defines private versioned data and retention boundaries.\n\n[Maintenance changes](docs/MAINTENANCE_CHANGELOG.md#unreleased)\n",
+      "ROADMAP.md": "# Maintenance roadmap\n\n## Current\n\nSynthetic maintenance tools pass local checks; no live restore has been performed.\n\n## Planned\n\n- TODO: verify the documented recovery path in an isolated environment.\n",
+      "docs/MAINTENANCE_CHANGELOG.md": "# Maintenance changelog\n\n## Unreleased\n\n## Notes\n\nA synthetic setup command was added and verified locally.\n",
+      "docs/RECOVERY.md": "# Synthetic recovery guide\n",
+      "storage.contract.json": "Synthetic protected metadata; documentation checker must not open this file.\n",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "failure": "changelog.maintenance"
+  },
+  {
+    "name": "combined invalid maintenance date fails",
+    "profile": "combined",
+    "stage": "accepted",
+    "files": {
+      "README.md": "# Synthetic maintenance repository\n\n## Design Philosophy\n\nSource and versioned backups share a private repository so reviewed tooling and recovery records stay together.\n\n## Setup\n\nRun the synthetic setup entry after reviewing the recovery instructions.\n\n```sh\npython tools/install.py\n```\n\n## Current state\n\nThe maintenance tools have local regression coverage; live restoration remains unverified. See the [current capabilities](ROADMAP.md#current).\n\n## Recovery\n\nReview the [recovery guide](docs/RECOVERY.md) before restoring a saved configuration.\n\n## Storage contract\n\nThe [storage contract](storage.contract.json) defines private versioned data and retention boundaries.\n\n[Maintenance changes](docs/MAINTENANCE_CHANGELOG.md#unreleased)\n",
+      "ROADMAP.md": "# Maintenance roadmap\n\n## Current\n\nSynthetic maintenance tools pass local checks; no live restore has been performed.\n\n## Planned\n\n- TODO: verify the documented recovery path in an isolated environment.\n",
+      "docs/MAINTENANCE_CHANGELOG.md": "# Maintenance changelog\n\n## Unreleased\n\n- Clarified the setup prerequisites and recovery verification boundary.\n\n## 2024-02-30\n\n- Added a deterministic maintenance document check.\n",
+      "docs/RECOVERY.md": "# Synthetic recovery guide\n",
+      "storage.contract.json": "Synthetic protected metadata; documentation checker must not open this file.\n",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "failure": "changelog.maintenance"
+  },
+  {
+    "name": "combined future maintenance date fails",
+    "profile": "combined",
+    "stage": "accepted",
+    "files": {
+      "README.md": "# Synthetic maintenance repository\n\n## Design Philosophy\n\nSource and versioned backups share a private repository so reviewed tooling and recovery records stay together.\n\n## Setup\n\nRun the synthetic setup entry after reviewing the recovery instructions.\n\n```sh\npython tools/install.py\n```\n\n## Current state\n\nThe maintenance tools have local regression coverage; live restoration remains unverified. See the [current capabilities](ROADMAP.md#current).\n\n## Recovery\n\nReview the [recovery guide](docs/RECOVERY.md) before restoring a saved configuration.\n\n## Storage contract\n\nThe [storage contract](storage.contract.json) defines private versioned data and retention boundaries.\n\n[Maintenance changes](docs/MAINTENANCE_CHANGELOG.md#unreleased)\n",
+      "ROADMAP.md": "# Maintenance roadmap\n\n## Current\n\nSynthetic maintenance tools pass local checks; no live restore has been performed.\n\n## Planned\n\n- TODO: verify the documented recovery path in an isolated environment.\n",
+      "docs/MAINTENANCE_CHANGELOG.md": "# Maintenance changelog\n\n## Unreleased\n\n- Clarified the setup prerequisites and recovery verification boundary.\n\n## 9999-06-10\n\n- Added a deterministic maintenance document check.\n",
+      "docs/RECOVERY.md": "# Synthetic recovery guide\n",
+      "storage.contract.json": "Synthetic protected metadata; documentation checker must not open this file.\n",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "failure": "changelog.maintenance"
+  },
+  {
+    "name": "combined maintenance placeholder fails",
+    "profile": "combined",
+    "stage": "accepted",
+    "files": {
+      "README.md": "# Synthetic maintenance repository\n\n## Design Philosophy\n\nSource and versioned backups share a private repository so reviewed tooling and recovery records stay together.\n\n## Setup\n\nRun the synthetic setup entry after reviewing the recovery instructions.\n\n```sh\npython tools/install.py\n```\n\n## Current state\n\nThe maintenance tools have local regression coverage; live restoration remains unverified. See the [current capabilities](ROADMAP.md#current).\n\n## Recovery\n\nReview the [recovery guide](docs/RECOVERY.md) before restoring a saved configuration.\n\n## Storage contract\n\nThe [storage contract](storage.contract.json) defines private versioned data and retention boundaries.\n\n[Maintenance changes](docs/MAINTENANCE_CHANGELOG.md#unreleased)\n",
+      "ROADMAP.md": "# Maintenance roadmap\n\n## Current\n\nSynthetic maintenance tools pass local checks; no live restore has been performed.\n\n## Planned\n\n- TODO: verify the documented recovery path in an isolated environment.\n",
+      "docs/MAINTENANCE_CHANGELOG.md": "# Maintenance changelog\n\n## Unreleased\n\n- TODO: explain setup prerequisites and recovery verification boundary.\n\n## 2024-06-10\n\n- Added a deterministic maintenance document check.\n",
+      "docs/RECOVERY.md": "# Synthetic recovery guide\n",
+      "storage.contract.json": "Synthetic protected metadata; documentation checker must not open this file.\n",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "failure": "docs.placeholders"
+  },
+  {
+    "name": "combined dated maintenance notes allow empty Unreleased",
+    "profile": "combined",
+    "stage": "accepted",
+    "files": {
+      "README.md": "# Synthetic maintenance repository\n\n## Design Philosophy\n\nSource and versioned backups share a private repository so reviewed tooling and recovery records stay together.\n\n## Setup\n\nRun the synthetic setup entry after reviewing the recovery instructions.\n\n```sh\npython tools/install.py\n```\n\n## Current state\n\nThe maintenance tools have local regression coverage; live restoration remains unverified. See the [current capabilities](ROADMAP.md#current).\n\n## Recovery\n\nReview the [recovery guide](docs/RECOVERY.md) before restoring a saved configuration.\n\n## Storage contract\n\nThe [storage contract](storage.contract.json) defines private versioned data and retention boundaries.\n\n[Maintenance changes](docs/MAINTENANCE_CHANGELOG.md#unreleased)\n",
+      "ROADMAP.md": "# Maintenance roadmap\n\n## Current\n\nSynthetic maintenance tools pass local checks; no live restore has been performed.\n\n## Planned\n\n- TODO: verify the documented recovery path in an isolated environment.\n",
+      "docs/MAINTENANCE_CHANGELOG.md": "# Maintenance changelog\n\n## Unreleased\n\n## 2024-06-10\n\n- Added a deterministic maintenance document check.\n\n## 2024-06-01\n\nTODO: this historical limitation remains recorded.\n",
+      "docs/RECOVERY.md": "# Synthetic recovery guide\n",
+      "storage.contract.json": "Synthetic protected metadata; documentation checker must not open this file.\n",
+      "tools/install.py": "print('synthetic setup')\n"
+    }
+  },
+  {
+    "name": "combined release stage retains maintenance duties",
+    "profile": "combined",
+    "stage": "release",
+    "files": {
+      "README.md": "# Synthetic maintenance repository\n\n## Design Philosophy\n\nSource and versioned backups share a private repository so reviewed tooling and recovery records stay together.\n\n## Setup\n\nRun the synthetic setup entry after reviewing the recovery instructions.\n\n```sh\npython tools/install.py\n```\n\n## Current state\n\nThe maintenance tools have local regression coverage; live restoration remains unverified. See the [current capabilities](ROADMAP.md#current).\n\n## Recovery\n\nReview the [recovery guide](docs/RECOVERY.md) before restoring a saved configuration.\n\n## Storage contract\n\nThe [storage contract](storage.contract.json) defines private versioned data and retention boundaries.\n\n[Maintenance changes](docs/MAINTENANCE_CHANGELOG.md#unreleased)\n",
+      "ROADMAP.md": "# Maintenance roadmap\n\n## Current\n\nSynthetic maintenance tools pass local checks; no live restore has been performed.\n\n## Planned\n\n- TODO: verify the documented recovery path in an isolated environment.\n",
+      "docs/MAINTENANCE_CHANGELOG.md": "# Maintenance changelog\n\n## Unreleased\n\n- Clarified the setup prerequisites and recovery verification boundary.\n\n## 2024-06-10\n\n- Added a deterministic maintenance document check.\n",
+      "docs/RECOVERY.md": "# Synthetic recovery guide\n",
+      "storage.contract.json": "Synthetic protected metadata; documentation checker must not open this file.\n",
+      "tools/install.py": "print('synthetic setup')\n"
+    }
+  },
+  {
+    "name": "combined maintenance log relative links valid",
+    "profile": "combined",
+    "stage": "accepted",
+    "files": {
+      "README.md": "# Synthetic maintenance repository\n\n## Design Philosophy\n\nSource and versioned backups share a private repository so reviewed tooling and recovery records stay together.\n\n## Setup\n\nRun the synthetic setup entry after reviewing the recovery instructions.\n\n```sh\npython tools/install.py\n```\n\n## Current state\n\nThe maintenance tools have local regression coverage; live restoration remains unverified. See the [current capabilities](ROADMAP.md#current).\n\n## Recovery\n\nReview the [recovery guide](docs/RECOVERY.md) before restoring a saved configuration.\n\n## Storage contract\n\nThe [storage contract](storage.contract.json) defines private versioned data and retention boundaries.\n\n[Maintenance changes](docs/MAINTENANCE_CHANGELOG.md#unreleased)\n",
+      "ROADMAP.md": "# Maintenance roadmap\n\n## Current\n\nSynthetic maintenance tools pass local checks; no live restore has been performed.\n\n## Planned\n\n- TODO: verify the documented recovery path in an isolated environment.\n",
+      "docs/MAINTENANCE_CHANGELOG.md": "# Maintenance changelog\n\n## Unreleased\n\n- Clarified the setup prerequisites and recovery verification boundary.\n\n## 2024-06-10\n\n- Added a deterministic maintenance document check.\n\n[Current capabilities](../ROADMAP.md#current) and [guide](RECOVERY.md#details).\n",
+      "docs/RECOVERY.md": "# Synthetic recovery guide\n",
+      "storage.contract.json": "Synthetic protected metadata; documentation checker must not open this file.\n",
+      "tools/install.py": "print('synthetic setup')\n"
+    }
+  },
+  {
+    "name": "combined maintenance log missing root anchor fails",
+    "profile": "combined",
+    "stage": "accepted",
+    "files": {
+      "README.md": "# Synthetic maintenance repository\n\n## Design Philosophy\n\nSource and versioned backups share a private repository so reviewed tooling and recovery records stay together.\n\n## Setup\n\nRun the synthetic setup entry after reviewing the recovery instructions.\n\n```sh\npython tools/install.py\n```\n\n## Current state\n\nThe maintenance tools have local regression coverage; live restoration remains unverified. See the [current capabilities](ROADMAP.md#current).\n\n## Recovery\n\nReview the [recovery guide](docs/RECOVERY.md) before restoring a saved configuration.\n\n## Storage contract\n\nThe [storage contract](storage.contract.json) defines private versioned data and retention boundaries.\n\n[Maintenance changes](docs/MAINTENANCE_CHANGELOG.md#unreleased)\n",
+      "ROADMAP.md": "# Maintenance roadmap\n\n## Current\n\nSynthetic maintenance tools pass local checks; no live restore has been performed.\n\n## Planned\n\n- TODO: verify the documented recovery path in an isolated environment.\n",
+      "docs/MAINTENANCE_CHANGELOG.md": "# Maintenance changelog\n\n## Unreleased\n\n- Clarified the setup prerequisites and recovery verification boundary.\n\n## 2024-06-10\n\n- Added a deterministic maintenance document check.\n\n[Current capabilities](../ROADMAP.md#missing).\n",
+      "docs/RECOVERY.md": "# Synthetic recovery guide\n",
+      "storage.contract.json": "Synthetic protected metadata; documentation checker must not open this file.\n",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "failure": "links.local"
+  },
+  {
+    "name": "combined maintenance malformed date fails",
+    "profile": "combined",
+    "stage": "accepted",
+    "files": {
+      "README.md": "# Synthetic maintenance repository\n\n## Design Philosophy\n\nSource and versioned backups share a private repository so reviewed tooling and recovery records stay together.\n\n## Setup\n\nRun the synthetic setup entry after reviewing the recovery instructions.\n\n```sh\npython tools/install.py\n```\n\n## Current state\n\nThe maintenance tools have local regression coverage; live restoration remains unverified. See the [current capabilities](ROADMAP.md#current).\n\n## Recovery\n\nReview the [recovery guide](docs/RECOVERY.md) before restoring a saved configuration.\n\n## Storage contract\n\nThe [storage contract](storage.contract.json) defines private versioned data and retention boundaries.\n\n[Maintenance changes](docs/MAINTENANCE_CHANGELOG.md#unreleased)\n",
+      "ROADMAP.md": "# Maintenance roadmap\n\n## Current\n\nSynthetic maintenance tools pass local checks; no live restore has been performed.\n\n## Planned\n\n- TODO: verify the documented recovery path in an isolated environment.\n",
+      "docs/MAINTENANCE_CHANGELOG.md": "# Maintenance changelog\n\n## Unreleased\n\n- Clarified the setup prerequisites and recovery verification boundary.\n\n## 2024-6-10\n\n- Added a deterministic maintenance document check.\n",
+      "docs/RECOVERY.md": "# Synthetic recovery guide\n",
+      "storage.contract.json": "Synthetic protected metadata; documentation checker must not open this file.\n",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "failure": "changelog.maintenance"
+  },
+  {
+    "name": "combined duplicate maintenance dates fail",
+    "profile": "combined",
+    "stage": "accepted",
+    "files": {
+      "README.md": "# Synthetic maintenance repository\n\n## Design Philosophy\n\nSource and versioned backups share a private repository so reviewed tooling and recovery records stay together.\n\n## Setup\n\nRun the synthetic setup entry after reviewing the recovery instructions.\n\n```sh\npython tools/install.py\n```\n\n## Current state\n\nThe maintenance tools have local regression coverage; live restoration remains unverified. See the [current capabilities](ROADMAP.md#current).\n\n## Recovery\n\nReview the [recovery guide](docs/RECOVERY.md) before restoring a saved configuration.\n\n## Storage contract\n\nThe [storage contract](storage.contract.json) defines private versioned data and retention boundaries.\n\n[Maintenance changes](docs/MAINTENANCE_CHANGELOG.md#unreleased)\n",
+      "ROADMAP.md": "# Maintenance roadmap\n\n## Current\n\nSynthetic maintenance tools pass local checks; no live restore has been performed.\n\n## Planned\n\n- TODO: verify the documented recovery path in an isolated environment.\n",
+      "docs/MAINTENANCE_CHANGELOG.md": "# Maintenance changelog\n\n## Unreleased\n\n- Clarified the setup prerequisites and recovery verification boundary.\n\n## 2024-06-10\n\n- Added a deterministic maintenance document check.\n\n## 2024-06-10\n\n- Clarified the synthetic recovery guide.\n",
+      "docs/RECOVERY.md": "# Synthetic recovery guide\n",
+      "storage.contract.json": "Synthetic protected metadata; documentation checker must not open this file.\n",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "failure": "changelog.maintenance"
+  },
+  {
+    "name": "combined maintenance date ordering fails",
+    "profile": "combined",
+    "stage": "accepted",
+    "files": {
+      "README.md": "# Synthetic maintenance repository\n\n## Design Philosophy\n\nSource and versioned backups share a private repository so reviewed tooling and recovery records stay together.\n\n## Setup\n\nRun the synthetic setup entry after reviewing the recovery instructions.\n\n```sh\npython tools/install.py\n```\n\n## Current state\n\nThe maintenance tools have local regression coverage; live restoration remains unverified. See the [current capabilities](ROADMAP.md#current).\n\n## Recovery\n\nReview the [recovery guide](docs/RECOVERY.md) before restoring a saved configuration.\n\n## Storage contract\n\nThe [storage contract](storage.contract.json) defines private versioned data and retention boundaries.\n\n[Maintenance changes](docs/MAINTENANCE_CHANGELOG.md#unreleased)\n",
+      "ROADMAP.md": "# Maintenance roadmap\n\n## Current\n\nSynthetic maintenance tools pass local checks; no live restore has been performed.\n\n## Planned\n\n- TODO: verify the documented recovery path in an isolated environment.\n",
+      "docs/MAINTENANCE_CHANGELOG.md": "# Maintenance changelog\n\n## Unreleased\n\n- Clarified the setup prerequisites and recovery verification boundary.\n\n## 2024-06-10\n\n- Added a deterministic maintenance document check.\n\n## 2024-07-01\n\n- Clarified the synthetic recovery guide.\n",
+      "docs/RECOVERY.md": "# Synthetic recovery guide\n",
+      "storage.contract.json": "Synthetic protected metadata; documentation checker must not open this file.\n",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "failure": "changelog.maintenance"
+  },
+  {
+    "name": "combined duplicate Unreleased fails",
+    "profile": "combined",
+    "stage": "accepted",
+    "files": {
+      "README.md": "# Synthetic maintenance repository\n\n## Design Philosophy\n\nSource and versioned backups share a private repository so reviewed tooling and recovery records stay together.\n\n## Setup\n\nRun the synthetic setup entry after reviewing the recovery instructions.\n\n```sh\npython tools/install.py\n```\n\n## Current state\n\nThe maintenance tools have local regression coverage; live restoration remains unverified. See the [current capabilities](ROADMAP.md#current).\n\n## Recovery\n\nReview the [recovery guide](docs/RECOVERY.md) before restoring a saved configuration.\n\n## Storage contract\n\nThe [storage contract](storage.contract.json) defines private versioned data and retention boundaries.\n\n[Maintenance changes](docs/MAINTENANCE_CHANGELOG.md#unreleased)\n",
+      "ROADMAP.md": "# Maintenance roadmap\n\n## Current\n\nSynthetic maintenance tools pass local checks; no live restore has been performed.\n\n## Planned\n\n- TODO: verify the documented recovery path in an isolated environment.\n",
+      "docs/MAINTENANCE_CHANGELOG.md": "# Maintenance changelog\n\n## Unreleased\n\n- Clarified the setup prerequisites and recovery verification boundary.\n\n## 2024-06-10\n\n- Added a deterministic maintenance document check.\n\n## Unreleased\n\n- Clarified the synthetic recovery guide.\n",
+      "docs/RECOVERY.md": "# Synthetic recovery guide\n",
+      "storage.contract.json": "Synthetic protected metadata; documentation checker must not open this file.\n",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "failure": "changelog.maintenance"
+  },
+  {
+    "name": "combined late Unreleased fails",
+    "profile": "combined",
+    "stage": "accepted",
+    "files": {
+      "README.md": "# Synthetic maintenance repository\n\n## Design Philosophy\n\nSource and versioned backups share a private repository so reviewed tooling and recovery records stay together.\n\n## Setup\n\nRun the synthetic setup entry after reviewing the recovery instructions.\n\n```sh\npython tools/install.py\n```\n\n## Current state\n\nThe maintenance tools have local regression coverage; live restoration remains unverified. See the [current capabilities](ROADMAP.md#current).\n\n## Recovery\n\nReview the [recovery guide](docs/RECOVERY.md) before restoring a saved configuration.\n\n## Storage contract\n\nThe [storage contract](storage.contract.json) defines private versioned data and retention boundaries.\n\n[Maintenance changes](docs/MAINTENANCE_CHANGELOG.md#unreleased)\n",
+      "ROADMAP.md": "# Maintenance roadmap\n\n## Current\n\nSynthetic maintenance tools pass local checks; no live restore has been performed.\n\n## Planned\n\n- TODO: verify the documented recovery path in an isolated environment.\n",
+      "docs/MAINTENANCE_CHANGELOG.md": "# Maintenance changelog\n\n## 2024-06-10\n\n- Added a deterministic maintenance document check.\n\n## Unreleased\n\n- Clarified the synthetic setup prerequisites.\n",
+      "docs/RECOVERY.md": "# Synthetic recovery guide\n",
+      "storage.contract.json": "Synthetic protected metadata; documentation checker must not open this file.\n",
+      "tools/install.py": "print('synthetic setup')\n"
+    },
+    "failure": "changelog.maintenance"
   }
 ]

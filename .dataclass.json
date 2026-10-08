@@ -19,7 +19,7 @@
     "                         That is an edit to somebody else's tree, not output this repo makes.",
     "  wrap_guard.py --fix -> rewrites only the caller's selected source after file identity checks.",
     "  load_budget.py      -> prints. It writes nothing at all.",
-    "  doc_contract.py     -> bounded root-doc/metadata reads and prints only; no real-run output.",
+    "  doc_contract.py     -> bounded admitted documentation/metadata reads and prints only; no real-run output.",
     "  make_fixtures.py   -> writes only the deterministic synthetic fixtures and test source declared FIXTURE.",
     "Tests write disposable synthetic inputs. There is no ledger, runs tree, dated output or database.",
     "",
