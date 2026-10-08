@@ -31,8 +31,10 @@ def test_document_contract(case, tmp_path):
     result = json.loads(run.stdout)
     assert result["schema_version"] == 1
     assert result["ok"] == (not bool(case.get("failure")))
-    assert [finding["name"] for finding in result["failures"]] == (
-        [case["failure"]] if case.get("failure") else [])
+    expected = case.get("failure", [])
+    if isinstance(expected, str):
+        expected = [expected]
+    assert [finding["name"] for finding in result["failures"]] == expected
     assert {check["name"] for check in result["checks"]} >= {
         "docs.required", "readme.philosophy", "readme.install", "docs.placeholders",
         "version.source", "version.current", "changelog.releases", "roadmap.current", "links.local"}
