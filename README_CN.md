@@ -14,21 +14,17 @@
 
 ## 设计哲学
 
-有三条承诺撑着这套 kit。它们也决定文档检查的边界：自动检查判断结构，独立评审判断设计取舍和真实能力。
+检查通过必须来自实际完成的扫描，并有能够失败的负对照。缺少输入、Git 不可用或扫描器不存在时，应报告失败。共享工具只维护一份实现，消费仓固定接受的提交。自动检查负责有限的结构问题，独立评审负责含义、设计取舍和行为证据。
 
-**没跑过的扫描不叫干净。** 两个工具都拒绝把「没查出问题」和「压根没查」混为一谈。git 不可用、或者当前目录根本不是一个 work tree 时，`dash_guard` 退 2，而不是枚举到零个文件然后打印 clean。找不到可测的 skill 时，`load_budget` 退 3，而不是把它报成一种状态。这里每一个 CI 步骤遇到扫描器缺失都是失败而不是跳过，因为一次不带 `--recursive` 的克隆留下的空 `style/` 目录，读起来和一个通过了的闸门一模一样。
-
-**不可能失败的闸门不是闸门。** 每个 action 都先跑守卫自己的测试，再跑守卫；而那些测试里的每一条保证都配了负对照：一份超预算的 `SKILL.md` 必须退 1，一段重复的正文必须退 1，同一份 fixture 上把阈值翻过去，判定也必须跟着翻。这条规则来自本仓自己的历史：`load_budget` 曾经有一半什么都挡不住，却照常打印 `ok`。
-
-**一份副本，钉住，永不 vendoring。** 这两个工具曾经被手工拷进每一个想要它们的仓，而副本会无声地漂。submodule 把那份手写的仓库清单换成了一个住在消费方仓里的指针，什么时候动这个指针由消费方自己决定。
+`dash_guard` 在 Git 不可用或当前目录不是工作树时退 2；`load_budget` 找不到可测的 skill 时退 3。CI action 先运行自己的测试，再检查消费仓。超预算和重复正文等合成负对照必须能使对应检查失败。
 
 ## 它是什么（不是什么）
 
 它是一个 git submodule，里面有四个检查器、对应测试和 composite GitHub Actions。`dash_guard` 检查公开正文的破折号，`wrap_guard` 检查段落硬折行，`load_budget` 检查常驻加载成本和重复正文，`doc_contract` 检查根文档结构、版本、日期和入口链接。
 
-它**不是** Claude Code 的 skill 或 plugin，也不带 `SKILL.md`：它是一个你加进仓里、再从 CI 调用的 submodule。它**不是**那套安全 kit。`fleet-guards` 的存在是为了让真实标识符不进公开历史，而这里没有任何东西干这件事；这两个闸门抓的是一条文风规则和一条架构规则。它也**不接** `core.hooksPath`，因为那个设置只能指向一个目录，而那个目录属于站在标识符与公开 push 之间的那套闸门。
+本仓通过 CI 调用，不提供 Claude Code skill/plugin 或 `SKILL.md`。安全检查和文档检查适用范围不同：公开仓需要发布守卫，没有 `SKILL.md` 的仓则没有 skill 加载预算可测。独立套件让消费仓分别选择适用检查并固定版本。最初拆出的 `dash_guard` 与 `load_budget` 占当时安全套件的 17.5%。
 
-把两套 kit 分开，也就把它们的答案分开了。每一个公开仓都需要安全闸门。而一个没有 `SKILL.md` 的仓，加载预算根本没东西可测，并且每跑一次就说一次。
+本套件不配置 `core.hooksPath`；该设置只能指向一个目录，应由发布守卫使用。
 
 ## 安装
 
@@ -103,19 +99,15 @@ pytest style/tools/
 
 ## 文档完成契约
 
-`doc_contract.py` 的 `--profile` 接受 `skill`、`software`、`companion`、`combined`，`--stage` 接受 `draft`、`accepted`、`release`。调用方 CLI 或 CI 提供阶段，仓内声明不能自行降为草稿。Skill 和软件需要双语 README、ROADMAP、CHANGELOG；伴生仓只需要根 README 或 DATA 维护入口，其他安全和类型义务由相应闸门负责。
+```bash
+python style/tools/doc_contract.py --root . --profile skill --stage accepted
+```
 
-两份 README 都要在安装前放置有实质正文的设计哲学，安装节需要命令或链接入口。检查会发现当前正文的已知模板占位、缺失的安装脚本，以及没有初始化必要 submodule 的 clone 步骤。草稿允许占位，接受和发布阶段拒绝。未来路线图的 `TODO` 与历史发布说明仍然合法。
+调用方通过 `--profile` 选择 `skill`、`software`、`companion` 或显式的 `combined`，通过 `--stage` 选择 `draft`、`accepted` 或 `release`。仓内内容不能自行选择 draft。action 默认采用 `skill` 和 `accepted`，先执行回归控制。
 
-`combined` 用于源码与版本化备份放在一起的 PRIVATE 仓库，必须显式选择。README 要说明设计理由和安装方法，并在当前状态、恢复、存储说明中提供本地链接；ROADMAP 要写清现状和后续工作；维护变更记录放在 `docs/MAINTENANCE_CHANGELOG.md`。检查不会打开根目录的整理日志 CHANGELOG 或 package 元数据，也不要求补一份翻译 README 或数字发布版本。PRIVATE 可见性和存储安全仍由各自的闸门验证。[合并仓文档契约](docs/COMBINED_DOCUMENTATION.md) 列出了读取范围、维护检查和验证边界。
+skill 和 software 需要双语 README、ROADMAP、CHANGELOG，设计依据位于安装之前，当前版本保持一致。companion 需要维护 README 或 DATA 入口。PRIVATE combined profile 使用专门的维护变更记录，不打开根目录的策展 DATA。各 profile 的职责、版本和日期规则、链接检查、JSON 输出及读取边界统一见[文档检查契约](docs/DOCUMENTATION_CONTRACT.md)；combined 的具体要求见[维护文档契约](docs/COMBINED_DOCUMENTATION.md)。
 
-Skill 和软件的版本取自 `.claude-plugin/plugin.json`，其次是 `package.json`，两者同时存在时必须一致；没有这两者时，ROADMAP 必须声明唯一数字版本。完整 SemVer 包括预发布与 build 后缀。README 版本和路线图徽章、当前版本字段、ROADMAP 的当前数字和最新 CHANGELOG 发布必须一致；有明确用途的 Current 节也可跟随 manifest，不重复数字。发布日期必须是有效、非未来的 ISO 日期，按日期从新到旧排列，原始版本字符串不能重复。维护分支历史与不同 build 版本可以保留。空 Unreleased 可以通过，发布阶段还要求最新数字发布有实质说明。占位检查只针对当前模板标记，普通待办描述和历史发布文字可以保留。
-
-旧徽章里的 `0.2.2 alpha` 或 `0.2.2 rc.1` 这类空格展示标签，数字基础版本与源版本比较，展示后缀在双语 README 间核对，后缀沿用字母、数字和点号语法；真正的 SemVer 预发布和 build 后缀仍完整比较。历史条目支持逗号分隔的版本、日期和标题。软件历史可以保留只有版本、带 `validated against` 注释及 `and earlier` 汇总的格式，缺日期及相关时间顺序明确标为未验证。发布阶段要求最新发布有日期，旧软件历史缺日期仍标为未验证。根文档锚点按平台路径身份匹配，Windows 文件名大小写差异不会绕过检查。
-
-检查只读取所选 profile 允许的文档和已知元数据，每个输入最多 1 MiB。本地链接按来源文档的位置解析，再检查路径元数据；允许读取的文档还检查 anchor，其他 payload 不打开。稀疏检出中，缺失目标只有在 Git index 明确记录为 skip-worktree 的普通文件时才可通过，路径另列在 `index_metadata_paths`。普通 tracked 文件缺失、index 内的 symlink 或 submodule、reparse 路径和越出根目录的路径都会失败。文档命令不执行，错误 URL 也返回具名失败。`--json` 返回 schema 1、`ok`、具名 `checks`、`failures`、推断的 `version` 和 `unverified` 边界；通过退 0，检查失败或不完整退 1，参数无效退 2。
-
-结构检查不能证明设计质量、双语准确性、变更记录完整、安装成功或外部效果。接受交付前，独立评审仍要根据证据核对这些内容。
+结构检查不能证明设计质量、双语准确性、变更记录完整、安装成功或外部效果。独立评审仍需核对相应证据。扫描器解析、暂存读取、修复和重复检测的细节见[扫描器参考](docs/SCANNERS.md)。
 
 ## 输出示例
 
@@ -136,11 +128,11 @@ load_budget: FAIL, measured NOTHING under /path/to/fleet-style
   from it rather than letting an inert gate report a result.
 ```
 
-第二条正是设计在起作用。一个没东西可测的仓会被告知别再背着这个闸门，而不是收下一个毫无含义的绿勾。
+第二条报告没有可测的 skill，退出码为 3，不能用作加载预算通过的证据。
 
 ## 局限
 
-两个闸门都不保护历史。它们读的是此刻的树，所以已经躺在老 commit 里的违规就留在那儿。这里也不接钩子，所以只在 CI 里跑它们的消费方，是在 push 之后而不是之前知道违规的。`dash_guard --fix` 就地重写文件，并且刻意不能当闸门用：它修复成功后退 0，把它接进 CI 等于装了一个不可能失败的检查。v0.3.0 新增的注释类没有修复器，在消费方升级之前只报告。它们的词法器是手写的小东西，不是解析器；YAML 标量（包括 `description:` 这种写成正文的）暂不检查，块标量里的 `#` 行也算正文不算注释，只有 `run:` 块例外，那里的 `#` 行会被计入，因为那是 shell 注释。JS 词法器还没在 `.jsx` 或 `.tsx` 文件上量过召回率，因为目前没有消费方带这类文件；`js` 要改成阻断之前必须先量。而 `load_budget` 只认两种仓库形态，`skills/*/SKILL.md` 和根目录下的 `SKILL.md`，别的形态一律报成什么都没测到。
+这些检查不扫描完整 Git 历史。它们读的是此刻的树，所以已经躺在老 commit 里的违规就留在那儿。这里也不接钩子，所以只在 CI 里跑它们的消费方，是在 push 之后而不是之前知道违规的。`dash_guard --fix` 就地重写文件，并且刻意不能当闸门用：它修复成功后退 0，把它接进 CI 等于装了一个不可能失败的检查。v0.3.0 新增的注释类没有修复器，在消费方升级之前只报告。它们的词法器是手写的小东西，不是解析器；YAML 标量（包括 `description:` 这种写成正文的）暂不检查，块标量里的 `#` 行也算正文不算注释，只有 `run:` 块例外，那里的 `#` 行会被计入，因为那是 shell 注释。JS 词法器还没在 `.jsx` 或 `.tsx` 文件上量过召回率，因为目前没有消费方带这类文件；`js` 要改成阻断之前必须先量。而 `load_budget` 只认两种仓库形态，`skills/*/SKILL.md` 和根目录下的 `SKILL.md`，别的形态一律报成什么都没测到。
 
 ## 语言
 

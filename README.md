@@ -13,9 +13,7 @@ Every reported pass needs an observed check and a negative control that can fail
 
 ### Why this is a separate repo from fleet-guards
 
-fleet-guards exists to keep a real identifier out of a public history. Nothing here does that. These two catch a house style rule and an architecture rule, and both are worth catching, but a repo that wants the security kit should not be made to carry them: they were 17.5% of that kit and none of it was about the thing the kit is for.
-
-Separating them also makes the answer to "must every public repo have this" different for each, which it always was. Every public repo needs the security gates. A repo with no SKILL.md has nothing for the load budget to measure, and said so on every run.
+Security checks and documentation checks have different scope. Every public consumer needs publication guards, while a repository without `SKILL.md` has no skill loading budget to measure. Keeping separate kits lets consumers select applicable checks and pin each accepted implementation independently. The original split moved `dash_guard` and `load_budget`, then 17.5% of the guard kit, into this repository.
 
 ## Install
 
@@ -29,7 +27,7 @@ Then in each workflow that wants a gate:
       with: {python-version: '3.x'}
     - uses: ./style/ci/dash-guard        # or wrap-guard, load-budget, doc-contract
 
-Hooks are NOT wired here. `core.hooksPath` can only point at one directory, and it belongs to fleet-guards, whose hooks are the thing standing between an identifier and a public push. These two run in CI, which cannot be skipped with `--no-verify` anyway.
+This kit runs through CI and does not configure Git hooks. Keep `core.hooksPath` assigned to the publication guards; it supports only one directory. The CI checks remain independent of local hook invocation.
 
 ## Checking files locally
 
@@ -37,57 +35,26 @@ Hooks are NOT wired here. `core.hooksPath` can only point at one directory, and 
     python tools/dash_guard.py --check --staged
     python tools/dash_guard.py --added-only
 
-The staged modes read the index blobs, including when explicit paths are supplied. An unstaged edit or removal cannot hide content that is about to be committed. `--added-only` checks the added lines of that same staged version. Unreadable or untokenizable inputs produce an incomplete result and a nonzero exit. Deliberate exclusions are listed separately with the examined count.
+Staged checks read Git index blobs. Incomplete reads or parses block, and `--fix --staged` is refused to preserve unstaged changes. Use `--fix --tree`, review the diff, then stage selected repairs. Comment kinds report by default unless promoted with `--block-kinds`; incomplete scans always block.
 
-Comment scanning also covers JavaScript, TypeScript, YAML, shell, PowerShell and cmd files. These kinds report by default; pass `--block-kinds js,yaml,sh,ps,cmd` or the CI action's `block-kinds` input to make their findings block. `--message FILE --block-kinds message` checks a commit message and preserves Git's comment and scissors handling. An incomplete scan always blocks regardless of the selected kinds. Comment files have no automatic fixer. Shell scripts without an extension are identified from the same staged or worktree content being checked, so an unstaged shebang change cannot hide a staged comment.
-
-`wrap_guard.py` uses the same safe file access and Markdown block parser. Its staged checks read text and `.wrap-allow` from the index; `--added-only` checks changed lines using textual Git ranges even when attributes mark Markdown as binary. Missing inputs and unavailable ranges block. Repair preserves code blocks, HTML blocks, explicit Markdown hard breaks, and allowed paragraphs or list items. It joins only reported spans and retains other bytes, including line endings and Unicode separators inside code. Repair rejects links and files that change during access, and `--fix --staged` is refused to preserve unstaged edits.
-
-The shared Markdown parser treats LF, CRLF and CR as line endings. Unicode separators inside a physical code line cannot open or close a fence. Commit-message checks stop at Git's scissors marker and report visible body findings at their original source line numbers, including when comments have been removed.
-
-Use `--fix --tree` to repair worktree files, inspect the diff, and stage the changes you want. `--fix --staged` is refused because replacing worktree files from the index would discard unstaged edits. `--check` and `--fix` are mutually exclusive.
-
-    python tools/make_fixtures.py --check
-    python -m pytest tools/ -q
-
-The first command verifies the generated synthetic inputs. The second runs the kit's full test suites, including controls for incomplete scans and staged content.
-
-The scanners share Markdown code protection that respects paragraph and container boundaries. Fenced and indented code, including code in quotes and lists, stays unchanged when fixing prose and is excluded from duplication measurements. Inline code can span physical lines within one paragraph. An unmatched delimiter cannot hide prose in a later block. Dependency references are excluded when a submodule marker exists at any ancestor below the skill's reference root.
-
-In GitHub Markdown tables, inline code stays within its own cell. An escaped pipe remains part of that cell. Ordinary paragraphs containing pipes retain normal inline-code behavior. The no-value and leading-item repairs also apply to recognized tables in containers and without outer pipes, preserving their container prefixes. Literal backticks inside inline HTML or link destinations and titles cannot open a code span over following prose. Those literal fields retain their bytes, and code in link labels or around HTML keeps normal code-span precedence. Duplication measurements exclude complete tables, including tables without outer pipes and tables in quotes or lists. HTML blocks follow their own boundaries: literal backticks there do not hide prose, while HTML inside a Markdown code block remains protected.
-
-Link reference definitions are parsed before inline code. Their destinations and titles remain literal, including multiline definitions in quotes and lists, and cannot hide the next paragraph. Full, collapsed and shortcut references use the document's defined labels. Completing a link disables enclosing link openers; image openers retain their separate nesting rules, preserving genuine code after an invalid nested link.
-
-Duplication checks use those same parsed links to normalize inline, reference and image labels. Their delimiters and targets are removed while adjacent label text stays joined. Escaped, unresolved and rejected link syntax remains visible prose, so a link-shaped tail cannot erase words that should be compared.
-
-`load_budget.py --max-dup` accepts a finite percentage from 0 through 100. A decoding, discovery or read error exits 3 and reports the affected input on stderr; it emits no partial JSON success. Inputs must be regular files in physical directories, including the supplied root's ancestors. Links are reported as unsupported, and submodules are pruned before traversing their contents. Missing references still produce the explicit `NOT CHECKED` result described by the tool.
-
-`tools/make_fixtures.py --out DIRECTORY` writes the synthetic fixtures by basename for the shared data-boundary check. Add `--check` to verify that directory without rewriting it.
+The [scanner reference](docs/SCANNERS.md) defines parser protection, comment kinds, repair behavior, duplication measurement and read limits. To verify generated inputs and the kit tests, run `python tools/make_fixtures.py --check` and `python -m pytest tools/ -q` in the kit checkout.
 
 ## Document completion contract
 
     python style/tools/doc_contract.py --root . --profile skill --stage accepted
 
-`--profile` selects `skill`, `software`, `companion` or `combined`; `--stage` selects `draft`, `accepted` or `release`. The calling CLI or CI supplies these values. Repository content cannot declare itself draft to bypass accepted checks. The [doc-contract action](ci/doc-contract/action.yml) defaults to `skill` and `accepted` and runs generated regression controls before checking the caller.
+Choose `skill`, `software`, `companion` or explicit `combined` with `--profile`, and `draft`, `accepted` or `release` with `--stage`. The caller supplies both; repository content cannot select draft for itself. The action defaults to `skill` and `accepted` and runs regression controls before the check.
 
-Skills and software need both READMEs, ROADMAP and CHANGELOG. Each README needs a substantive Design Philosophy before installation and an installation command or linked entry. The checker catches known placeholders in current prose, unavailable declared script paths and clone entries that omit required submodule initialization. Draft permits placeholders; acceptance and release reject them. A companion needs only a root README or DATA maintenance entry. Safety and repository-specific gates own further requirements.
+Skills and software require both READMEs, ROADMAP and CHANGELOG, with rationale before setup and consistent current versions. Companions require a maintenance README or DATA entry. The PRIVATE combined profile uses a dedicated maintenance changelog and leaves curation DATA unopened. The [documentation contract](docs/DOCUMENTATION_CONTRACT.md) defines profile duties, version and date rules, link checks, JSON output and read boundaries; [combined maintenance](docs/COMBINED_DOCUMENTATION.md) specifies that profile's requirements.
 
-The explicit `combined` profile serves PRIVATE repositories that maintain source and versioned backups together. It requires a substantive README with rationale, setup, current state, recovery and storage links; a current/future ROADMAP; and `docs/MAINTENANCE_CHANGELOG.md`. It never opens the root curation CHANGELOG or package metadata and does not require a translated README or numeric release version. PRIVATE visibility and storage safety remain separate gate responsibilities. The [combined documentation contract](docs/COMBINED_DOCUMENTATION.md) defines the admitted inputs, maintenance checks and verification limits.
-
-For skill and software profiles, version provenance follows a unique full SemVer in `.claude-plugin/plugin.json`, then `package.json`, with both agreeing when present. Without either, ROADMAP declares one numeric current version. README version and roadmap badges, explicit version fields, ROADMAP current declarations and the newest CHANGELOG release must agree. A meaningful `Current` section can follow the manifest without duplicating a version. Dates must be valid, nonfuture ISO dates; raw release versions must be unique and dates ordered newest first. Maintenance branch histories and distinct build versions remain valid. Empty Unreleased is valid, while release stage requires substantive notes in the newest numeric release. Current scaffold markers fail; lowercase todo descriptions, future roadmap work and historical release text remain valid.
-
-Legacy whitespace badge labels such as `0.2.2 alpha` or `0.2.2 rc.1` compare their numeric base to the source and their display suffix between both READMEs. These display suffixes retain the existing letters, digits and dots grammar. Genuine SemVer prerelease/build suffixes still compare in full. Historical comma/date/title release headings are supported. The software profile can retain version-only or `validated against` histories and an `and earlier` summary: missing dates and chronology are explicitly unverified. Release stage requires a dated newest release; undated prior software history remains unverified. Root-doc anchor lookup uses platform path identity, including case-insensitive Windows filenames.
-
-The checker reads only the selected profile's admitted documentation and known metadata, at most 1 MiB per input. Local links resolve relative to their source document and are checked by path metadata; admitted document paths receive anchor checks. Other linked payloads are never opened. In sparse checkouts, an exact missing regular file can be observed through its Git index mode and skip-worktree flag, reported separately in `index_metadata_paths`. Ordinary missing tracked files, indexed symlinks/submodules, linked/reparse paths and root escapes fail. Markdown commands are never executed. `--json` emits schema version 1, `ok`, named `checks`, named `failures`, inferred `version` and explicit `unverified` boundaries; exits are 0 for pass, 1 for failed or incomplete checks, 2 for invalid arguments. Malformed link URLs produce named failures.
-
-These checks establish structure and visible consistency. They cannot establish design quality, bilingual accuracy, complete change history, successful installation or external effectiveness. A reviewer must assess those against independent evidence before acceptance.
+These checks establish structure and visible consistency. Independent review must assess meaning, bilingual accuracy, history completeness and evidence of installation or external behavior.
 
 ## Moving the pin
 
     git -C style fetch && git -C style checkout <sha>
 
-then commit the new pointer. A submodule pins one commit and does not follow the source on its own, which is deliberate: a bad commit here cannot reach every consumer by itself.
+Then commit the new pointer. Consumers select accepted commits independently, or enroll in [automatic synchronization](docs/AUTOMATIC_SYNC.md), which advances the pointer through their own commit gates after upstream checks pass.
 
 ## An empty style/ is not a pass
 
-A plain `git clone` without `--recursive` leaves it EMPTY, and so does a CI checkout without `submodules: true`. Every action here fails on a missing scanner rather than skipping, because a gate that is not there is not a gate that passed.
+A clone without `--recursive`, or CI checkout without `submodules: true`, can leave `style/` empty. Initialize it with `git submodule update --init`; actions block when their required scanner is missing.
