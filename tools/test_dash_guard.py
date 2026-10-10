@@ -11,7 +11,9 @@ round-trip to a WORD, and must never round-trip to punctuation.
 
 Run: python test_dash_guard.py     (also collectable by pytest)
 """
+import json
 import os
+from pathlib import Path
 import shutil
 import subprocess
 import sys
@@ -54,8 +56,9 @@ def test_dash_only_cell_is_idempotent():
 
 
 def test_several_dash_cells_in_one_row():
-    check(md(f"| SIFY | fcf_cap | null | {EM} | {EM} | {EM} | False |"),
-          "| SIFY | fcf_cap | null | none | none | none | False |", "adjacent dash cells")
+    fixture = Path(__file__).resolve().parents[1] / "tests" / "fixtures" / "table_cases.json"
+    case = json.loads(fixture.read_text(encoding="utf-8"))["adjacent_dash_cells"]
+    check(md(case["input"]), case["expected"], "adjacent dash cells")
 
 
 def test_trailing_dash_cell_without_closing_pipe():

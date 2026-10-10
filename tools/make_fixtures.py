@@ -231,7 +231,10 @@ def table_fixture_bytes():
             text = code + f" Outside {dash} prose."
             escaped_runs.append({"name": repr((length, backslashes)), "input": text,
                                  "expected": code + " Outside, prose."})
-    cases = {"cross_cells": cross_cells, "cross_rows": cross_rows, "cell_code": cell_code,
+    cases = {"adjacent_dash_cells": {
+                 "input": f"| alpha | beta | null | {dash} | {dash} | {dash} | False |",
+                 "expected": "| alpha | beta | null | none | none | none | False |"},
+             "cross_cells": cross_cells, "cross_rows": cross_rows, "cell_code": cell_code,
              "contextual": contextual, "ordinary": ordinary, "escaped_runs": escaped_runs}
     return (json.dumps(cases, ensure_ascii=True, indent=2) + "\n").encode("utf-8")
 

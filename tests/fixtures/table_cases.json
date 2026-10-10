@@ -1,4 +1,8 @@
 {
+  "adjacent_dash_cells": {
+    "input": "| alpha | beta | null | \u2014 | \u2014 | \u2014 | False |",
+    "expected": "| alpha | beta | null | none | none | none | False |"
+  },
   "cross_cells": [
     {
       "name": "`",
