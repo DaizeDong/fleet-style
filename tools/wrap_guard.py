@@ -43,7 +43,6 @@
 
 ## 目标集
 
-    --message FILE   一份 commit message（`commit-msg` 钩子用这个）
     --staged         git 暂存区里的文本 blob（pre-commit 用）
     --tree  （默认） 所有被 git 跟踪的文本文件
     paths...         显式给文件（覆盖上面）
@@ -90,11 +89,6 @@ _HEADING = re.compile(r"^\s*#{1,6}\s")
 _SETEXT = re.compile(r"^\s*(=+|-{3,})\s*$")
 _LINKDEF = re.compile(r"^\s*\[[^\]]+\]:\s")
 _HTML = re.compile(r"^\s*<")
-# git trailer：`Co-Authored-By: …`、`Signed-off-by: …`、`Fixes: …`。
-# 它们**按格式必须各占一行**，报它们等于让这个钩子挡下每一条带署名的提交。
-# 只在 commit message 那一面生效, 在 Markdown 里 `Note: 某某` 是一句散文，
-# 不是 trailer，拿同一条规则去套会悄悄放过真正的硬折行。
-_TRAILER = re.compile(r"^[A-Za-z][A-Za-z0-9-]*:\s")
 _INDENT_CODE = re.compile(r"^(\t| {4,})")
 
 # 整行只有图片/链接（徽章行、图标行），**不是散文**。
@@ -222,9 +216,7 @@ def _blocks(text: str) -> list[_Block]:
 
 
 def _is_prose_line(ln: str, kind: str = "md") -> bool:
-    """这一行是不是**散文**（而不是表格/引用/标题/代码/链接定义/HTML/trailer）。"""
-    if kind == "message" and _TRAILER.match(ln):
-        return False
+    """这一行是不是**散文**（而不是表格/引用/标题/代码/链接定义/HTML）。"""
     if _only_links(ln):
         return False
     return not (_TABLE.match(ln) or _QUOTE.match(ln) or _HEADING.match(ln)
@@ -450,7 +442,6 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(
         description="硬折行闸门：段落内不许有换行符")
     ap.add_argument("paths", nargs="*", help="显式要查的文件")
-    ap.add_argument("--message", help="一份 commit message 文件（commit-msg 钩子用）")
     ap.add_argument("--staged", action="store_true", help="只查 git 暂存区")
     ap.add_argument("--tree", action="store_true", help="查所有被跟踪的文本文件（默认）")
     ap.add_argument("--fix", action="store_true", help="就地展开。**这不是闸门**")
@@ -458,8 +449,7 @@ def main(argv: list[str] | None = None) -> int:
                     help="只报这次新增的行（配 --staged）")
     ap.add_argument("--repo", default=".", help="仓库根")
     a = ap.parse_args(argv)
-    if (a.fix and a.staged or a.tree and (a.staged or a.added_only)
-            or a.message and (a.fix or a.staged or a.tree or a.added_only or a.paths)):
+    if a.fix and a.staged or a.tree and (a.staged or a.added_only):
         print("wrap_guard: incompatible target or repair modes", file=sys.stderr)
         return 2
     if a.added_only:
@@ -470,20 +460,6 @@ def main(argv: list[str] | None = None) -> int:
               "把 --added-only 想跳过的存量也一并改了。两者不许同时给。",
               file=sys.stderr)
         return 2
-
-    # --- commit message：它自成一个目标集，不经过 git 文件列表 ---
-    if a.message:
-        p = Path(a.message)
-        try:
-            text, _ = _read_worktree(p)
-        except (OSError, UnicodeError, ValueError) as exc:
-            print(f"wrap_guard: 读不了 {p}：{exc}", file=sys.stderr)
-            return 2
-        body = _message_body(text)
-        found = check_text(body["text"], path=str(p), kind="message")
-        for f in found:
-            f["line"] = body["line_numbers"][f["line"] - 1]
-        return _report(found, scanned=1, skipped=0, what="commit message")
 
     repo = Path(a.repo).absolute()
     try:
@@ -574,32 +550,6 @@ def main(argv: list[str] | None = None) -> int:
         # **--fix 不是闸门。** 它修好之后退 0；只有读不了的文件才退 1。
         return 1 if unreadable else 0
     return _report(found, scanned=len(targets) - unreadable, skipped=skipped, unreadable=unreadable, what="文件")
-
-
-def _message_body(text: str) -> dict:
-    """Drop the subject, comments and scissors tail while retaining source coordinates."""
-    lines = _source_lines(text)
-    keep: list[str] = []
-    line_numbers: list[int] = []
-    offset = 0
-    started = False
-    for i, raw in enumerate(lines):
-        ln = raw.rstrip("\r\n")
-        if _SCAN._SCISSORS.match(ln):
-            break
-        if ln.startswith("#"):
-            if not started:
-                offset = i + 1
-            continue
-        if not started:
-            if i == 0:
-                offset = 1
-                continue                 # 标题行
-            started = True
-            offset = i
-        keep.append(ln)
-        line_numbers.append(i + 1)
-    return {"text": "\n".join(keep), "offset": offset, "line_numbers": line_numbers}
 
 
 def _report(found: list[dict], *, scanned: int, skipped: int, what: str,

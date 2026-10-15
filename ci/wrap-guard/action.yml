@@ -10,9 +10,7 @@ description: House rule that prose paragraphs carry no hard wraps, checked again
 # needs no rewrite, which is exactly why this kit is separate from the security one: nothing here
 # keeps a real identifier out of a public history.
 #
-# ONE surface this action does NOT cover: commit messages. Those are caught by the machine-level
-# `commit-msg` hook, because a message never reaches CI as a file. If you are reading this while
-# wondering why a wrapped commit body got through, that hook is what to check.
+# Commit messages are not covered: wrap_guard has no message mode, and nothing checks message wraps.
 
 runs:
   using: composite

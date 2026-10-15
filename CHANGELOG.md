@@ -4,6 +4,10 @@ All notable changes to this project are documented here (Keep a Changelog style)
 
 ## [Unreleased]
 
+### Removed
+
+- **`wrap_guard.py --message`.** The commit-message mode, its git-trailer exemption, scissors handling and tests, and the generated `message_cases` fixtures are gone. Its only callers were a machine-level `commit-msg` hook and a consumer's CI copy of the same rule, and both are retired. `dash_guard.py --message` is unchanged.
+
 ### Added
 
 - Explicit `combined` documentation profile for PRIVATE source and backup maintenance repositories. It requires rationale, setup, current state, recovery and storage links, a current/future roadmap and a dedicated maintenance changelog. The checker leaves the curation DATA changelog and version metadata unopened; synthetic controls cover missing obligations, date errors, local links and the content-read boundary.

@@ -55,7 +55,6 @@ def fixture_bytes():
             "clean": "Synthetic paragraph stays on one line.\n",
             "allow": "guide.md # Synthetic archived-document exemption\n",
             "attributes": ["*.md -diff\n", "*.md binary\n"],
-            "message": "Synthetic subject\n\nSynthetic paragraph begins here\nand continues here.\n",
             "fences": [
                 "````markdown\n```\nalpha\nbeta\n```\n````\n",
                 "```text\n~~~\nalpha\nbeta\n~~~\n```\n",
@@ -89,16 +88,6 @@ def fixture_bytes():
     cases["wrap_inputs"]["repair_cases"] = repair
     repair.extend({"name": case["name"], "input": case["wrap_input"],
                    "expected": case["wrap_expected"]} for case in physical_line_cases())
-    scissors = "# ------------------------ >8 ------------------------\n"
-    tail = "Discarded synthetic first line\ndiscarded second line.\n"
-    cases["wrap_inputs"]["message_cases"] = [
-        {"name": "only discarded tail wraps", "input": "Synthetic subject\n\nClean body.\n" + scissors + tail,
-         "exit_code": 0, "line": None},
-        {"name": "visible body wraps", "input": "Synthetic subject\n\nFirst body line\nsecond body line.\n" + scissors + tail,
-         "exit_code": 1, "line": 3},
-        {"name": "comment lines preserve coordinates", "input": "Synthetic subject\n\n# Synthetic comment\n# Another comment\nFirst body line\nsecond body line.\n" + scissors + tail,
-         "exit_code": 1, "line": 5},
-    ]
     return (json.dumps(cases, ensure_ascii=True, indent=2) + "\n").encode("utf-8")
 
 

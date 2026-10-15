@@ -252,60 +252,6 @@ def test_fix_keeps_the_trailing_newline_decision():
 
 
 # --------------------------------------------------------------------------
-# 四 · commit message 那一面
-# --------------------------------------------------------------------------
-
-def test_the_subject_line_is_not_a_paragraph(tmp_path):
-    """标题行本来就是一行，它不参与段落规则。"""
-    p = tmp_path / "MSG"
-    p.write_text("这是标题行\n\n这是一整段正文写成一行。\n", encoding="utf-8")
-    assert W.main(["--message", str(p)]) == 0
-
-
-def test_a_wrapped_commit_body_is_caught(tmp_path):
-    p = tmp_path / "MSG"
-    p.write_text("标题\n\n正文的前半句，\n正文的后半句。\n", encoding="utf-8")
-    assert W.main(["--message", str(p)]) == 1
-
-
-def test_git_comment_lines_in_a_message_are_ignored(tmp_path):
-    p = tmp_path / "MSG"
-    p.write_text("标题\n\n一整段正文。\n\n# 请输入提交信息\n# 以 '#' 开头的行将被忽略\n",
-                 encoding="utf-8")
-    assert W.main(["--message", str(p)]) == 0
-
-
-def test_git_trailers_are_not_a_wrapped_paragraph(tmp_path):
-    """**git trailer 按格式必须各占一行。**
-
-    不放过它们，这个钩子会挡下每一条带署名的提交 —— 而一个挡下一切的钩子
-    会在第一天就被 `--no-verify` 绕过，等于从来没装。
-    """
-    p = tmp_path / "MSG"
-    p.write_text("标题\n\n一整段正文。\n\n"
-                 "Co-Authored-By: Someone <user1@example.com>\n"
-                 "Claude-Session: https://example.com/s/1\n", encoding="utf-8")
-    assert W.main(["--message", str(p)]) == 0
-
-
-def test_a_trailer_looking_line_in_markdown_is_still_prose():
-    """**另一半**：只有 commit message 那一面认 trailer。
-
-    Markdown 里 `Note: 某某` 是一句散文，拿同一条规则去套，会把真正的
-    硬折行悄悄放过。
-    """
-    text = "Note: 这是前半句，\n这是后半句。\n"
-    assert W.check_text(text, kind="md"), "Markdown 里也把它当 trailer 放过了"
-    assert W.check_text(text, kind="message") == []
-
-
-def test_an_unreadable_message_file_exits_two(tmp_path):
-    """**读不了不许退 0。** 一次「没检查」和一次「检查过了是干净的」
-    必须是两个输出。"""
-    assert W.main(["--message", str(tmp_path / "does-not-exist")]) == 2
-
-
-# --------------------------------------------------------------------------
 # 五 · 扫不动要退 2，不许退 0
 # --------------------------------------------------------------------------
 
@@ -436,12 +382,6 @@ def test_contract_incompatible_modes_are_rejected(tmp_path, args):
     assert W.main(["--repo", str(tmp_path), *args]) == 2
 
 
-def test_contract_invalid_message_encoding_is_not_replaced(tmp_path):
-    path = tmp_path / "message"
-    path.write_bytes(bytes.fromhex(_CONTRACTS["invalid_utf8_hex"]))
-    assert W.main(["--message", str(path)]) == 2
-
-
 @pytest.mark.parametrize("text", _WRAP["fences"])
 def test_contract_fence_marker_and_length_preserve_code(text):
     assert W.check_text(text) == []
@@ -560,13 +500,3 @@ def test_contract_added_only_maps_markdown_lines_to_git_lines(tmp_path, case):
     path.write_bytes(case["input"].encode("utf-8"))
     _contract_git(tmp_path, "-c", "core.autocrlf=false", "add", "--", path.name)
     assert W.main(["--repo", str(tmp_path), "--added-only"]) == 1
-
-
-@pytest.mark.parametrize("case", _WRAP["message_cases"], ids=lambda case: case["name"])
-def test_contract_scissors_tail_is_ignored_and_visible_coordinates_remain(tmp_path, capsys, case):
-    path = tmp_path / "MSG"
-    path.write_bytes(case["input"].encode("utf-8"))
-    assert W.main(["--message", str(path)]) == case["exit_code"]
-    output = capsys.readouterr().out
-    if case["line"] is not None:
-        assert f'{path}:{case["line"]}  [paragraph]' in output
