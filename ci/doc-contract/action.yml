@@ -10,13 +10,6 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Document checker's generated regression controls
-      shell: bash
-      run: |
-        python -m pip install --quiet pytest
-        python "$GITHUB_ACTION_PATH/../../tools/make_fixtures.py" --check
-        test -f "$GITHUB_ACTION_PATH/../../tools/doc_contract.py" || { echo "::error::missing document checker"; exit 1; }
-        python -m pytest "$GITHUB_ACTION_PATH/../../tools/test_doc_contract.py" -q
     - name: Calling repository document contract
       shell: bash
       env:

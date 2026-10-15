@@ -2,7 +2,7 @@
 
 Run `python style/tools/doc_contract.py --root . --profile skill --stage accepted` from a consumer root.
 
-`--profile` selects `skill`, `software`, `companion` or `combined`; `--stage` selects `draft`, `accepted` or `release`. The calling CLI or CI supplies these values. Repository content cannot declare itself draft to bypass accepted checks. The [doc-contract action](../ci/doc-contract/action.yml) defaults to `skill` and `accepted` and runs generated regression controls before checking the caller.
+`--profile` selects `skill`, `software`, `companion` or `combined`; `--stage` selects `draft`, `accepted` or `release`. The calling CLI or CI supplies these values. Repository content cannot declare itself draft to bypass accepted checks. The [doc-contract action](../ci/doc-contract/action.yml) defaults to `skill` and `accepted`.
 
 Skills and software need both READMEs, ROADMAP and CHANGELOG. Each README needs a substantive Design Philosophy before installation and an installation command or linked entry. The checker catches known placeholders in current prose, unavailable declared script paths and clone entries that omit required submodule initialization. Draft permits placeholders; acceptance and release reject them. A companion needs only a root README or DATA maintenance entry. Safety and repository-specific gates own further requirements.
 

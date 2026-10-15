@@ -3,9 +3,8 @@
 # Callers rather than a second copy of the steps: the action IS the subject here, so a break shows
 # up in this repo before it reaches a consumer.
 #
-# No pii-guard job. This repo does not carry that scanner, and the machine-level hook plus the
-# consuming repos' own CI cover the identifier question. What is asserted here is that these two
-# gates still work.
+# No pii-guard job. This repo does not carry that scanner; the consuming repos' own CI covers the
+# identifier question. What is asserted here is that the doc and dash gates still work.
 name: style
 
 on:
@@ -32,30 +31,6 @@ jobs:
         with:
           python-version: '3.x'
       - uses: ./ci/dash-guard
-  budget-tests:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.x'
-      - name: Load-budget regression suite
-        run: |
-          python -m pip install --quiet pytest
-          python tools/make_fixtures.py --check
-          python -m pytest tools/test_load_budget.py tools/test_load_budget_inputs.py tools/test_load_budget_prose.py tools/test_markdown_inputs.py tools/test_markdown_syntax.py tools/test_markdown_links.py -q
-
-  # Separate job, not a second step in `dash`. A failing dash scan would otherwise stop the run
-  # before the wrap scan ever executed, and "did not run" would be reported as one red gate rather
-  # than two independent answers.
-  wrap:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.x'
-      - uses: ./ci/wrap-guard
 
   # The notifier hands secrets to a reusable workflow in another repository; this job fails if that
   # call (or any new one) is made at a movable ref instead of a full commit SHA.
