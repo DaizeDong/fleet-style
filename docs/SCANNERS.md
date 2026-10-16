@@ -6,7 +6,7 @@ Paths below are relative to the kit checkout, named by `git config fleet.style`.
 
 The staged modes read the index blobs, including when explicit paths are supplied. An unstaged edit or removal cannot hide content that is about to be committed. `--added-only` checks the added lines of that same staged version. Unreadable or untokenizable inputs produce an incomplete result and a nonzero exit. Deliberate exclusions are listed separately with the examined count.
 
-Comment scanning also covers JavaScript, TypeScript, YAML, shell, PowerShell and cmd files. These kinds report by default; pass `--block-kinds js,yaml,sh,ps,cmd` to make their findings block. `--message FILE --block-kinds message` checks a commit message and preserves Git's comment and scissors handling. An incomplete scan always blocks regardless of the selected kinds. Comment files have no automatic fixer. Shell scripts without an extension are identified from the same staged or worktree content being checked, so an unstaged shebang change cannot hide a staged comment.
+`--message FILE` checks a commit message, preserves Git's comment and scissors handling, and blocks on any finding. An incomplete scan always blocks.
 
 
 The shared Markdown parser treats LF, CRLF and CR as line endings. Unicode separators inside a physical code line cannot open or close a fence. Commit-message checks stop at Git's scissors marker and report visible body findings at their original source line numbers, including when comments have been removed.

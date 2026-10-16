@@ -34,7 +34,7 @@ fi
 python "$S/tools/dash_guard.py" --check --staged --added-only </dev/null || exit 1
 ```
 
-Add `--block-kinds js,yaml` (or any other kinds) to promote report-only comment kinds for that repository. An unset key or a checkout without the script blocks; there is no fallback location. `load_budget` and `doc_contract` are on-demand scripts and are not wired into any hook.
+An unset key or a checkout without the script blocks; there is no fallback location. `load_budget` and `doc_contract` are on-demand scripts and are not wired into any hook.
 
 ## Checking files by hand
 
@@ -45,9 +45,9 @@ Add `--block-kinds js,yaml` (or any other kinds) to promote report-only comment 
 
 From a consumer, run them as `python "$(git config --get fleet.style)/tools/<tool>.py"`.
 
-Staged checks read Git index blobs. Incomplete reads or parses block, and `--fix --staged` is refused to preserve unstaged changes. Use `--fix --tree`, review the diff, then stage selected repairs. Comment kinds report by default unless promoted with `--block-kinds`; incomplete scans always block.
+Staged checks read Git index blobs. Incomplete reads or parses block, and `--fix --staged` is refused to preserve unstaged changes. Use `--fix --tree`, review the diff, then stage selected repairs. Incomplete scans always block.
 
-The [scanner reference](docs/SCANNERS.md) defines parser protection, comment kinds, repair behavior, duplication measurement and read limits.
+The [scanner reference](docs/SCANNERS.md) defines parser protection, repair behavior, duplication measurement and read limits.
 
 ## Document completion contract
 

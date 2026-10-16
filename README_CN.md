@@ -46,7 +46,7 @@ fi
 python "$S/tools/dash_guard.py" --check --staged --added-only </dev/null || exit 1
 ```
 
-想把某些只报告的注释类设为阻断，就在这一行加 `--block-kinds js,yaml` 之类。配置项没设，或者 checkout 里没有这个脚本，一律拦下；没有任何备用位置。`load_budget` 和 `doc_contract` 是按需手动跑的脚本，不接任何钩子。
+配置项没设，或者 checkout 里没有这个脚本，一律拦下；没有任何备用位置。`load_budget` 和 `doc_contract` 是按需手动跑的脚本，不接任何钩子。
 
 ## 快速开始
 
@@ -57,7 +57,6 @@ python tools/dash_guard.py --tree      # 所有被跟踪的文本文件
 python tools/dash_guard.py --staged    # 只看 staged 的 blob
 python tools/dash_guard.py --fix FILE  # 确定性修复，不是闸门
 python tools/dash_guard.py --message .git/COMMIT_EDITMSG   # 查一条 commit message
-python tools/dash_guard.py --tree --block-kinds js,yaml    # 把报告类升为阻断
 python tools/load_budget.py .          # 常驻加载预算
 python tools/doc_contract.py --root . --profile software --stage accepted
 ```
@@ -66,7 +65,7 @@ python tools/doc_contract.py --root . --profile software --stage accepted
 
 | 闸门 | 它断言什么 | 退出码 |
 | --- | --- | --- |
-| `tools/dash_guard.py` | 公开 prose 不含 en dash、em dash、horizontal bar。Markdown 围栏与行内 code 豁免，带 `dash-guard: allow` 标记的行豁免，扫描器源文件按固定路径或标记识别。Markdown、纯文本和 Python 注释默认阻断。JS、YAML、shell、PowerShell 和 cmd 的注释，以及 commit message（`--message`），默认报告，可用 `--block-kinds` 设为阻断。扫描不完整时始终阻断。暂存模式读取 Git index，修复模式验证文件与目录身份后才写入。 | 0 干净，1 有发现或扫描不完整，2 扫描跑不起来 |
+| `tools/dash_guard.py` | 公开 prose 不含 en dash、em dash、horizontal bar。Markdown 围栏与行内 code 豁免，带 `dash-guard: allow` 标记的行豁免，扫描器源文件按固定路径或标记识别。Markdown、纯文本、Python 注释和 commit message（`--message`）里的发现都阻断。扫描不完整时始终阻断。暂存模式读取 Git index，修复模式验证文件与目录身份后才写入。 | 0 干净，1 有发现或扫描不完整，2 扫描跑不起来 |
 | `tools/load_budget.py` | 一个 skill 的常驻加载行数不超预算，且 `SKILL.md` 里的正文不是 reference 里正文的第二份副本。重复用 word shingle 检测，所以一条规则的措辞出现在展开它的那份 reference 里并不会触发。 | 0 在预算内，1 超预算，3 什么都没测到 |
 | `tools/doc_contract.py` | 根文档结构、版本、日期和入口链接。 | 0 通过，非零为失败 |
 
