@@ -72,7 +72,6 @@ WHY "NOTHING TO MEASURE" IS A FAILURE (and used to be a quiet success)
 
 import argparse
 import fnmatch
-import json
 import math
 import os
 import re
@@ -288,26 +287,13 @@ def audit(skill_md):
 
 def main():
     ap = argparse.ArgumentParser(description="PHILOSOPHY P7 gate: always-loaded budget + cross-file prose duplication.")
-    ap.add_argument("root", nargs="?", default=".", help="repo root, or a directory of repos with --scan-all")
-    ap.add_argument("--scan-all", action="store_true", help="treat root as a parent dir and audit every skill repo under it")
+    ap.add_argument("root", nargs="?", default=".", help="repo root")
     ap.add_argument("--max-dup", type=percentage, default=DUP_PCT_MAX,
                     help="maximum duplicated prose percentage, from 0 through 100")
-    ap.add_argument("--max-lines", type=int, default=ALWAYS_LOADED_MAX,
-                    help="hard cap on always-loaded SKILL.md lines; over this BLOCKS (exit 1). "
-                         "This is the half that used to be incapable of failing.")
-    ap.add_argument("--json", action="store_true")
     args = ap.parse_args()
 
     try:
-        if args.scan_all:
-            targets = []
-            info = _path_info(args.root, optional=True)
-            kids = _entries(args.root) if info is not None and stat.S_ISDIR(info.st_mode) else []
-            for entry in kids:
-                if stat.S_ISDIR(_path_info(entry.path).st_mode):
-                    targets += skill_md_paths(entry.path)
-        else:
-            targets = skill_md_paths(args.root)
+        targets = skill_md_paths(args.root)
         results = [audit(t) for t in targets]
     except (OSError, MeasurementError) as error:
         print(f"load_budget: FAIL, incomplete measurement: {error}", file=sys.stderr)
@@ -317,19 +303,15 @@ def main():
         # measure") described the tool's state; what the operator needs is the consequence.
         root = os.path.abspath(args.root)
         print("load_budget: FAIL, measured NOTHING under %s" % root)
-        print("  looked for: skills/*/SKILL.md and SKILL.md at the root%s"
-              % (" of every immediate subdirectory" if args.scan_all else ""))
-        if args.scan_all or ships_a_skill(args.root):
+        print("  looked for: skills/*/SKILL.md and SKILL.md at the root")
+        if ships_a_skill(args.root):
             print("  This repo is a skill repo, so finding no SKILL.md is a defect in the repo or in")
             print("  this resolution, not a clean result. Nothing was measured; nothing is cleared.")
         else:
             print("  This repo declares no skill (no .claude-plugin/plugin.json, no skills/, no root")
-            print("  SKILL.md), so load_budget has nothing here to guard. Drop tools/load_budget.py")
-            print("  from it rather than letting an inert gate report a result.")
+            print("  SKILL.md), so load_budget has nothing here to guard. Do not run it on this")
+            print("  repo; an inert gate reporting a result reads like a verdict.")
         return 3
-
-    if args.json:
-        print(json.dumps(results, indent=1, ensure_ascii=False))
 
     failed = False
     for r in results:
@@ -337,7 +319,7 @@ def main():
         # row is named "." tells the reader nothing about which file was measured.
         name = os.path.basename(os.path.abspath(os.path.dirname(r["skill_md"])))
         over = r["dup_checked"] and r["dup_pct"] > args.max_dup
-        over_lines = r["always_loaded_lines"] > args.max_lines
+        over_lines = r["always_loaded_lines"] > ALWAYS_LOADED_MAX
         unmeasured = not r["measured"]
         bad = over or over_lines or unmeasured
         failed |= bad
@@ -350,40 +332,39 @@ def main():
             dup_col = f"dup NOT CHECKED (0 refs, {r['shingles']} shingles)"
         else:
             dup_col = f"dup {r['dup_pct']:>5.2f}% ({r['dup_shingles']}/{r['shingles']})"
-        if not args.json:
-            print(f"[{flag:>5}] {name:<26} always-loaded {r['always_loaded_lines']:>4} lines | "
-                  f"{dup_col} | "
-                  f"{r['ref_count']} refs, {r['ref_lines']} on-demand lines")
-            if unmeasured:
-                print(f"          MEASURED NOTHING: {r['skill_md']} yielded no {SHINGLE_N}-word run of prose.")
-                print("          A SKILL.md that short is empty, truncated or unreadable. Neither half of this")
-                print("          gate examined it, so nothing about it has been cleared. Exit 1, not exit 0.")
-            if over_lines:
-                print(f"          BLOCK: always-loaded budget exceeded. {r['always_loaded_lines']} lines > "
-                      f"cap {args.max_lines}, over by {r['always_loaded_lines'] - args.max_lines}.")
-                print(f"          file: {r['skill_md']}")
-                print(f"          Every invocation of this skill pays for all {r['always_loaded_lines']} lines. Move the "
-                      f"parts only SOME runs need")
-                print("          into a reference doc and leave a pointer (P7). Raising --max-lines is not the fix.")
-            elif r["always_loaded_lines"] > ALWAYS_LOADED_WARN:
-                print(f"          note: SKILL.md is large ({r['always_loaded_lines']} lines, warn at "
-                      f"{ALWAYS_LOADED_WARN}, block at {args.max_lines}). Not a failure by itself, but check")
-                print("          whether any of it is only needed by SOME runs (P7).")
-            if not r["dup_checked"] and r["measured"]:
-                print("          note: 0 reference docs, so the duplication half compared nothing. Legitimate for "
-                      "a single-file skill, but NOT a clean duplication result.")
-            if over:
-                for count, ref, samples in r["offenders"]:
-                    print(f"          +{count:<4} shared with {ref}")
-                    for s in samples:
-                        print(f"                \"{s[:96]}\"")
-                print("          fix: keep the RULE in SKILL.md, move the rationale/war-story to the reference, "
-                      "and leave a pointer. Do not paste both.")
-                print("          NOTE: this measures overlap, not DIRECTION. Decide per hit which side defers. "
-                      "A rule restated inside a reference means the REFERENCE should point back.")
-            for count, pair in r["cross_ref"]:
-                print(f"          note: +{count} shared between {pair[0]} and {pair[1]} "
-                      f"(reference-to-reference, advisory only)")
+        print(f"[{flag:>5}] {name:<26} always-loaded {r['always_loaded_lines']:>4} lines | "
+              f"{dup_col} | "
+              f"{r['ref_count']} refs, {r['ref_lines']} on-demand lines")
+        if unmeasured:
+            print(f"          MEASURED NOTHING: {r['skill_md']} yielded no {SHINGLE_N}-word run of prose.")
+            print("          A SKILL.md that short is empty, truncated or unreadable. Neither half of this")
+            print("          gate examined it, so nothing about it has been cleared. Exit 1, not exit 0.")
+        if over_lines:
+            print(f"          BLOCK: always-loaded budget exceeded. {r['always_loaded_lines']} lines > "
+                  f"cap {ALWAYS_LOADED_MAX}, over by {r['always_loaded_lines'] - ALWAYS_LOADED_MAX}.")
+            print(f"          file: {r['skill_md']}")
+            print(f"          Every invocation of this skill pays for all {r['always_loaded_lines']} lines. Move the "
+                  f"parts only SOME runs need")
+            print("          into a reference doc and leave a pointer (P7). Raising ALWAYS_LOADED_MAX is not the fix.")
+        elif r["always_loaded_lines"] > ALWAYS_LOADED_WARN:
+            print(f"          note: SKILL.md is large ({r['always_loaded_lines']} lines, warn at "
+                  f"{ALWAYS_LOADED_WARN}, block at {ALWAYS_LOADED_MAX}). Not a failure by itself, but check")
+            print("          whether any of it is only needed by SOME runs (P7).")
+        if not r["dup_checked"] and r["measured"]:
+            print("          note: 0 reference docs, so the duplication half compared nothing. Legitimate for "
+                  "a single-file skill, but NOT a clean duplication result.")
+        if over:
+            for count, ref, samples in r["offenders"]:
+                print(f"          +{count:<4} shared with {ref}")
+                for s in samples:
+                    print(f"                \"{s[:96]}\"")
+            print("          fix: keep the RULE in SKILL.md, move the rationale/war-story to the reference, "
+                  "and leave a pointer. Do not paste both.")
+            print("          NOTE: this measures overlap, not DIRECTION. Decide per hit which side defers. "
+                  "A rule restated inside a reference means the REFERENCE should point back.")
+        for count, pair in r["cross_ref"]:
+            print(f"          note: +{count} shared between {pair[0]} and {pair[1]} "
+                  f"(reference-to-reference, advisory only)")
     return 1 if failed else 0
 
 
