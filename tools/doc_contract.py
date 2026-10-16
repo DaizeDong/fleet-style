@@ -5,8 +5,6 @@ This is a structural contract. It cannot establish design quality, translation
 accuracy, historical completeness, working installation or product effectiveness.
 Only trusted CLI inputs select the profile and lifecycle stage.
 """
-from __future__ import annotations
-
 import argparse
 from datetime import date
 import json

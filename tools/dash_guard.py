@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# dash-guard:scanner-file -- this file carries the dash set by design; see _self_marker
 """dash_guard: flag / fix en-dash and em-dash used as prose in a public repo.
 
 House rule (user global): published prose carries NO en/em dash. The ASCII hyphen `-` is left
@@ -39,8 +38,6 @@ Why the table rules exist: a table cell holding a single long dash is the conven
 not prose at all, and NO gate can see it afterwards because the output contains no dash. The cell
 rules run before the prose rules so a dash that is a value never reaches the appositive rule.
 """
-from __future__ import annotations
-
 import argparse
 import io
 import os
@@ -52,11 +49,8 @@ import tokenize
 
 import markdown_regions as _MARKDOWN
 
-try:
-    sys.stdout.reconfigure(encoding="utf-8")
-    sys.stderr.reconfigure(encoding="utf-8")
-except Exception:
-    pass
+sys.stdout.reconfigure(encoding="utf-8")
+sys.stderr.reconfigure(encoding="utf-8")
 
 _DASHES = "–—―"          # – — ―
 _DASH_RE = re.compile(f"[{_DASHES}]")
@@ -573,14 +567,8 @@ def main(argv=None) -> int:
     #                only this one affects an exit code.
     excluded = []                     # (path, reason)
     unexamined = []                   # (path, reason)
-    # The guard's own source carries the dash set by design, so it is exempt -- but keyed on its
-    # PATH, not on the basename. A basename rule means `git mv prose.md tools/../
-    # dash_guard.py`, or simply any file called dash_guard.py in any directory, is exempt from the
-    # check. pii_guard had the identical hole and it was worth more there; the shape is the same
-    # and so is the fix. A legitimate copy at a non-standard path proves what it is by carrying
-    # the marker, rather than by being on a list of blessed locations.
-    _self_paths = {"tools/dash_guard.py", "dash_guard.py"}
-    _self_marker = "dash-guard:scanner-file"
+    # The guard's own source carries the dash set by design, so it is exempt by its path.
+    _self_paths = {"tools/dash_guard.py"}
     for rel in files:
         path = rel if os.path.isabs(rel) else os.path.join(repo, rel)
         extension = os.path.splitext(path)[1].lower()
@@ -616,8 +604,7 @@ def main(argv=None) -> int:
             # because "skipped" reported as "clean" is the same class of lie as the git fail-open.
             unexamined.append((rel, "unreadable (%s)" % type(e).__name__))
             continue
-        if _rel in _self_paths or (os.path.basename(_rel) == "dash_guard.py"
-                                   and _self_marker in text):
+        if _rel in _self_paths:
             excluded.append((rel, "the guard's own source (contains the dash set by design)"))
             continue
         if kind is None:
