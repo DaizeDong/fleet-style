@@ -6,6 +6,7 @@ All notable changes to this project are documented here (Keep a Changelog style)
 
 ### Removed
 
+- **`doc_contract` legacy version suffixes.** `display_version()` and the "README bilingual legacy display suffixes" check are gone: a README version badge or line must show the source version exactly, so `v1.2.3 beta` no longer passes as `1.2.3`.
 - **No submodule, no CI, no automatic sync (2026-10-15).** The kit runs only from one local checkout per machine, named by `git config fleet.style`. `dash_guard` runs from each consumer's `.githooks/pre-commit` shim as `--check --staged --added-only`; `load_budget` and `doc_contract` are on-demand scripts. Deleted: `ci/dash-guard`, `ci/load-budget`, `ci/doc-contract`, both workflows (`style.yml`, `notify-consumers.yml`), `tools/test_workflow_pins.py`, `docs/AUTOMATIC_SYNC.md` and `docs/2026-09-22-spec-adaptation.md`. This repository now has its own `.githooks/` shims with `core.hooksPath=.githooks` instead of pointing at the sibling fleet-guards hooks.
 - **The kit's own test suites, fixture generator and `conftest.py`.** Every `tools/test_*.py` except `tools/test_workflow_pins.py`, `tools/make_fixtures.py`, the generated `tests/fixtures/` and the `conftest.py` that kept those tests out of consumer runs are gone. The `ci/dash-guard`, `ci/load-budget` and `ci/doc-contract` actions now run only their gate command, and `style.yml` drops the `budget-tests` job; the `pins` job stays.
 - **`wrap_guard.py`, `ci/wrap-guard` and the `wrap` job.** No consumer workflow called the action.

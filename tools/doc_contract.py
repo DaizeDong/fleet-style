@@ -197,12 +197,6 @@ def displayed_versions(text):
     return values
 
 
-def display_version(value):
-    """Legacy whitespace labels are display metadata; full SemVer stays exact."""
-    match = re.fullmatch(r"((?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*))\s+([A-Za-z0-9.]+)", value)
-    return (match[1], " ".join(match[2].split())) if match else (value, "")
-
-
 def local_regular_file(root, relative):
     """Check ordinary or sparse regular-file metadata without opening the payload."""
     try:
@@ -404,14 +398,9 @@ def check(root, profile="skill", stage="accepted"):
                                          for heading, body, _ in sections(roadmap)):
                 fail("roadmap.current", "ROADMAP needs a purposeful current section or current version declaration")
         if source and not errors["version.source"]:
-            suffixes = {}
             for name in ("README.md", "README_CN.md"):
-                displays = [display_version(value) for value in displayed_versions(docs.get(name, ""))]
-                suffixes[name] = {suffix for _, suffix in displays if suffix}
-                if any(value != source for value, _ in displays):
+                if any(value != source for value in displayed_versions(docs.get(name, ""))):
                     fail("version.current", f"{name}: displayed current version differs from {source}")
-            if all(name in docs for name in suffixes) and suffixes["README.md"] != suffixes["README_CN.md"]:
-                fail("version.current", "README bilingual legacy display suffixes differ")
         changelog = docs.get("CHANGELOG.md", "")
         releases, unreleased = [], []
         for heading, body, offset in sections(changelog):
