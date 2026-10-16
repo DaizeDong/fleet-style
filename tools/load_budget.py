@@ -65,7 +65,7 @@ WHY "NOTHING TO MEASURE" IS A FAILURE (and used to be a quiet success)
     clean, deliberate-looking result on the files most over that budget.
     That is the fleet's signature defect: a gate that reassures. Both halves are fixed here. The
     root layout is now discovered (see skill_md_paths), and finding nothing to measure exits 3,
-    because a tool vendored into a skill repo that locates no skill has failed to do its job, no
+    because a tool pointed at a skill repo that locates no skill has failed to do its job, no
     matter how calmly it says so. The former benign exit 2 for this case is retired;
     argparse still uses exit 2 for invalid arguments.
 """
@@ -231,8 +231,8 @@ def ships_a_skill(root):
     """Does this repo claim to be a skill repo at all?
 
     Only used to word the exit-3 message. It never converts the failure into a pass: a repo that
-    ships no skill and still carries this tool is a vendoring mistake to correct, not a result to
-    accept, and either way nothing was measured.
+    ships no skill and is still measured by this tool is a targeting mistake to correct, not a result
+    to accept, and either way nothing was measured.
     """
     return (os.path.isfile(os.path.join(root, ".claude-plugin", "plugin.json"))
             or os.path.isdir(os.path.join(root, "skills")))
@@ -242,18 +242,16 @@ def in_submodule(base, path):
     """Is `path` inside a git submodule of `base`?
 
     A submodule's files are a DEPENDENCY, not this repo's prose. Counting them makes the budget
-    measure something the repo does not own and cannot edit, and it produces duplication notes that
-    are true by construction: the guard kit's COMPANION.md is byte-identical to the consumer's copy
-    on purpose, so every root-layout repo reported the same three notes on every run. A rare signal
-    made routine is a signal people learn to scroll past.
+    measure something the repo does not own and cannot edit, and a dependency that ships a copy of
+    the repo's own docs produces duplication notes that are true by construction and repeat on every
+    run. A rare signal made routine is a signal people learn to scroll past.
 
     DETECTED BY SHAPE, NOT BY NAME, for the same reason the scanner's skip is: a name list is a
     list of the submodules somebody remembered, and the next one is silent again. `.git` as a FILE
     rather than a directory is git's own marker for "this worktree belongs to a parent".
 
     Only repos whose SKILL.md sits at the ROOT are affected, because that is the only layout where
-    the reference walk starts above the submodules. That is why this went unnoticed until three
-    such repos existed.
+    the reference walk starts above the submodules.
     """
     base, path = os.path.abspath(base), os.path.abspath(path)
     try:

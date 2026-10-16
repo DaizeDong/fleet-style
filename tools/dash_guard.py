@@ -885,14 +885,13 @@ def main(argv=None) -> int:
     #                only this one affects an exit code.
     excluded = []                     # (path, reason)
     unexamined = []                   # (path, reason)
-    # The guard's own source carries the dash set by design, so it is exempt -- but keyed on the
-    # vendored PATH, not on the basename. A basename rule means `git mv prose.md tools/../
+    # The guard's own source carries the dash set by design, so it is exempt -- but keyed on its
+    # PATH, not on the basename. A basename rule means `git mv prose.md tools/../
     # dash_guard.py`, or simply any file called dash_guard.py in any directory, is exempt from the
     # check. pii_guard had the identical hole and it was worth more there; the shape is the same
     # and so is the fix. A legitimate copy at a non-standard path proves what it is by carrying
     # the marker, rather than by being on a list of blessed locations.
-    _self_paths = {"tools/dash_guard.py", "tools/test_dash_guard.py",
-                   "dash_guard.py", "test_dash_guard.py"}
+    _self_paths = {"tools/dash_guard.py", "dash_guard.py"}
     _self_marker = "dash-guard:scanner-file"
     for rel in files:
         path = rel if os.path.isabs(rel) else os.path.join(repo, rel)
@@ -948,8 +947,7 @@ def main(argv=None) -> int:
             # because "skipped" reported as "clean" is the same class of lie as the git fail-open.
             unexamined.append((rel, "unreadable (%s)" % type(e).__name__))
             continue
-        if _rel in _self_paths or (os.path.basename(_rel) in
-                                   {"dash_guard.py", "test_dash_guard.py"}
+        if _rel in _self_paths or (os.path.basename(_rel) == "dash_guard.py"
                                    and _self_marker in text):
             excluded.append((rel, "the guard's own source (contains the dash set by design)"))
             continue
