@@ -418,13 +418,6 @@ def _blocks(text, definitions=None):
         yield "inline", paragraph, len(text)
 
 
-def fenced_regions(text):
-    """Yield block-code ranges, stopping unclosed fences at their container end."""
-    for kind, start, end in _blocks(text):
-        if kind == "code":
-            yield start, end
-
-
 def code_and_html_regions(text):
     """Yield blocks whose layout a prose reflow operation must preserve."""
     for kind, start, end in _blocks(text):

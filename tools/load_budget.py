@@ -238,39 +238,6 @@ def ships_a_skill(root):
             or os.path.isdir(os.path.join(root, "skills")))
 
 
-def in_submodule(base, path):
-    """Is `path` inside a git submodule of `base`?
-
-    A submodule's files are a DEPENDENCY, not this repo's prose. Counting them makes the budget
-    measure something the repo does not own and cannot edit, and a dependency that ships a copy of
-    the repo's own docs produces duplication notes that are true by construction and repeat on every
-    run. A rare signal made routine is a signal people learn to scroll past.
-
-    DETECTED BY SHAPE, NOT BY NAME, for the same reason the scanner's skip is: a name list is a
-    list of the submodules somebody remembered, and the next one is silent again. `.git` as a FILE
-    rather than a directory is git's own marker for "this worktree belongs to a parent".
-
-    Only repos whose SKILL.md sits at the ROOT are affected, because that is the only layout where
-    the reference walk starts above the submodules.
-    """
-    base, path = os.path.abspath(base), os.path.abspath(path)
-    try:
-        inside = os.path.normcase(os.path.commonpath([base, path])) == os.path.normcase(base)
-    except ValueError:
-        inside = False
-    if not inside:
-        return False
-    parent = os.path.dirname(path)
-    while os.path.normcase(parent) != os.path.normcase(base):
-        if _submodule(parent):
-            return True
-        ancestor = os.path.dirname(parent)
-        if ancestor == parent:
-            break
-        parent = ancestor
-    return False
-
-
 def audit(skill_md):
     base = os.path.dirname(skill_md) or os.curdir
     refs = sorted(
