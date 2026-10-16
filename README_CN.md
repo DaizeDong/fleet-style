@@ -43,7 +43,7 @@ if [ -z "$S" ] || [ ! -s "$S/tools/dash_guard.py" ]; then
   echo "BLOCKED: git config fleet.style is unset or has no tools/dash_guard.py; nothing was checked." >&2
   exit 1
 fi
-python "$S/tools/dash_guard.py" --check --staged --added-only </dev/null || exit 1
+python "$S/tools/dash_guard.py" --staged --added-only </dev/null || exit 1
 ```
 
 配置项没设，或者 checkout 里没有这个脚本，一律拦下；没有任何备用位置。`load_budget` 和 `doc_contract` 是按需手动跑的脚本，不接任何钩子。

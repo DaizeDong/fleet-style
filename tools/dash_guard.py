@@ -7,8 +7,8 @@ ALONE (it is code syntax: identifiers, flags, file names, versions, URLs, ranges
 guard only touches the en-dash U+2013, em-dash U+2014 and horizontal bar U+2015. None of those
 three ever appear in code SYNTAX, so every occurrence outside a code span is prose and is a target.
 
-Modes (exactly one action):
-  --check  (default) print every offending file:line; exit 1 for findings or incomplete coverage
+Modes:
+  (default)          print every offending file:line; exit 1 for findings or incomplete coverage
   --fix              rewrite the offending files in place. NOT a gate: see the note at the end of
                      main(). It exits 0 after a successful repair and 1 only for files it could not
                      read, so wiring --fix into a hook would install a check that cannot fail.
@@ -42,7 +42,6 @@ rules run before the prose rules so a dash that is a value never reaches the app
 from __future__ import annotations
 
 import argparse
-import importlib.util
 import io
 import os
 import re
@@ -51,10 +50,7 @@ import subprocess
 import sys
 import tokenize
 
-_MARKDOWN_SPEC = importlib.util.spec_from_file_location(
-    "_fleet_style_markdown", os.path.join(os.path.dirname(__file__), "markdown_regions.py"))
-_MARKDOWN = importlib.util.module_from_spec(_MARKDOWN_SPEC)
-_MARKDOWN_SPEC.loader.exec_module(_MARKDOWN)
+import markdown_regions as _MARKDOWN
 
 try:
     sys.stdout.reconfigure(encoding="utf-8")
@@ -508,9 +504,7 @@ def _check_message(path):
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description="en/em dash guard for public repo prose")
     ap.add_argument("--repo", default=".")
-    action = ap.add_mutually_exclusive_group()
-    action.add_argument("--check", action="store_true", help="check without writing (default)")
-    action.add_argument("--fix", action="store_true", help="rewrite offending files in place")
+    ap.add_argument("--fix", action="store_true", help="rewrite offending files in place")
     g = ap.add_mutually_exclusive_group()
     g.add_argument("--staged", action="store_true")
     g.add_argument("--tree", action="store_true")
@@ -687,12 +681,12 @@ def main(argv=None) -> int:
         # --fix is a REPAIR, not a gate, and its exit code is deliberately not a verdict on the
         # tree: it just rewrote the tree, so "0 remaining findings" would be true by construction
         # and would let `dash_guard --fix` be wired into a hook as a gate that can never fail. The gate
-        # is --check, and only --check. What --fix DOES report nonzero is the one thing it cannot
+        # is the default check mode, and only that. What --fix DOES report nonzero is the one thing it cannot
         # honestly claim to have repaired: files it could not read. Those still hold whatever they
         # held, and a repair run that silently left them behind is the same silent-success bug.
         if unexamined:
-            print("dash_guard: --fix could not examine %d file(s) (listed above); re-run --check "
-                  "to gate." % len(unexamined), file=sys.stderr)
+            print("dash_guard: --fix could not examine %d file(s) (listed above); re-run without "
+                  "--fix to gate." % len(unexamined), file=sys.stderr)
             return 1
         return 0
     if total:

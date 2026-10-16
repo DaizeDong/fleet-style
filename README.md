@@ -31,15 +31,15 @@ if [ -z "$S" ] || [ ! -s "$S/tools/dash_guard.py" ]; then
   echo "BLOCKED: git config fleet.style is unset or has no tools/dash_guard.py; nothing was checked." >&2
   exit 1
 fi
-python "$S/tools/dash_guard.py" --check --staged --added-only </dev/null || exit 1
+python "$S/tools/dash_guard.py" --staged --added-only </dev/null || exit 1
 ```
 
 An unset key or a checkout without the script blocks; there is no fallback location. `load_budget` and `doc_contract` are on-demand scripts and are not wired into any hook.
 
 ## Checking files by hand
 
-    python tools/dash_guard.py --check --tree
-    python tools/dash_guard.py --check --staged
+    python tools/dash_guard.py --tree
+    python tools/dash_guard.py --staged
     python tools/dash_guard.py --added-only
     python tools/load_budget.py .
 

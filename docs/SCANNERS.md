@@ -11,7 +11,7 @@ The staged modes read the index blobs, including when explicit paths are supplie
 
 The shared Markdown parser treats LF, CRLF and CR as line endings. Unicode separators inside a physical code line cannot open or close a fence. Commit-message checks stop at Git's scissors marker and report visible body findings at their original source line numbers, including when comments have been removed.
 
-Use `--fix --tree` to repair worktree files, inspect the diff, and stage the changes you want. `--fix --staged` is refused because replacing worktree files from the index would discard unstaged edits. `--check` and `--fix` are mutually exclusive.
+Use `--fix --tree` to repair worktree files, inspect the diff, and stage the changes you want. `--fix --staged` is refused because replacing worktree files from the index would discard unstaged edits.
 
 The scanners share Markdown code protection that respects paragraph and container boundaries. Fenced and indented code, including code in quotes and lists, stays unchanged when fixing prose and is excluded from duplication measurements. Inline code can span physical lines within one paragraph. An unmatched delimiter cannot hide prose in a later block. Dependency references are excluded when a submodule marker exists at any ancestor below the skill's reference root.
 

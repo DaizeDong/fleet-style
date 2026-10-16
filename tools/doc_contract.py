@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import argparse
 from datetime import date
-import importlib.util
 import json
 import os
 from pathlib import Path
@@ -18,9 +17,7 @@ import stat
 import subprocess
 from urllib.parse import unquote, urlsplit
 
-_SPEC = importlib.util.spec_from_file_location("_doc_markdown", Path(__file__).with_name("markdown_regions.py"))
-_MD = importlib.util.module_from_spec(_SPEC)
-_SPEC.loader.exec_module(_MD)
+import markdown_regions as _MD
 
 SEMVER = (r"(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)"
           r"(?:-[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?")

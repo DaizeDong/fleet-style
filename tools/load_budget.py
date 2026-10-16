@@ -72,7 +72,6 @@ WHY "NOTHING TO MEASURE" IS A FAILURE (and used to be a quiet success)
 
 import argparse
 import fnmatch
-import importlib.util
 import json
 import math
 import os
@@ -80,10 +79,7 @@ import re
 import stat
 import sys
 
-_MARKDOWN_SPEC = importlib.util.spec_from_file_location(
-    "_fleet_style_markdown", os.path.join(os.path.dirname(__file__), "markdown_regions.py"))
-_MARKDOWN = importlib.util.module_from_spec(_MARKDOWN_SPEC)
-_MARKDOWN_SPEC.loader.exec_module(_MARKDOWN)
+import markdown_regions as _MARKDOWN
 
 # Tunables. Deliberately generous: this gate exists to catch a paragraph pasted into two files,
 # not to police wording. Raise DUP_PCT_MAX only with a reason recorded in CHANGELOG.
