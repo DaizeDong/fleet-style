@@ -26,7 +26,7 @@ WHAT IT DELIBERATELY DOES NOT FLAG
 
 EXIT CODES
     0  within budget
-    1  over budget (used by hooks / CI)
+    1  over budget
     2  invalid command-line arguments
     3  no complete measurement (missing targets, discovery or input failure)
 

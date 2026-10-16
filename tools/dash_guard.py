@@ -11,7 +11,7 @@ Modes (exactly one action):
   --check  (default) print every offending file:line; exit 1 for findings or incomplete coverage
   --fix              rewrite the offending files in place. NOT a gate: see the note at the end of
                      main(). It exits 0 after a successful repair and 1 only for files it could not
-                     read, so wiring --fix into CI would install a check that cannot fail.
+                     read, so wiring --fix into a hook would install a check that cannot fail.
 
 Exit codes: 0 clean (or repaired under --fix), 1 findings or incomplete coverage,
 2 invalid arguments or an unusable Git repository. Every nonzero code blocks a check.
@@ -620,7 +620,7 @@ def _git(repo, *a, allow_fail=False, raw=False):
     an empty list, the scan loop never executed, `total` stayed 0, and main() printed
     "dash_guard: clean" and exited 0 without opening a single file. Every way git can fail -- not a
     repo, an extracted git-archive with no .git, git missing from PATH, an index.lock, a permission
-    error -- arrived at that same green result, including in the CI workflow whose entire job is
+    error -- arrived at that same green result, including in the gate whose entire job is
     running this command.
 
     So a nonzero exit RAISES, carrying git's own stderr. allow_fail=True returns None instead, and
@@ -1027,7 +1027,7 @@ def main(argv=None) -> int:
               f"{examined} file(s) examined")
         # --fix is a REPAIR, not a gate, and its exit code is deliberately not a verdict on the
         # tree: it just rewrote the tree, so "0 remaining findings" would be true by construction
-        # and would let `dash_guard --fix` be wired into CI as a gate that can never fail. The gate
+        # and would let `dash_guard --fix` be wired into a hook as a gate that can never fail. The gate
         # is --check, and only --check. What --fix DOES report nonzero is the one thing it cannot
         # honestly claim to have repaired: files it could not read. Those still hold whatever they
         # held, and a repair run that silently left them behind is the same silent-success bug.
@@ -1056,7 +1056,7 @@ def main(argv=None) -> int:
 
 def cli():
     """main() with the git-failure exit. 0 clean, 1 findings, 2 the scan never ran. Any nonzero is
-    a block for the hook and for CI: an unexamined tree is not a clean tree."""
+    a block for the hook: an unexamined tree is not a clean tree."""
     try:
         return main()
     except GitError as e:

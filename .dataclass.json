@@ -12,7 +12,7 @@
   "_run_shape_probes": [],
   "_audited": [
     "2026-10-02. The data list is empty because this repo produces no real-run output, not because",
-    "nobody looked. It holds three checkers and three CI actions.",
+    "nobody looked. It holds three checker scripts and a shared Markdown parser.",
     "",
     "Checked rather than assumed. Every write in shipped (non-test) code was located:",
     "  dash_guard.py --fix -> rewrites the file it was pointed at, which is the CALLER's source.",

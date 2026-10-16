@@ -1,9 +1,0 @@
-name: load-budget
-description: PHILOSOPHY P7 always-loaded budget and the no-second-copy rule, against the CALLING repo.
-
-runs:
-  using: composite
-  steps:
-    - name: Always-loaded budget (P7)
-      shell: bash
-      run: python "$GITHUB_ACTION_PATH/../../tools/load_budget.py" .
